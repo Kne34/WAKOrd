@@ -1,0 +1,58 @@
+{
+  "rules": {
+    "users": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "songs": {
+      ".read": "auth != null",
+      "$songId": {
+        "likeCount": { ".write": "auth != null" },
+        "saveCount": { ".write": "auth != null" }
+      }
+    },
+    "progressions": {
+      ".read": "auth != null",
+      ".indexOn": ["authorId", "likeCount", "createdAt"],
+      "$progressionId": {
+        ".write": "auth != null && (!data.exists() || data.child('authorId').val() === auth.uid)",
+        "likeCount": { ".write": "auth != null" },
+        "saveCount": { ".write": "auth != null" },
+        "playCount": { ".write": "auth != null" }
+      }
+    },
+    "likes": {
+      "$targetId": {
+        ".read": "auth != null",
+        "$uid": { ".write": "auth != null && auth.uid === $uid" }
+      }
+    },
+    "comments": {
+      "$targetId": {
+        ".read": "auth != null",
+        ".indexOn": ["createdAt"],
+        "$commentId": {
+          ".write": "auth != null && (!data.exists() || data.child('authorId').val() === auth.uid)",
+          ".validate": "newData.hasChildren(['authorId', 'text', 'createdAt']) && newData.child('text').isString() && newData.child('text').val().length <= 500",
+          "likes": {
+            "$uid": { ".write": "auth != null && auth.uid === $uid" }
+          }
+        }
+      }
+    },
+    "saves": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "tunings": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    }
+  }
+}
