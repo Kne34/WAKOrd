@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_home">Beranda</string>
+    <string name="nav_explore">Jelajah</string>
+    <string name="nav_tuner">Tuner</string>
+    <string name="nav_analyze">Analisis</string>
+    <string name="nav_profile">Profil</string>
+    <string name="nav_notifications">Notifikasi</string>
+
+    <string name="show_password">Tampilkan kata sandi</string>
+    <string name="hide_password">Sembunyikan kata sandi</string>
+    <string name="loading_more">Memuat lagi</string>
+    <string name="play">Putar</string>
+    <string name="pause">Jeda</string>
+    <string name="back">Kembali</string>
+    <string name="continue_label">Lanjut</string>
+    <string name="skip">Lewati</string>
+    <string name="allow">Izinkan</string>
+    <string name="not_now">Nanti saja</string>
+    <string name="open_settings">Buka pengaturan</string>
+    <string name="step_of">Langkah %1$d dari %2$d</string>
+</resources>
