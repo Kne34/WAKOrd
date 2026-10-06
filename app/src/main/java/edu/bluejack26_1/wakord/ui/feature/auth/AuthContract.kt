@@ -52,8 +52,8 @@ sealed interface RegisterEffect {
 }
 
 val DefaultGenres = listOf(
-    "Acoustic", "Neo-Soul", "Pop", "Rock", "Jazz", "Lo-fi",
-    "R&B", "Indie", "Blues", "Folk", "Gospel", "Classical",
+    "Pop", "Acoustic", "Rock", "Neo-Soul", "Jazz", "Indie Folk",
+    "R&B", "Worship", "Dangdut", "Blues", "Lo-fi", "Metal",
 )
 
 data class PreferencesUiState(

@@ -1,6 +1,7 @@
 package edu.bluejack26_1.wakord.ui.navigation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -10,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
@@ -19,6 +21,12 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import edu.bluejack26_1.wakord.ui.components.TopLevelDestinations
 import edu.bluejack26_1.wakord.ui.components.WakBottomBar
+import edu.bluejack26_1.wakord.ui.feature.auth.LoginRoute
+import edu.bluejack26_1.wakord.ui.feature.auth.PreferencesRoute
+import edu.bluejack26_1.wakord.ui.feature.auth.RegisterRoute
+import edu.bluejack26_1.wakord.ui.feature.auth.ResetPasswordRoute
+import edu.bluejack26_1.wakord.ui.feature.auth.SplashScreen
+import edu.bluejack26_1.wakord.ui.feature.auth.SplashViewModel
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 
 @Composable
@@ -30,6 +38,7 @@ fun WakApp() {
 
     Scaffold(
         containerColor = WakTheme.colors.bg,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             if (showBottomBar) {
                 WakBottomBar(currentRoute = currentRoute, onNavigate = navController::navigateTopLevel)
@@ -38,10 +47,47 @@ fun WakApp() {
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = Routes.MAIN_GRAPH,
+            startDestination = Routes.AUTH_GRAPH,
             modifier = Modifier.padding(padding),
         ) {
+            authGraph(navController)
             mainGraph()
+        }
+    }
+}
+
+private fun NavGraphBuilder.authGraph(nav: NavController) {
+    navigation(startDestination = Routes.SPLASH, route = Routes.AUTH_GRAPH) {
+        composable(Routes.SPLASH) {
+            val splashViewModel: SplashViewModel = viewModel(factory = SplashViewModel.Factory)
+            SplashScreen(onFinished = {
+                if (splashViewModel.isLoggedIn) {
+                    nav.navigateToMain()
+                } else {
+                    nav.navigate(Routes.LOGIN) { popUpTo(Routes.SPLASH) { inclusive = true } }
+                }
+            })
+        }
+        composable(Routes.LOGIN) {
+            LoginRoute(
+                onLoggedIn = nav::navigateToMain,
+                onRegister = { nav.navigate(Routes.REGISTER) },
+                onForgotPassword = { nav.navigate(Routes.RESET_PASSWORD) },
+            )
+        }
+        composable(Routes.REGISTER) {
+            RegisterRoute(
+                onRegistered = {
+                    nav.navigate(Routes.PREFERENCES) { popUpTo(Routes.REGISTER) { inclusive = true } }
+                },
+                onBackToLogin = { nav.popBackStack() },
+            )
+        }
+        composable(Routes.PREFERENCES) {
+            PreferencesRoute(onDone = nav::navigateToMain)
+        }
+        composable(Routes.RESET_PASSWORD) {
+            ResetPasswordRoute(onBack = { nav.popBackStack() })
         }
     }
 }
