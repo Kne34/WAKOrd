@@ -36,4 +36,16 @@ class StringMatcherTest {
             assertEquals(tuning.name, tuning.instrument.stringCount, tuning.notes.size)
         }
     }
+
+    @Test
+    fun `only mandolin uses paired strings`() {
+        assertEquals(listOf(TunerInstrument.MANDOLIN), TunerInstrument.entries.filter { it.isPaired })
+    }
+
+    @Test
+    fun `standard presets use a short label`() {
+        assertEquals("Standard", TuningPresets.default(TunerInstrument.GUITAR).shortName)
+        assertEquals("Standard E", TuningPresets.default(TunerInstrument.GUITAR).name)
+        assertEquals("Drop D", dropD.shortName)
+    }
 }
