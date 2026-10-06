@@ -1,7 +1,11 @@
 package edu.bluejack26_1.wakord.ui.feature.auth
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import edu.bluejack26_1.wakord.WAKordApp
 import edu.bluejack26_1.wakord.core.error.messageRes
 import edu.bluejack26_1.wakord.domain.repository.AuthRepository
 import edu.bluejack26_1.wakord.domain.validation.AuthValidator
@@ -61,6 +65,15 @@ class RegisterViewModel(
                     onSuccess = { state.copy(isLoading = false, showAccountCreated = true) },
                     onFailure = { state.copy(isLoading = false, errorMessage = it.messageRes()) },
                 )
+            }
+        }
+    }
+
+    companion object {
+        val Factory = viewModelFactory {
+            initializer {
+                val container = (this[APPLICATION_KEY] as WAKordApp).container
+                RegisterViewModel(container.authRepository, container.authValidator)
             }
         }
     }

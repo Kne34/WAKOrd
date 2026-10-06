@@ -1,7 +1,11 @@
 package edu.bluejack26_1.wakord.ui.feature.auth
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import edu.bluejack26_1.wakord.WAKordApp
 import edu.bluejack26_1.wakord.domain.repository.AuthRepository
 import edu.bluejack26_1.wakord.domain.validation.AuthValidator
 import kotlinx.coroutines.channels.Channel
@@ -45,6 +49,15 @@ class LoginViewModel(
             val result = authRepository.login(state.email, state.password)
             _uiState.update { it.copy(isLoading = false, showLoginFailed = result.isFailure) }
             if (result.isSuccess) _effects.send(LoginEffect.NavigateHome)
+        }
+    }
+
+    companion object {
+        val Factory = viewModelFactory {
+            initializer {
+                val container = (this[APPLICATION_KEY] as WAKordApp).container
+                LoginViewModel(container.authRepository, container.authValidator)
+            }
         }
     }
 }
