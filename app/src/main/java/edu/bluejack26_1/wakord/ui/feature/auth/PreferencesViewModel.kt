@@ -1,7 +1,11 @@
 package edu.bluejack26_1.wakord.ui.feature.auth
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import edu.bluejack26_1.wakord.WAKordApp
 import edu.bluejack26_1.wakord.core.error.messageRes
 import edu.bluejack26_1.wakord.domain.repository.AuthRepository
 import edu.bluejack26_1.wakord.domain.validation.AuthValidator
@@ -53,4 +57,13 @@ class PreferencesViewModel(
     }
 
     private fun <T> Set<T>.toggle(item: T): Set<T> = if (item in this) this - item else this + item
+
+    companion object {
+        val Factory = viewModelFactory {
+            initializer {
+                val container = (this[APPLICATION_KEY] as WAKordApp).container
+                PreferencesViewModel(container.authRepository, container.authValidator)
+            }
+        }
+    }
 }
