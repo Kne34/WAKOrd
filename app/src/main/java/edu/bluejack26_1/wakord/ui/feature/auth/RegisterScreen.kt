@@ -55,7 +55,7 @@ fun RegisterScreen(
             )
         },
     ) {
-        AuthTopBar(onBack = onBackToLogin, end = { StepLabel(step = 1, total = 2) })
+        AuthTopBar(onBack = null, center = { StepLabel(step = 1, total = 2) })
         Spacer(Modifier.height(28.dp))
         AuthHeadline(stringResource(R.string.register_title), stringResource(R.string.register_subtitle))
         Spacer(Modifier.height(24.dp))
@@ -82,6 +82,7 @@ fun RegisterScreen(
             value = state.password,
             onValueChange = { onAction(RegisterAction.PasswordChanged(it)) },
             label = stringResource(R.string.field_password),
+            placeholder = stringResource(R.string.password_placeholder),
             leadingIcon = painterResource(R.drawable.ic_lock),
             error = fieldErrorText(state.passwordError, R.string.error_password_required),
             isPassword = true,
@@ -91,6 +92,7 @@ fun RegisterScreen(
             value = state.confirmPassword,
             onValueChange = { onAction(RegisterAction.ConfirmPasswordChanged(it)) },
             label = stringResource(R.string.field_confirm_password),
+            placeholder = stringResource(R.string.confirm_password_placeholder),
             leadingIcon = painterResource(R.drawable.ic_lock),
             error = fieldErrorText(state.confirmPasswordError, R.string.error_confirm_required),
             isPassword = true,

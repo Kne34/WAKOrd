@@ -73,6 +73,7 @@ fun LoginScreen(
             value = state.password,
             onValueChange = { onAction(LoginAction.PasswordChanged(it)) },
             label = stringResource(R.string.field_password),
+            placeholder = stringResource(R.string.login_password_placeholder),
             leadingIcon = painterResource(R.drawable.ic_lock),
             error = fieldErrorText(state.passwordError, R.string.error_password_required),
             isPassword = true,

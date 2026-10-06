@@ -11,6 +11,8 @@
     <string name="field_confirm_password">Konfirmasi kata sandi</string>
     <string name="email_placeholder">kamu@contoh.com</string>
     <string name="full_name_placeholder">Nama kamu</string>
+    <string name="password_placeholder">Minimal 8 karakter</string>
+    <string name="confirm_password_placeholder">Ulangi kata sandi</string>
     <string name="forgot_password">Lupa kata sandi?</string>
     <string name="log_in">Masuk</string>
     <string name="register">Daftar</string>
@@ -59,6 +61,7 @@
     <string name="reset_password_subtitle">Masukkan email yang kamu pakai saat daftar. Kami akan mengirim link untuk mengatur ulang kata sandi.</string>
     <string name="send_reset_link">Kirim link reset</string>
     <string name="check_your_email">Cek email kamu</string>
-    <string name="reset_link_sent">Link reset sudah dikirim ke %1$s.</string>
+    <string name="reset_link_sent">Kalau %1$s terdaftar, link reset sudah kami kirim. Cek folder spam kalau belum masuk.</string>
     <string name="back_to_login">Kembali ke halaman masuk</string>
+    <string name="remember_password_prompt">Ingat kata sandimu?</string>
 </resources>
