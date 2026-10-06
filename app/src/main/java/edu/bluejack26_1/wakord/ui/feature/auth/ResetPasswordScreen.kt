@@ -50,19 +50,24 @@ fun ResetPasswordScreen(
                     modifier = Modifier.fillMaxWidth(),
                     loading = state.isSending,
                 )
+                Spacer(Modifier.height(18.dp))
+                AuthSwitchPrompt(
+                    prompt = stringResource(R.string.remember_password_prompt),
+                    action = stringResource(R.string.log_in),
+                    onClick = onBack,
+                )
             }
         },
     ) {
-        AuthTopBar(onBack = onBack)
-        Spacer(Modifier.height(28.dp))
+        Spacer(Modifier.height(72.dp))
         if (state.isSent) {
             Box(
                 modifier = Modifier
                     .size(64.dp)
-                    .background(c.primary.copy(alpha = 0.12f), RoundedCornerShape(22.dp)),
+                    .background(c.primaryText.copy(alpha = 0.12f), RoundedCornerShape(22.dp)),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(painterResource(R.drawable.ic_mail), contentDescription = null, tint = c.primary, modifier = Modifier.size(28.dp))
+                Icon(painterResource(R.drawable.ic_mail), contentDescription = null, tint = c.primaryText, modifier = Modifier.size(28.dp))
             }
             Spacer(Modifier.height(20.dp))
             AuthHeadline(stringResource(R.string.check_your_email), stringResource(R.string.reset_link_sent, state.email))

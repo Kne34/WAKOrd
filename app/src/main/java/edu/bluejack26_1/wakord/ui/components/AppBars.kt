@@ -242,7 +242,7 @@ fun MiniPlayer(
                 }
                 IconButton(onClick = onToggleLike) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_heart),
+                        painter = painterResource(if (isLiked) R.drawable.ic_heart_filled else R.drawable.ic_heart),
                         contentDescription = stringResource(R.string.like),
                         tint = if (isLiked) c.peach else c.text,
                         modifier = Modifier.size(20.dp),
@@ -316,6 +316,23 @@ private fun AppBarsLightPreview() {
                 modifier = Modifier.padding(vertical = 8.dp),
             )
             WakBottomBar(currentRoute = Routes.EXPLORE, onNavigate = {})
+        }
+    }
+}
+
+@Preview(name = "Notification bell")
+@Composable
+private fun NotificationBellPreview() {
+    WAKordTheme(darkTheme = true) {
+        Row(
+            modifier = Modifier
+                .background(WakTheme.colors.bg)
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            NotificationBell(unreadCount = 0, onClick = {})
+            NotificationBell(unreadCount = 3, onClick = {})
+            NotificationBell(unreadCount = 12, onClick = {})
         }
     }
 }
