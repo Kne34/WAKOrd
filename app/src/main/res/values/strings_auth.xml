@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="splash_tagline">Tune, discover chords and share your progressions.</string>
+    <string name="splash_version">v1.0 · KO WA</string>
+
+    <string name="login_title">Welcome back</string>
+    <string name="login_subtitle">Log in to tune, find chords and pick up where you left off.</string>
+    <string name="field_email">Email</string>
+    <string name="field_password">Password</string>
+    <string name="field_full_name">Full name</string>
+    <string name="field_confirm_password">Confirm password</string>
+    <string name="email_placeholder">you@example.com</string>
+    <string name="full_name_placeholder">Your name</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="log_in">Log in</string>
+    <string name="register">Register</string>
+    <string name="no_account_prompt">Don\'t have an account?</string>
+    <string name="have_account_prompt">Already have an account?</string>
+    <string name="login_failed_title">Couldn\'t log you in</string>
+    <string name="login_failed_message">The email or password you entered is incorrect. Please try again.</string>
+    <string name="try_again">Try again</string>
+    <string name="reset_password">Reset password</string>
+
+    <string name="error_name_required">Name is required</string>
+    <string name="error_email_required">Email is required</string>
+    <string name="error_password_required">Password is required</string>
+    <string name="error_confirm_required">Please confirm your password</string>
+    <string name="error_invalid_email">Enter a valid email, like name@mail.com</string>
+    <string name="error_password_too_short">Password must be at least %1$d characters</string>
+    <string name="error_password_mismatch">Passwords don\'t match</string>
+    <string name="error_too_few_genres">Pick at least %1$d genres</string>
+
+    <string name="register_title">Create your account</string>
+    <string name="register_subtitle">One place for your tuner, chord sheets and progressions.</string>
+    <string name="create_account">Create account</string>
+    <string name="account_created_title">Account created</string>
+    <string name="account_created_message">Welcome to WAKord, %1$s. Tell us what you play so we can tune your feed.</string>
+
+    <string name="account_created_action">Pick my instruments</string>
+    <string name="preferences_title">What do you play?</string>
+    <string name="preferences_subtitle">We use this to set up your tuner and fill your feed. Change it any time.</string>
+    <string name="instruments">Instruments</string>
+    <string name="selected_count">%1$d selected</string>
+    <string name="favorite_genres">Favorite genres</string>
+    <string name="pick_at_least">Pick at least %1$d</string>
+    <string name="instrument_guitar">Guitar</string>
+    <string name="instrument_ukulele">Ukulele</string>
+    <string name="instrument_bass">Bass</string>
+    <string name="instrument_piano">Piano</string>
+    <string name="instrument_vocals">Vocals</string>
+    <string name="instrument_other">Other</string>
+    <string name="instrument_guitar_detail">6 strings</string>
+    <string name="instrument_ukulele_detail">4 strings</string>
+    <string name="instrument_bass_detail">4 strings</string>
+    <string name="instrument_piano_detail">Keys</string>
+    <string name="instrument_vocals_detail">Singing</string>
+    <string name="instrument_other_detail">Tell us later</string>
+
+    <string name="reset_password_subtitle">Enter the email you signed up with and we\'ll send you a link to reset your password.</string>
+    <string name="send_reset_link">Send reset link</string>
+    <string name="check_your_email">Check your email</string>
+    <string name="reset_link_sent">We sent a reset link to %1$s.</string>
+    <string name="back_to_login">Back to log in</string>
+</resources>
