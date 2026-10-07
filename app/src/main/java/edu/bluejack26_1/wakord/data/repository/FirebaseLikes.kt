@@ -9,13 +9,19 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 
-internal suspend fun FirebaseDatabase.toggleLike(uid: String, targetId: String, counterPath: String, liked: Boolean) {
+internal suspend fun FirebaseDatabase.toggleLike(
+    uid: String,
+    targetId: String,
+    counterPath: String,
+    liked: Boolean,
+    extra: Map<String, Any?> = emptyMap(),
+) {
     reference.updateChildren(
         mapOf(
             "likes/$targetId/$uid" to (if (liked) true else null),
             "userLikes/$uid/$targetId" to (if (liked) ServerValue.TIMESTAMP else null),
             "$counterPath/likeCount" to ServerValue.increment(if (liked) 1L else -1L),
-        ),
+        ) + extra,
     ).await()
 }
 
