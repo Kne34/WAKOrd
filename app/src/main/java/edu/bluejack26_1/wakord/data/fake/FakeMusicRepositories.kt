@@ -122,6 +122,9 @@ class FakeSavedItemsRepository : SavedItemsRepository {
 
     override fun isSaved(type: SavedType, id: String): Flow<Boolean> = saved.map { (type to id) in it }
 
+    override fun saved(type: SavedType): Flow<List<String>> =
+        saved.map { all -> all.filter { it.first == type }.map { it.second }.reversed() }
+
     override suspend fun setSaved(type: SavedType, id: String, saved: Boolean): Result<Unit> {
         this.saved.update { if (saved) it + (type to id) else it - (type to id) }
         return Result.success(Unit)
