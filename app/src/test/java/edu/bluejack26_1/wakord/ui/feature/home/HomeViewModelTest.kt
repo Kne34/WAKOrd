@@ -1,0 +1,111 @@
+package edu.bluejack26_1.wakord.ui.feature.home
+
+import edu.bluejack26_1.wakord.R
+import edu.bluejack26_1.wakord.data.fake.FakeFeedRepository
+import edu.bluejack26_1.wakord.data.fake.FakePlaybackController
+import edu.bluejack26_1.wakord.data.fake.FakeProgressionRepository
+import edu.bluejack26_1.wakord.data.fake.FakeSavedItemsRepository
+import edu.bluejack26_1.wakord.data.fake.FakeUserRepository
+import edu.bluejack26_1.wakord.data.fake.SampleDiscover
+import edu.bluejack26_1.wakord.domain.model.FeedItem
+import edu.bluejack26_1.wakord.domain.model.SavedType
+import edu.bluejack26_1.wakord.domain.model.User
+import edu.bluejack26_1.wakord.testutil.MainDispatcherRule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Rule
+import org.junit.Test
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class HomeViewModelTest {
+    @get:Rule
+    val main = MainDispatcherRule()
+
+    private val users = FakeUserRepository(User(uid = "u", fullName = "Keane Wilson", email = "k@mail.com", genres = listOf("Jazz")))
+    private val feed = FakeFeedRepository()
+    private val saved = FakeSavedItemsRepository()
+    private val progressions = FakeProgressionRepository()
+    private val playback = FakePlaybackController()
+
+    private fun viewModel() = HomeViewModel(users, feed, saved, progressions, playback, computeDispatcher = main.dispatcher)
+
+    @Test
+    fun `first page loads greeting, recommendations and feed`() = runTest(main.dispatcher) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        val s = vm.uiState.value
+        assertFalse(s.isLoading)
+        assertEquals("Keane Wilson", s.userName)
+        assertTrue(s.recommended.isNotEmpty())
+        assertEquals(HomeViewModel.PAGE_SIZE + 2, s.feed.size)
+        assertTrue(s.feed.all { it.commentCount == 2 })
+        assertFalse(s.endReached)
+    }
+
+    @Test
+    fun `favorite genre is ranked first in the feed`() = runTest(main.dispatcher) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        assertEquals("Jazz", vm.uiState.value.feed.first().genre)
+    }
+
+    @Test
+    fun `load more uses the cursor until the end`() = runTest(main.dispatcher) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        vm.onAction(HomeAction.LoadMore)
+        advanceUntilIdle()
+        vm.onAction(HomeAction.LoadMore)
+        advanceUntilIdle()
+        val s = vm.uiState.value
+        assertTrue(s.endReached)
+        assertEquals(SampleDiscover.progressions.size + SampleDiscover.songs.size, s.feed.size)
+        assertEquals(s.feed.size, s.feed.map { it.id }.toSet().size)
+        assertEquals(3, feed.requestedCursors.size)
+        assertNull(feed.requestedCursors.first())
+
+        vm.onAction(HomeAction.LoadMore)
+        advanceUntilIdle()
+        assertEquals(3, feed.requestedCursors.size)
+    }
+
+    @Test
+    fun `failed page shows error and keeps the feed`() = runTest(main.dispatcher) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        feed.failNextPage = true
+        vm.onAction(HomeAction.LoadMore)
+        advanceUntilIdle()
+        val s = vm.uiState.value
+        assertEquals(R.string.error_network, s.errorMessage)
+        assertEquals(HomeViewModel.PAGE_SIZE + 2, s.feed.size)
+        assertFalse(s.isLoadingMore)
+    }
+
+    @Test
+    fun `recently saved chords come with a diagram`() = runTest(main.dispatcher) {
+        saved.setSaved(SavedType.CHORD, "G", true)
+        saved.setSaved(SavedType.CHORD, "Am7", true)
+        val vm = viewModel()
+        advanceUntilIdle()
+        assertEquals(listOf("Am7", "G"), vm.uiState.value.savedChords.map { it.symbol })
+        assertTrue(vm.uiState.value.savedChords.all { it.voicing != null })
+    }
+
+    @Test
+    fun `playing from the feed starts the mini player and records a play`() = runTest(main.dispatcher) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        val item = vm.uiState.value.feed.filterIsInstance<FeedItem.ProgressionItem>().first()
+        vm.onAction(HomeAction.PlayProgression(item.progression))
+        advanceUntilIdle()
+        assertEquals(listOf(item.id), playback.played)
+        assertEquals(listOf(item.id), progressions.plays)
+        assertTrue(playback.state.value.isPlaying)
+    }
+}

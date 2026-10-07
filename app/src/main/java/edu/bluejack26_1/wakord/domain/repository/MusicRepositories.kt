@@ -27,5 +27,6 @@ interface CommentRepository {
 
 interface SavedItemsRepository {
     fun isSaved(type: SavedType, id: String): Flow<Boolean>
+    fun saved(type: SavedType): Flow<List<String>>
     suspend fun setSaved(type: SavedType, id: String, saved: Boolean): Result<Unit>
 }

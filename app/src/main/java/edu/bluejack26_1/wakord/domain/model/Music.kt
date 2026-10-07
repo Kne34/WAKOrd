@@ -36,6 +36,7 @@ data class ChordProgression(
     val playCount: Int = 0,
     val likeCount: Int = 0,
     val saveCount: Int = 0,
+    val createdAt: Long = 0,
 )
 
 data class Comment(
