@@ -2,6 +2,8 @@ package edu.bluejack26_1.wakord.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
+import edu.bluejack26_1.wakord.core.discover.SearchEngine
 import edu.bluejack26_1.wakord.data.remote.firebaseCall
 import edu.bluejack26_1.wakord.data.remote.requireUid
 import edu.bluejack26_1.wakord.data.remote.valueFlow
@@ -20,6 +22,13 @@ class FirebaseSongRepository(
     override fun isLiked(id: String): Flow<Boolean> = database.likedFlow(auth, id)
 
     override suspend fun setLiked(id: String, liked: Boolean): Result<Unit> = firebaseCall {
-        database.toggleLike(auth.requireUid(), id, "songs/$id", liked)
+        val week = SearchEngine.weekKey(System.currentTimeMillis())
+        database.toggleLike(
+            auth.requireUid(),
+            id,
+            "songs/$id",
+            liked,
+            mapOf("weeklyLikes/$week/$id" to ServerValue.increment(if (liked) 1L else -1L)),
+        )
     }
 }
