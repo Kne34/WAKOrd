@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import edu.bluejack26_1.wakord.WAKordApp
+import edu.bluejack26_1.wakord.core.audio.PlaybackController
 import edu.bluejack26_1.wakord.core.audio.TonePlayer
 import edu.bluejack26_1.wakord.core.error.AppError
 import edu.bluejack26_1.wakord.core.error.messageRes
@@ -33,12 +34,12 @@ class ProgressionDetailViewModel(
     private val commentRepository: CommentRepository,
     private val savedItemsRepository: SavedItemsRepository,
     private val tonePlayer: TonePlayer,
+    private val playbackController: PlaybackController,
     private val computeDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ProgressionDetailUiState())
     val uiState: StateFlow<ProgressionDetailUiState> = _uiState.asStateFlow()
 
-    private var playJob: Job? = null
     private var chordSavedJob: Job? = null
 
     init {
@@ -62,6 +63,12 @@ class ProgressionDetailViewModel(
             savedItemsRepository.isSaved(SavedType.PROGRESSION, progressionId).collect { v -> _uiState.update { it.copy(isSaved = v) } }
         }
         viewModelScope.launch { commentRepository.comments(progressionId).collect { v -> _uiState.update { it.copy(comments = v) } } }
+        viewModelScope.launch {
+            playbackController.state.collect { playback ->
+                val mine = playback.progression?.id == progressionId
+                _uiState.update { it.copy(isPlaying = mine && playback.isPlaying, playingIndex = if (mine) playback.chordIndex else null) }
+            }
+        }
     }
 
     fun onAction(action: ProgressionDetailAction) {
@@ -87,25 +94,12 @@ class ProgressionDetailViewModel(
 
     private fun startPlayback() {
         val progression: ChordProgression = _uiState.value.progression ?: return
-        val diagrams = _uiState.value.chordDiagrams
-        playJob = viewModelScope.launch {
-            progressionRepository.recordPlay(progressionId)
-            _uiState.update { it.copy(isPlaying = true) }
-            val barMs = 60_000L * 4 / progression.bpm
-            progression.chords.indices.forEach { index ->
-                _uiState.update { it.copy(playingIndex = index) }
-                val voicing = diagrams.getOrNull(index)
-                tonePlayer.playChord(voicing?.let { VoicingGenerator.midiNotes(it) }.orEmpty(), barMs)
-            }
-            _uiState.update { it.copy(isPlaying = false, playingIndex = null) }
-        }
+        playbackController.play(progression)
+        viewModelScope.launch { progressionRepository.recordPlay(progressionId) }
     }
 
     private fun stopPlayback() {
-        playJob?.cancel()
-        playJob = null
-        tonePlayer.stop()
-        _uiState.update { it.copy(isPlaying = false, playingIndex = null) }
+        playbackController.pause()
     }
 
     private fun openChord(symbol: String) {
@@ -183,10 +177,6 @@ class ProgressionDetailViewModel(
         }
     }
 
-    override fun onCleared() {
-        tonePlayer.stop()
-    }
-
     companion object {
         const val PROGRESSION_ID = "progressionId"
 
@@ -199,6 +189,7 @@ class ProgressionDetailViewModel(
                     commentRepository = container.commentRepository,
                     savedItemsRepository = container.savedItemsRepository,
                     tonePlayer = container.tonePlayer,
+                    playbackController = container.playbackController,
                 )
             }
         }

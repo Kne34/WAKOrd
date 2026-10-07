@@ -1,12 +1,16 @@
 package edu.bluejack26_1.wakord.ui.feature.progression
 
+import edu.bluejack26_1.wakord.core.audio.PlaybackController
+import edu.bluejack26_1.wakord.core.audio.TonePlaybackController
 import edu.bluejack26_1.wakord.data.fake.FakeCommentRepository
+import edu.bluejack26_1.wakord.data.fake.FakePlaybackController
 import edu.bluejack26_1.wakord.data.fake.FakeProgressionRepository
 import edu.bluejack26_1.wakord.data.fake.FakeSavedItemsRepository
 import edu.bluejack26_1.wakord.data.fake.SampleMusic
 import edu.bluejack26_1.wakord.domain.model.SavedType
 import edu.bluejack26_1.wakord.testutil.MainDispatcherRule
 import edu.bluejack26_1.wakord.testutil.RecordingTonePlayer
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -26,9 +30,10 @@ class ProgressionDetailViewModelTest {
     private val comments = FakeCommentRepository()
     private val saved = FakeSavedItemsRepository()
     private val player = RecordingTonePlayer()
+    private val playback = TonePlaybackController(player, CoroutineScope(main.dispatcher), main.dispatcher)
 
-    private fun viewModel() = ProgressionDetailViewModel(
-        SampleMusic.progression.id, progressions, comments, saved, player, computeDispatcher = main.dispatcher,
+    private fun viewModel(controller: PlaybackController = playback) = ProgressionDetailViewModel(
+        SampleMusic.progression.id, progressions, comments, saved, player, controller, computeDispatcher = main.dispatcher,
     )
 
     @Test
@@ -51,6 +56,21 @@ class ProgressionDetailViewModelTest {
         assertEquals(3, player.chords.size)
         assertFalse(vm.uiState.value.isPlaying)
         assertNull(vm.uiState.value.playingIndex)
+        assertEquals(SampleMusic.progression.id, playback.state.value.progression?.id)
+    }
+
+    @Test
+    fun `pausing from the mini player updates the detail page`() = runTest(main.dispatcher) {
+        val controller = FakePlaybackController()
+        val vm = viewModel(controller)
+        advanceUntilIdle()
+        vm.onAction(ProgressionDetailAction.TogglePlay)
+        advanceUntilIdle()
+        assertTrue(vm.uiState.value.isPlaying)
+        assertEquals(0, vm.uiState.value.playingIndex)
+        controller.toggle()
+        advanceUntilIdle()
+        assertFalse(vm.uiState.value.isPlaying)
     }
 
     @Test
