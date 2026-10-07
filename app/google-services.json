@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "438173129766",
+    "firebase_url": "https://wakord-e935e-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "wakord-e935e",
+    "storage_bucket": "wakord-e935e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:438173129766:android:0a5a068d392eee6a8edae7",
+        "android_client_info": {
+          "package_name": "edu.bluejack26_1.wakord"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBR1sv6ConZ03meJcld1M09pgvBAAeAswo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

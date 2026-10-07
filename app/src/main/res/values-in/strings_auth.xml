@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="splash_tagline">Setem, temukan chord, dan bagikan progresimu.</string>
+    <string name="splash_version">v1.0 · KO WA</string>
+
+    <string name="login_title">Selamat datang kembali</string>
+    <string name="login_subtitle">Masuk untuk menyetem, mencari chord, dan melanjutkan latihanmu.</string>
+    <string name="field_email">Email</string>
+    <string name="field_password">Kata sandi</string>
+    <string name="field_full_name">Nama lengkap</string>
+    <string name="field_confirm_password">Konfirmasi kata sandi</string>
+    <string name="email_placeholder">kamu@contoh.com</string>
+    <string name="full_name_placeholder">Nama kamu</string>
+    <string name="password_placeholder">Minimal 8 karakter</string>
+    <string name="confirm_password_placeholder">Ulangi kata sandi</string>
+    <string name="forgot_password">Lupa kata sandi?</string>
+    <string name="log_in">Masuk</string>
+    <string name="register">Daftar</string>
+    <string name="no_account_prompt">Belum punya akun?</string>
+    <string name="have_account_prompt">Sudah punya akun?</string>
+    <string name="login_failed_title">Gagal masuk</string>
+    <string name="login_failed_message">Email atau kata sandi yang kamu masukkan salah. Coba lagi.</string>
+    <string name="try_again">Coba lagi</string>
+    <string name="reset_password">Atur ulang kata sandi</string>
+
+    <string name="error_name_required">Nama wajib diisi</string>
+    <string name="error_email_required">Email wajib diisi</string>
+    <string name="error_password_required">Kata sandi wajib diisi</string>
+    <string name="error_confirm_required">Konfirmasi kata sandimu</string>
+    <string name="error_invalid_email">Masukkan email yang valid, misalnya nama@mail.com</string>
+    <string name="error_password_too_short">Kata sandi minimal %1$d karakter</string>
+    <string name="error_password_mismatch">Kata sandi tidak sama</string>
+    <string name="error_too_few_genres">Pilih minimal %1$d genre</string>
+
+    <string name="register_title">Buat akunmu</string>
+    <string name="register_subtitle">Satu tempat untuk tuner, chord sheet, dan progresimu.</string>
+    <string name="create_account">Buat akun</string>
+    <string name="account_created_title">Akun berhasil dibuat</string>
+    <string name="account_created_message">Selamat datang di WAKord, %1$s. Ceritakan alat musikmu supaya feed-mu pas.</string>
+
+    <string name="account_created_action">Pilih alat musikku</string>
+    <string name="preferences_title">Kamu main apa?</string>
+    <string name="preferences_subtitle">Ini dipakai untuk menyiapkan tuner dan feed-mu. Bisa diubah kapan saja.</string>
+    <string name="instruments">Alat musik</string>
+    <string name="selected_count">%1$d dipilih</string>
+    <string name="favorite_genres">Genre favorit</string>
+    <string name="pick_at_least">Pilih minimal %1$d</string>
+    <string name="instrument_guitar">Gitar</string>
+    <string name="instrument_ukulele">Ukulele</string>
+    <string name="instrument_bass">Bass</string>
+    <string name="instrument_piano">Piano</string>
+    <string name="instrument_vocals">Vokal</string>
+    <string name="instrument_other">Lainnya</string>
+    <string name="instrument_guitar_detail">6 senar</string>
+    <string name="instrument_ukulele_detail">4 senar</string>
+    <string name="instrument_bass_detail">4 senar</string>
+    <string name="instrument_piano_detail">Tuts</string>
+    <string name="instrument_vocals_detail">Bernyanyi</string>
+    <string name="instrument_other_detail">Isi nanti</string>
+
+    <string name="reset_password_subtitle">Masukkan email yang kamu pakai saat daftar. Kami akan mengirim link untuk mengatur ulang kata sandi.</string>
+    <string name="send_reset_link">Kirim link reset</string>
+    <string name="check_your_email">Cek email kamu</string>
+    <string name="reset_link_sent">Kalau %1$s terdaftar, link reset sudah kami kirim. Cek folder spam kalau belum masuk.</string>
+    <string name="back_to_login">Kembali ke halaman masuk</string>
+    <string name="remember_password_prompt">Ingat kata sandimu?</string>
+</resources>

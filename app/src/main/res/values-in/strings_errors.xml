@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_invalid_credentials">Email atau kata sandi salah.</string>
+    <string name="error_email_used">Email ini sudah terdaftar. Coba masuk saja.</string>
+    <string name="error_network">Kamu sedang offline. Periksa koneksi lalu coba lagi.</string>
+    <string name="error_not_logged_in">Sesimu berakhir. Masuk lagi untuk melanjutkan.</string>
+    <string name="error_not_found">Data tidak ditemukan. Mungkin sudah dihapus.</string>
+    <string name="error_comment_blocked">Komentar ini melanggar aturan komunitas.</string>
+    <string name="error_unknown">Terjadi kesalahan. Coba lagi.</string>
+</resources>
