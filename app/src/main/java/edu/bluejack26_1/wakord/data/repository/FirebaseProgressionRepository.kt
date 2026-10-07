@@ -1,14 +1,10 @@
 package edu.bluejack26_1.wakord.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import edu.bluejack26_1.wakord.data.remote.firebaseCall
-import edu.bluejack26_1.wakord.data.remote.int
 import edu.bluejack26_1.wakord.data.remote.requireUid
-import edu.bluejack26_1.wakord.data.remote.string
-import edu.bluejack26_1.wakord.data.remote.strings
 import edu.bluejack26_1.wakord.data.remote.valueFlow
 import edu.bluejack26_1.wakord.domain.model.ChordProgression
 import edu.bluejack26_1.wakord.domain.repository.ProgressionRepository
@@ -30,23 +26,9 @@ class FirebaseProgressionRepository(
     }
 
     override suspend fun recordPlay(id: String): Result<Unit> = firebaseCall {
-        database.getReference("progressions/$id/playCount").setValue(ServerValue.increment(1L)).await()
+        val updates = mutableMapOf<String, Any>("progressions/$id/playCount" to ServerValue.increment(1L))
+        auth.currentUser?.uid?.let { updates["plays/$it/$id"] = ServerValue.TIMESTAMP }
+        database.reference.updateChildren(updates).await()
         Unit
     }
-
-    private fun DataSnapshot.toProgression() = ChordProgression(
-        id = key.orEmpty(),
-        title = string("title"),
-        key = string("key"),
-        bpm = int("bpm").takeIf { it > 0 } ?: 90,
-        genre = string("genre"),
-        difficulty = difficulty(),
-        chords = strings("chords"),
-        authorId = string("authorId"),
-        authorName = string("authorName"),
-        description = string("description"),
-        playCount = int("playCount"),
-        likeCount = int("likeCount"),
-        saveCount = int("saveCount"),
-    )
 }

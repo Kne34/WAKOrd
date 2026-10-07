@@ -1,13 +1,10 @@
 package edu.bluejack26_1.wakord.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import edu.bluejack26_1.wakord.data.remote.firebaseCall
 import edu.bluejack26_1.wakord.data.remote.requireUid
-import edu.bluejack26_1.wakord.data.remote.string
-import edu.bluejack26_1.wakord.data.remote.strings
 import edu.bluejack26_1.wakord.domain.model.Instrument
 import edu.bluejack26_1.wakord.domain.model.User
 import edu.bluejack26_1.wakord.domain.repository.AuthRepository
@@ -76,15 +73,4 @@ class FirebaseAuthRepository(
     override suspend fun logout() {
         auth.signOut()
     }
-
-    private fun DataSnapshot.toUser(uid: String, fallbackEmail: String) = User(
-        uid = uid,
-        fullName = string("fullName"),
-        email = string("email").ifEmpty { fallbackEmail },
-        username = string("username"),
-        photoUrl = child("photoUrl").getValue(String::class.java),
-        bio = string("bio"),
-        instruments = strings("instruments").mapNotNull { name -> Instrument.entries.firstOrNull { it.name == name } },
-        genres = strings("genres"),
-    )
 }
