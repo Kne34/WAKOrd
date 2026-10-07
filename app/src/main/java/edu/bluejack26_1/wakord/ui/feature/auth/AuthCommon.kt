@@ -18,12 +18,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -34,8 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.domain.validation.DefaultAuthValidator
 import edu.bluejack26_1.wakord.domain.validation.FieldError
+import edu.bluejack26_1.wakord.ui.components.BackgroundArt
 import edu.bluejack26_1.wakord.ui.theme.SpaceGrotesk
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 
@@ -62,7 +59,7 @@ fun AuthScaffold(
             .background(c.bg),
     ) {
         if (background != null) {
-            AuthBackgroundArt(background, backgroundHeight)
+            BackgroundArt(background, backgroundHeight)
         }
         BoxWithConstraints(
             Modifier
@@ -87,36 +84,6 @@ fun AuthScaffold(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun AuthBackgroundArt(@DrawableRes image: Int, height: Dp) {
-    val c = WakTheme.colors
-    Box(
-        modifier = Modifier
-            .offset(x = (-60).dp, y = (-80).dp)
-            .wrapContentSize(align = Alignment.TopStart, unbounded = true)
-            .size(width = 510.dp, height = height),
-    ) {
-        Image(
-            painter = painterResource(image),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            alpha = if (c.isDark) 0.55f else 0.35f,
-            modifier = Modifier.fillMaxSize(),
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        0f to c.bg.copy(alpha = 0f),
-                        0.35f to c.bg.copy(alpha = 0f),
-                        0.96f to c.bg,
-                    ),
-                ),
-        )
     }
 }
 
