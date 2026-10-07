@@ -3,8 +3,12 @@ package edu.bluejack26_1.wakord.core.di
 import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import edu.bluejack26_1.wakord.core.audio.AudioInput
+import edu.bluejack26_1.wakord.core.audio.MicAudioInput
+import edu.bluejack26_1.wakord.core.audio.PitchDetector
 import edu.bluejack26_1.wakord.core.audio.SynthTonePlayer
 import edu.bluejack26_1.wakord.core.audio.TonePlayer
+import edu.bluejack26_1.wakord.core.audio.YinPitchDetector
 import edu.bluejack26_1.wakord.core.network.AndroidConnectivityObserver
 import edu.bluejack26_1.wakord.core.network.ConnectivityObserver
 import edu.bluejack26_1.wakord.data.local.AppDatabase
@@ -26,6 +30,8 @@ class AppContainer(context: Context) {
     val connectivityObserver: ConnectivityObserver by lazy { AndroidConnectivityObserver(appContext) }
     val settingsRepository: SettingsRepository by lazy { RoomSettingsRepository(database.settingsDao()) }
     val tonePlayer: TonePlayer by lazy { SynthTonePlayer() }
+    val audioInput: AudioInput by lazy { MicAudioInput() }
+    val pitchDetector: PitchDetector by lazy { YinPitchDetector() }
     val authRepository: AuthRepository by lazy { FirebaseAuthRepository(firebaseAuth, firebaseDatabase) }
     val authValidator: AuthValidator = DefaultAuthValidator()
     val tuningRepository: TuningRepository by lazy { FirebaseTuningRepository(firebaseAuth, firebaseDatabase) }

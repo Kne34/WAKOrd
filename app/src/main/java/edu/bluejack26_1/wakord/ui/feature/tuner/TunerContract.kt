@@ -23,6 +23,7 @@ data class TunerUiState(
     val status: TuneStatus = TuneStatus.IDLE,
     val tunedStrings: Set<Int> = emptySet(),
     val referencePitch: Float = 440f,
+    val pitchPipeMode: Boolean = false,
     val pitchPipeString: Int? = null,
     val sheet: TunerSheet? = null,
 ) {
@@ -37,6 +38,7 @@ sealed interface TunerAction {
     data class SelectTuning(val tuning: Tuning) : TunerAction
     data class SelectString(val index: Int) : TunerAction
     data object ToggleAuto : TunerAction
+    data object UsePitchPipe : TunerAction
     data class PlayPitchPipe(val index: Int) : TunerAction
     data class SaveCustomTuning(val name: String, val notes: List<String>) : TunerAction
     data class OpenSheet(val sheet: TunerSheet) : TunerAction
