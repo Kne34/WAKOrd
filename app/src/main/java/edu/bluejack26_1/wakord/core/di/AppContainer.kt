@@ -14,12 +14,14 @@ import edu.bluejack26_1.wakord.core.network.ConnectivityObserver
 import edu.bluejack26_1.wakord.data.local.AppDatabase
 import edu.bluejack26_1.wakord.data.repository.FirebaseAuthRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseCommentRepository
+import edu.bluejack26_1.wakord.data.repository.FirebaseProgressionRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseSavedItemsRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseSongRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseTuningRepository
 import edu.bluejack26_1.wakord.data.repository.RoomSettingsRepository
 import edu.bluejack26_1.wakord.domain.repository.AuthRepository
 import edu.bluejack26_1.wakord.domain.repository.CommentRepository
+import edu.bluejack26_1.wakord.domain.repository.ProgressionRepository
 import edu.bluejack26_1.wakord.domain.repository.SavedItemsRepository
 import edu.bluejack26_1.wakord.domain.repository.SettingsRepository
 import edu.bluejack26_1.wakord.domain.repository.SongRepository
@@ -42,6 +44,7 @@ class AppContainer(context: Context) {
     val songRepository: SongRepository by lazy { FirebaseSongRepository(firebaseAuth, firebaseDatabase) }
     val commentRepository: CommentRepository by lazy { FirebaseCommentRepository(firebaseAuth, firebaseDatabase) }
     val savedItemsRepository: SavedItemsRepository by lazy { FirebaseSavedItemsRepository(firebaseAuth, firebaseDatabase) }
+    val progressionRepository: ProgressionRepository by lazy { FirebaseProgressionRepository(firebaseAuth, firebaseDatabase) }
     val authValidator: AuthValidator = DefaultAuthValidator()
     val tuningRepository: TuningRepository by lazy { FirebaseTuningRepository(firebaseAuth, firebaseDatabase) }
 }
