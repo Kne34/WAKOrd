@@ -7,9 +7,11 @@ import edu.bluejack26_1.wakord.core.network.AndroidConnectivityObserver
 import edu.bluejack26_1.wakord.core.network.ConnectivityObserver
 import edu.bluejack26_1.wakord.data.local.AppDatabase
 import edu.bluejack26_1.wakord.data.repository.FirebaseAuthRepository
+import edu.bluejack26_1.wakord.data.repository.FirebaseTuningRepository
 import edu.bluejack26_1.wakord.data.repository.RoomSettingsRepository
 import edu.bluejack26_1.wakord.domain.repository.AuthRepository
 import edu.bluejack26_1.wakord.domain.repository.SettingsRepository
+import edu.bluejack26_1.wakord.domain.repository.TuningRepository
 import edu.bluejack26_1.wakord.domain.validation.AuthValidator
 import edu.bluejack26_1.wakord.domain.validation.DefaultAuthValidator
 
@@ -23,4 +25,5 @@ class AppContainer(context: Context) {
     val settingsRepository: SettingsRepository by lazy { RoomSettingsRepository(database.settingsDao()) }
     val authRepository: AuthRepository by lazy { FirebaseAuthRepository(firebaseAuth, firebaseDatabase) }
     val authValidator: AuthValidator = DefaultAuthValidator()
+    val tuningRepository: TuningRepository by lazy { FirebaseTuningRepository(firebaseAuth, firebaseDatabase) }
 }
