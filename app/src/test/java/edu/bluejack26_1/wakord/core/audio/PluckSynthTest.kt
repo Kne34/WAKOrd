@@ -5,6 +5,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import kotlin.math.abs
+import kotlin.math.log2
 
 class PluckSynthTest {
     private val sampleRate = 44_100
@@ -36,6 +37,26 @@ class PluckSynthTest {
         val result = YinPitchDetector().detect(window, sampleRate)
         assertNotNull(result)
         assertEquals(110f, result!!.frequencyHz, 1f)
+    }
+
+    @Test
+    fun `every tuner reference note is within one cent`() {
+        listOf(28, 40, 45, 50, 55, 59, 64, 67, 69, 76).forEach { midi ->
+            val target = PluckSynth.frequencyOf(midi)
+            val samples = PluckSynth.render(listOf(target), durationMs = 1500, sampleRate = sampleRate)
+            val window = samples.copyOfRange(sampleRate / 4, sampleRate / 4 + 4096)
+            val result = YinPitchDetector().detect(window, sampleRate)
+            assertNotNull("no pitch for midi $midi", result)
+            val cents = abs(1200 * log2(result!!.frequencyHz / target))
+            assertTrue("midi $midi is $cents cents off", cents < 1f)
+        }
+    }
+
+    @Test
+    fun `starts without a click`() {
+        val samples = PluckSynth.render(listOf(220f), durationMs = 300, sampleRate = sampleRate)
+        assertEquals(0f, samples.first(), 0.001f)
+        assertTrue(abs(samples[10]) < 0.2f)
     }
 
     @Test

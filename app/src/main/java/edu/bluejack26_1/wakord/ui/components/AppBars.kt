@@ -17,12 +17,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +41,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,6 +52,8 @@ import edu.bluejack26_1.wakord.ui.navigation.Routes
 import edu.bluejack26_1.wakord.ui.theme.SpaceGrotesk
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
+
+private val BadgeText = Color(0xFF2B0C00)
 
 data class TopLevelDestination(
     val route: String,
@@ -145,24 +149,41 @@ private fun NavItem(
 }
 
 @Composable
-fun NotificationBell(unreadCount: Int, onClick: () -> Unit) {
+fun NotificationBell(unreadCount: Int, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val c = WakTheme.colors
-    IconButton(onClick = onClick) {
-        BadgedBox(
-            badge = {
-                if (unreadCount > 0) {
-                    Badge(containerColor = c.peach, contentColor = c.onPrimary) {
-                        Text(if (unreadCount > 9) "9+" else "$unreadCount")
-                    }
-                }
-            },
+    Box(modifier.size(44.dp)) {
+        Surface(
+            onClick = onClick,
+            modifier = Modifier.fillMaxSize(),
+            shape = CircleShape,
+            color = c.s2.copy(alpha = if (c.isDark) 0.62f else 0.74f),
+            border = BorderStroke(1.dp, c.text.copy(alpha = if (c.isDark) 0.09f else 0.08f)),
         ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_bell),
-                contentDescription = stringResource(R.string.nav_notifications),
-                tint = c.text,
-                modifier = Modifier.size(24.dp),
-            )
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_bell),
+                    contentDescription = stringResource(R.string.nav_notifications),
+                    tint = c.text,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+        }
+        if (unreadCount > 0) {
+            Box(
+                modifier = Modifier
+                    .offset(x = 22.dp, y = 5.dp)
+                    .height(18.dp)
+                    .widthIn(min = 19.dp)
+                    .background(c.orange, CircleShape)
+                    .padding(horizontal = 5.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = if (unreadCount > 9) "9+" else "$unreadCount",
+                    style = TextStyle(fontFamily = SpaceGrotesk, fontWeight = FontWeight.Bold, fontSize = 10.sp),
+                    color = BadgeText,
+                )
+            }
         }
     }
 }
