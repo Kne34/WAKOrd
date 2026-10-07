@@ -5,6 +5,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import edu.bluejack26_1.wakord.data.remote.firebaseCall
 import edu.bluejack26_1.wakord.data.remote.requireUid
+import edu.bluejack26_1.wakord.data.remote.string
 import edu.bluejack26_1.wakord.data.remote.toDatabaseKey
 import edu.bluejack26_1.wakord.data.remote.valueFlow
 import edu.bluejack26_1.wakord.domain.model.SavedType
@@ -21,6 +22,13 @@ class FirebaseSavedItemsRepository(
     override fun isSaved(type: SavedType, id: String): Flow<Boolean> {
         val uid = auth.currentUser?.uid ?: return flowOf(false)
         return database.getReference("saves/$uid/${type.path}/${id.toDatabaseKey()}").valueFlow().map { it.exists() }
+    }
+
+    override fun saved(type: SavedType): Flow<List<String>> {
+        val uid = auth.currentUser?.uid ?: return flowOf(emptyList())
+        return database.getReference("saves/$uid/${type.path}").orderByChild("savedAt").valueFlow().map { snapshot ->
+            snapshot.children.map { it.string("id") }.filter { it.isNotEmpty() }.reversed()
+        }
     }
 
     override suspend fun setSaved(type: SavedType, id: String, saved: Boolean): Result<Unit> = firebaseCall {
