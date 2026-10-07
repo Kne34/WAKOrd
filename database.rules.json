@@ -8,6 +8,7 @@
     },
     "songs": {
       ".read": "auth != null",
+      ".indexOn": ["likeCount"],
       "$songId": {
         "likeCount": { ".write": "auth != null" },
         "saveCount": { ".write": "auth != null" }
@@ -58,6 +59,16 @@
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
         ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "weeklyLikes": {
+      ".read": "auth != null",
+      "$week": {
+        ".indexOn": [".value"],
+        "$songId": {
+          ".write": "auth != null",
+          ".validate": "newData.isNumber()"
+        }
       }
     },
     "tunings": {
