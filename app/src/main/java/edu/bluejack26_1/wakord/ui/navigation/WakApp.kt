@@ -27,6 +27,7 @@ import edu.bluejack26_1.wakord.ui.feature.auth.RegisterRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.ResetPasswordRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.SplashScreen
 import edu.bluejack26_1.wakord.ui.feature.auth.SplashViewModel
+import edu.bluejack26_1.wakord.ui.feature.tuner.TunerRoute
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 
 @Composable
@@ -51,7 +52,7 @@ fun WakApp() {
             modifier = Modifier.padding(padding),
         ) {
             authGraph(navController)
-            mainGraph()
+            mainGraph(navController)
         }
     }
 }
@@ -92,11 +93,13 @@ private fun NavGraphBuilder.authGraph(nav: NavController) {
     }
 }
 
-private fun NavGraphBuilder.mainGraph() {
+private fun NavGraphBuilder.mainGraph(nav: NavController) {
     navigation(startDestination = Routes.HOME, route = Routes.MAIN_GRAPH) {
         composable(Routes.HOME) { PlaceholderScreen("Home") }
         composable(Routes.EXPLORE) { PlaceholderScreen("Explore") }
-        composable(Routes.TUNER) { PlaceholderScreen("Tuner") }
+        composable(Routes.TUNER) {
+            TunerRoute(onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) })
+        }
         composable(Routes.ANALYZE) { PlaceholderScreen("Analyze") }
         composable(Routes.PROFILE) { PlaceholderScreen("Profile") }
         composable(Routes.NOTIFICATIONS) { PlaceholderScreen("Notifications") }
