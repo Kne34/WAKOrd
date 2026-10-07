@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="instrument_mandolin">Mandolin</string>
+    <string name="instrument_violin">Violin</string>
+    <string name="tuner_instrument_cd">Instrument: %1$s</string>
+    <string name="tuner_tuning_cd">Tuning: %1$s</string>
+
+    <string name="tuner_string_label">String %1$d · %2$s</string>
+    <string name="tuner_play_a_string">Play a string</string>
+    <string name="tuner_listening">Listening…</string>
+    <string name="tuner_in_tune">In tune · %1$s cents</string>
+    <string name="tuner_flat">Flat · %1$s cents · tighten</string>
+    <string name="tuner_sharp">Sharp · %1$s cents · loosen</string>
+    <string name="tuner_flat_scale">Flat · −50</string>
+    <string name="tuner_zero_cents">0 cents</string>
+    <string name="tuner_sharp_scale">+50 · Sharp</string>
+
+    <string name="tuner_strings_low_to_high">Strings · low to high</string>
+    <string name="tuner_auto">Auto</string>
+    <string name="tuner_auto_cd">Auto detect string</string>
+    <string name="tuner_tuned">tuned</string>
+    <string name="tuner_now">now</string>
+    <string name="tuner_string_cd">String %1$d, %2$s</string>
+
+    <string name="allow_mic_title">Allow microphone?</string>
+    <string name="allow_mic_message">WAKord listens to tune your instrument and detect chords. Audio stays on your phone unless you save it.</string>
+    <string name="allow_microphone">Allow microphone</string>
+    <string name="mic_off_title">Microphone access is off</string>
+    <string name="mic_off_tuner_message">WAKord needs the mic to hear your strings. Your audio is processed on this phone and never recorded.</string>
+    <string name="use_pitch_pipe">Use pitch pipe instead</string>
+    <string name="tuner_pitch_pipe">Pitch pipe</string>
+    <string name="tuner_pitch_pipe_hint">Tap a string to hear its note</string>
+    <string name="tuner_turn_on_mic">Turn on mic</string>
+
+    <string name="tuner_instrument_title">Instrument</string>
+    <string name="tuner_instrument_subtitle">The tuner will listen for these strings</string>
+    <plurals name="tuner_string_count">
+        <item quantity="one">%1$d string</item>
+        <item quantity="other">%1$d strings</item>
+    </plurals>
+    <plurals name="tuner_pair_count">
+        <item quantity="one">%1$d pair</item>
+        <item quantity="other">%1$d pairs</item>
+    </plurals>
+    <string name="tuner_use_item">Use %1$s</string>
+    <string name="close">Close</string>
+
+    <string name="tuner_custom_title">Custom tuning</string>
+    <string name="tuner_string_number">String %1$d</string>
+    <string name="tuner_from_note">from %1$s</string>
+    <string name="tuner_standard">standard</string>
+    <string name="tuner_lower_cd">Lower string %1$d a semitone</string>
+    <string name="tuner_raise_cd">Raise string %1$d a semitone</string>
+    <string name="tuner_name_label">Name</string>
+    <string name="tuner_name_placeholder">Name this tuning</string>
+    <string name="tuner_name_required">Give your tuning a name</string>
+    <string name="tuner_save">Save tuning</string>
+</resources>
