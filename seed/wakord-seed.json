@@ -1,0 +1,134 @@
+{
+  "songs": {
+    "subtle-resonance": {
+      "title": "Subtle Resonance",
+      "artist": "Alex Vance ft. Koro",
+      "key": "Eb",
+      "capo": 1,
+      "tempo": 84,
+      "difficulty": "INTERMEDIATE",
+      "genre": "Neo-Soul",
+      "likeCount": 2400,
+      "saveCount": 310,
+      "sections": [
+        { "name": "Intro", "lines": ["[Ebmaj7] [Bb7sus4] [Cm7] [Abmaj7]"] },
+        {
+          "name": "Verse 1",
+          "lines": [
+            "[Ebmaj7]Streetlights hum a [Bb7sus4]quiet tune",
+            "[Cm7]Coffee cooling [Abmaj7]in the room",
+            "[Ebmaj7]Every word I [Bb7sus4]meant to say",
+            "[Cm7]Drifts like smoke and [Abmaj7]fades away"
+          ]
+        },
+        {
+          "name": "Chorus",
+          "lines": [
+            "[Abmaj7]Hold the note a [Bb7sus4]little longer",
+            "[Gm7]Let it ring until it's [Cm7]stronger",
+            "[Abmaj7]Subtle reso[Bb7sus4]nance [Ebmaj7]"
+          ]
+        }
+      ]
+    },
+    "golden-hour-glow": {
+      "title": "Golden Hour Glow",
+      "artist": "Koro Acoustic Trio",
+      "key": "G",
+      "capo": 0,
+      "tempo": 96,
+      "difficulty": "EASY",
+      "genre": "Acoustic",
+      "likeCount": 980,
+      "saveCount": 120,
+      "sections": [
+        { "name": "Intro", "lines": ["[G] [D] [Em] [C]"] },
+        {
+          "name": "Verse 1",
+          "lines": [
+            "[G]Sun is low on the [D]harbor wall",
+            "[Em]Gulls are calling [C]one and all",
+            "[G]Pack the guitar, [D]leave the rest",
+            "[Em]Golden hour [C]suits you best"
+          ]
+        },
+        {
+          "name": "Chorus",
+          "lines": [
+            "[C]Oh, the [G]glow, the [D]glow",
+            "[C]Takes it [G]slow, real [D]slow"
+          ]
+        }
+      ]
+    },
+    "midnight-waves": {
+      "title": "Midnight Waves",
+      "artist": "Neon Mirage",
+      "key": "E",
+      "capo": 0,
+      "tempo": 110,
+      "difficulty": "INTERMEDIATE",
+      "genre": "Pop",
+      "likeCount": 1830,
+      "saveCount": 240,
+      "sections": [
+        {
+          "name": "Verse 1",
+          "lines": [
+            "[E]Wandering through the [B]midnight streets",
+            "[C#m]Neon on the [A]wet concrete",
+            "[E]Radio plays our [B]favorite song",
+            "[C#m]Hum it while we [A]drive along"
+          ]
+        }
+      ]
+    }
+  },
+  "progressions": {
+    "neo-soul-04": {
+      "title": "Neo-Soul Progression #04",
+      "key": "C",
+      "bpm": 84,
+      "genre": "Neo-Soul",
+      "difficulty": "ADVANCED",
+      "chords": ["Dm9", "G13", "Cmaj9"],
+      "authorId": "seed-julian",
+      "authorName": "Julian Keys",
+      "description": "Classic ii–V–I with lush extensions.",
+      "playCount": 1800,
+      "likeCount": 342,
+      "saveCount": 89,
+      "createdAt": 1790000000000
+    },
+    "late-night-tension": {
+      "title": "Late night tension",
+      "key": "C",
+      "bpm": 72,
+      "genre": "Jazz",
+      "difficulty": "INTERMEDIATE",
+      "chords": ["Fmaj9", "Em7", "Dm7", "Cmaj7"],
+      "authorId": "seed-julian",
+      "authorName": "Julian Keys",
+      "description": "Descending diatonic walk for slow nights.",
+      "playCount": 640,
+      "likeCount": 128,
+      "saveCount": 40,
+      "createdAt": 1790100000000
+    },
+    "rainy-window-loop": {
+      "title": "Rainy window loop",
+      "key": "C",
+      "bpm": 78,
+      "genre": "Lo-fi",
+      "difficulty": "EASY",
+      "chords": ["Cmaj7", "Am7", "Fmaj7", "G"],
+      "authorId": "seed-keane",
+      "authorName": "Keane Wilson",
+      "description": "Four-chord lo-fi loop.",
+      "playCount": 210,
+      "likeCount": 56,
+      "saveCount": 18,
+      "createdAt": 1790200000000
+    }
+  }
+}
