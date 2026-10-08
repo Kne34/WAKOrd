@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="greeting_morning">Good morning</string>
+    <string name="greeting_afternoon">Good afternoon</string>
+    <string name="greeting_evening">Good evening</string>
+    <string name="home_profile_cd">Open profile</string>
+    <string name="home_search_cd">Search</string>
+
+    <string name="workout_title">Daily ear workout</string>
+    <plurals name="workout_streak">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <string name="workout_skill_default">Intervals</string>
+    <string name="workout_level">%1$s · Level %2$d</string>
+    <string name="workout_progress">%1$d of %2$d min today · %3$d%% accuracy</string>
+    <string name="workout_progress_short">%1$d of %2$d min today</string>
+    <string name="workout_minutes">%1$d/%2$d</string>
+    <string name="workout_start_cd">Start daily ear workout</string>
+
+    <string name="recommended_title">Recommended for you</string>
+    <string name="see_all">See all</string>
+    <string name="recommended_based_on">Based on %1$s</string>
+    <string name="recommended_and">%1$s &amp; %2$s</string>
+    <plurals name="recommended_chords">
+        <item quantity="one">%1$s · %2$d chord</item>
+        <item quantity="other">%1$s · %2$d chords</item>
+    </plurals>
+    <string name="recommended_play_cd">Open %1$s</string>
+
+    <string name="saved_chords_title">Recently saved chords</string>
+    <string name="saved_chords_empty">Save a chord from any progression and it will show up here.</string>
+
+    <string name="feed_title">Your feed</string>
+    <string name="feed_subtitle">Songs &amp; progressions</string>
+    <string name="feed_key_of">Key of %1$s</string>
+    <string name="feed_progression_meta">Chord progression · %1$s</string>
+    <string name="feed_play_cd">Play %1$s</string>
+    <string name="feed_comments_cd">%1$s comments</string>
+    <string name="feed_end">You\'re all caught up</string>
+    <string name="feed_empty">Your feed is quiet for now. Pull down to refresh.</string>
+
+    <string name="mini_player_close_cd">Close player</string>
+</resources>
