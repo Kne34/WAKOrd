@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="progression_header">Progression</string>
+    <string name="progression_key_bpm">%1$s · %2$d BPM</string>
+    <string name="progression_author_stats">%1$s plays · %2$s saves</string>
+    <string name="progression_play">Play progression</string>
+    <string name="progression_pause">Pause progression</string>
+    <string name="progression_like_cd">Like, %1$s likes</string>
+    <string name="progression_unlike_cd">Unlike, %1$s likes</string>
+    <string name="progression_save_cd">Save progression</string>
+    <string name="progression_unsave_cd">Remove from saved</string>
+    <string name="progression_likes">%1$s likes</string>
+    <string name="progression_comments">%1$s comments</string>
+    <string name="progression_view_all">View all %1$s</string>
+    <string name="progression_add_comment">Add a comment…</string>
+    <string name="progression_share_text">%1$s by %2$s on WAKord</string>
+    <string name="progression_not_found">This progression is no longer available</string>
+    <string name="progression_chord_cd">%1$s, tap for voicings</string>
+
+    <string name="chord_open">open</string>
+    <string name="chord_base_fret">%1$dfr</string>
+    <string name="chord_voicing">Voicing</string>
+    <string name="chord_fingers">Fingers</string>
+    <string name="chord_mute">Mute</string>
+    <string name="chord_mute_none">None</string>
+    <string name="chord_mute_and">%1$s and %2$s</string>
+    <string name="voicing_open">Open</string>
+    <string name="voicing_fret_st">%1$dst fret</string>
+    <string name="voicing_fret_nd">%1$dnd fret</string>
+    <string name="voicing_fret_rd">%1$drd fret</string>
+    <string name="voicing_fret_th">%1$dth fret</string>
+    <string name="voicing_position">%1$s, %2$d of %3$d</string>
+    <string name="chord_play_preview">Play preview</string>
+    <string name="chord_save">Save chord</string>
+    <string name="chord_saved">Saved</string>
+    <string name="chord_no_voicing">No guitar voicing found for this chord</string>
+    <string name="string_low_e">Low E</string>
+    <string name="string_a">A</string>
+    <string name="string_d">D</string>
+    <string name="string_g">G</string>
+    <string name="string_b">B</string>
+    <string name="string_high_e">high E</string>
+</resources>
