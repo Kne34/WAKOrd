@@ -48,6 +48,43 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun `liking a progression from the feed saves it and bumps the count`() = runTest(main.dispatcher) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        val item = vm.uiState.value.feed.filterIsInstance<FeedItem.ProgressionItem>().first()
+        val before = item.progression.likeCount
+
+        vm.onAction(HomeAction.ToggleProgressionLike(item.progression))
+        advanceUntilIdle()
+
+        val after = vm.uiState.value.feed.filterIsInstance<FeedItem.ProgressionItem>().first { it.id == item.id }
+        assertTrue(item.id in vm.uiState.value.likedIds)
+        assertTrue(item.id in progressions.liked.value)
+        assertEquals(before + 1, after.progression.likeCount)
+
+        vm.onAction(HomeAction.ToggleProgressionLike(after.progression))
+        advanceUntilIdle()
+        val reverted = vm.uiState.value.feed.filterIsInstance<FeedItem.ProgressionItem>().first { it.id == item.id }
+        assertFalse(item.id in vm.uiState.value.likedIds)
+        assertEquals(before, reverted.progression.likeCount)
+    }
+
+    @Test
+    fun `likes made elsewhere update the feed in real time`() = runTest(main.dispatcher) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        val item = vm.uiState.value.feed.filterIsInstance<FeedItem.ProgressionItem>().first()
+        val before = item.progression.likeCount
+
+        feed.liked.value = setOf(item.id)
+        advanceUntilIdle()
+
+        val after = vm.uiState.value.feed.filterIsInstance<FeedItem.ProgressionItem>().first { it.id == item.id }
+        assertTrue(item.id in vm.uiState.value.likedIds)
+        assertEquals(before + 1, after.progression.likeCount)
+    }
+
+    @Test
     fun `favorite genre is ranked first in the feed`() = runTest(main.dispatcher) {
         val vm = viewModel()
         advanceUntilIdle()

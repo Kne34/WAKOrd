@@ -48,6 +48,7 @@ class FakeFeedRepository(
 ) : FeedRepository {
     var failNextPage = false
     val requestedCursors = mutableListOf<Long?>()
+    val liked = MutableStateFlow(userActivity.likedIds)
 
     override suspend fun songs(): Result<List<Song>> = Result.success(songList)
 
@@ -69,6 +70,8 @@ class FakeFeedRepository(
         Result.success(ids.associateWith { 2 })
 
     override suspend fun activity(): Result<UserActivity> = Result.success(userActivity)
+
+    override fun likedIds(): Flow<Set<String>> = liked
 }
 
 class FakeUserRepository(initial: User? = User(uid = "demo", fullName = "Keane Wilson", email = "keane.wilson@mail.com")) : UserRepository {

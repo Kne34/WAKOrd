@@ -50,6 +50,7 @@ class HomeViewModel(
     private var cursor: Long? = null
     private val shownSongIds = mutableSetOf<String>()
     private var loadJob: Job? = null
+    private val baseLikes = mutableMapOf<String, Pair<Int, Boolean>>()
 
     init {
         viewModelScope.launch {
@@ -66,6 +67,9 @@ class HomeViewModel(
                 _uiState.update { it.copy(savedChords = chords) }
             }
         }
+        viewModelScope.launch {
+            feedRepository.likedIds().collect { ids -> applyLikes(ids) }
+        }
         refresh()
     }
 
@@ -74,6 +78,7 @@ class HomeViewModel(
             HomeAction.LoadMore -> loadMore()
             HomeAction.Refresh -> refresh()
             is HomeAction.PlayProgression -> play(action.progression)
+            is HomeAction.ToggleProgressionLike -> toggleLike(action.progression)
             HomeAction.DismissError -> _uiState.update { it.copy(errorMessage = null) }
         }
     }
@@ -84,6 +89,7 @@ class HomeViewModel(
             _uiState.update { it.copy(isLoading = true, feed = emptyList(), endReached = false, errorMessage = null) }
             cursor = null
             shownSongIds.clear()
+            baseLikes.clear()
             user = userRepository.currentUser().first()
             val result = feedRepository.songs().mapCatching { all ->
                 songs = all
@@ -128,7 +134,35 @@ class HomeViewModel(
             }
         }
         cursor = page.nextCursor
+        val liked = _uiState.value.likedIds
+        withCounts.forEach { item -> baseLikes.getOrPut(item.id) { item.likeCount to (item.id in liked) } }
         _uiState.update { it.copy(feed = it.feed + FeedRanker.rank(withCounts, user, affinity), endReached = isLast) }
+    }
+
+    private fun applyLikes(ids: Set<String>) {
+        _uiState.update { state ->
+            state.copy(
+                likedIds = ids,
+                feed = state.feed.map { item ->
+                    if (item !is FeedItem.ProgressionItem) return@map item
+                    val (count, likedAtLoad) = baseLikes[item.id] ?: return@map item
+                    val adjusted = count + (if (item.id in ids) 1 else 0) - (if (likedAtLoad) 1 else 0)
+                    item.copy(progression = item.progression.copy(likeCount = adjusted.coerceAtLeast(0)))
+                },
+            )
+        }
+    }
+
+    private fun toggleLike(progression: ChordProgression) {
+        val before = _uiState.value.likedIds
+        val liked = progression.id !in before
+        applyLikes(if (liked) before + progression.id else before - progression.id)
+        viewModelScope.launch {
+            progressionRepository.setLiked(progression.id, liked).onFailure { e ->
+                applyLikes(before)
+                _uiState.update { it.copy(errorMessage = e.messageRes()) }
+            }
+        }
     }
 
     private fun play(progression: ChordProgression) {
