@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="song_chord_sheet">Chord sheet</string>
+    <string name="more_options">Opsi lainnya</string>
+    <string name="song_cover_cd">Sampul %1$s</string>
+    <string name="song_stats">%1$s suka · %2$s simpan</string>
+    <string name="song_key">Kunci</string>
+    <string name="song_capo">Capo</string>
+    <string name="song_tempo">Tempo</string>
+    <string name="song_level">Level</string>
+    <string name="song_capo_none">Tidak</string>
+    <string name="ordinal_st">Ke-%1$d</string>
+    <string name="ordinal_nd">Ke-%1$d</string>
+    <string name="ordinal_rd">Ke-%1$d</string>
+    <string name="ordinal_th">Ke-%1$d</string>
+    <string name="level_easy">Mudah</string>
+    <string name="level_intermediate">Sedang</string>
+    <string name="level_advanced">Mahir</string>
+    <string name="key_major">%1$s mayor</string>
+    <string name="key_minor">%1$s minor</string>
+
+    <string name="song_like_cd">Suka lagu, %1$s suka</string>
+    <string name="song_unlike_cd">Batal suka lagu, %1$s suka</string>
+    <string name="song_save">Simpan</string>
+    <string name="song_saved">Tersimpan</string>
+    <string name="song_comments_cd">Komentar, %1$s</string>
+    <string name="share">Bagikan</string>
+    <string name="song_share_text">%1$s oleh %2$s di WAKord</string>
+    <string name="song_reset_transpose">Kembalikan kunci asli</string>
+
+    <string name="transpose">Transpose</string>
+    <string name="transpose_original">Kunci asli %1$s</string>
+    <string name="transpose_change">%1$s → %2$s</string>
+    <string name="transpose_down_cd">Turunkan satu semitone</string>
+    <string name="transpose_up_cd">Naikkan satu semitone</string>
+
+    <string name="player_now">Sekarang</string>
+    <string name="player_next">berikutnya</string>
+    <string name="play_progression">Putar chord</string>
+    <string name="pause_progression">Jeda chord</string>
+    <string name="playback_speed_cd">Kecepatan putar %1$s</string>
+    <string name="loop_on_cd">Ulang aktif</string>
+    <string name="loop_off_cd">Ulang mati</string>
+    <string name="previous_chord">Chord sebelumnya</string>
+    <string name="next_chord">Chord berikutnya</string>
+
+    <string name="comments">Komentar</string>
+    <string name="comments_count">Komentar %1$s</string>
+    <string name="view_all">Lihat semua</string>
+    <string name="comments_subtitle">%1$s · %2$s</string>
+    <string name="comment_placeholder">Bagikan tips voicing…</string>
+    <string name="comment_reply">Balas</string>
+    <string name="comment_replying_to">Membalas %1$s</string>
+    <string name="comment_cancel_reply">Batal membalas</string>
+    <string name="comment_post">Kirim komentar</string>
+    <plurals name="comment_like_cd">
+        <item quantity="other">Suka komentar, %1$d suka</item>
+    </plurals>
+    <string name="comment_sort_top">Teratas</string>
+    <string name="comment_sort_newest">Terbaru</string>
+    <string name="comments_empty_title">Belum ada komentar</string>
+    <string name="comments_empty_message">Jadilah yang pertama berbagi tips voicing atau cerita tentang lagu ini.</string>
+    <string name="comment_blocked_title">Komentar diblokir</string>
+    <string name="comment_blocked_message">Komentar ini sepertinya melanggar aturan komunitas. Ubah lalu coba lagi.</string>
+    <string name="time_now">baru saja</string>
+    <string name="time_minutes">%1$dm</string>
+    <string name="time_hours">%1$dj</string>
+    <string name="time_days">%1$dh</string>
+    <string name="time_weeks">%1$dmg</string>
+    <string name="time_ago">%1$s lalu</string>
+    <string name="song_not_found">Lagu ini sudah tidak tersedia</string>
+</resources>
