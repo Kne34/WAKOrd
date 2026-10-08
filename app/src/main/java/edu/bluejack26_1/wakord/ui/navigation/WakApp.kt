@@ -29,6 +29,10 @@ import edu.bluejack26_1.wakord.ui.feature.auth.RegisterRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.ResetPasswordRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.SplashScreen
 import edu.bluejack26_1.wakord.ui.feature.auth.SplashViewModel
+import edu.bluejack26_1.wakord.ui.feature.explore.ExploreRoute
+import edu.bluejack26_1.wakord.ui.feature.explore.ExploreSection
+import edu.bluejack26_1.wakord.ui.feature.explore.ExploreSectionRoute
+import edu.bluejack26_1.wakord.ui.feature.explore.ExploreViewModel
 import edu.bluejack26_1.wakord.ui.feature.home.HomeRoute
 import edu.bluejack26_1.wakord.ui.feature.player.MiniPlayerHost
 import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionCommentsRoute
@@ -121,7 +125,27 @@ private fun NavGraphBuilder.mainGraph(nav: NavController) {
                 onOpenTraining = { nav.navigate(Routes.TRAINING) },
             )
         }
-        composable(Routes.EXPLORE) { PlaceholderScreen("Explore") }
+        composable(Routes.EXPLORE) {
+            ExploreRoute(
+                onOpenSong = { nav.navigate(Routes.song(it)) },
+                onOpenProgression = { nav.navigate(Routes.progression(it)) },
+                onOpenSection = { nav.navigate(Routes.exploreSection(it.name)) },
+                onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) },
+            )
+        }
+        composable(Routes.EXPLORE_SECTION) { entry ->
+            val section = entry.arguments?.getString("section")
+                ?.let { name -> ExploreSection.entries.firstOrNull { it.name == name } }
+                ?: ExploreSection.TRENDING_SONGS
+            val owner = remember(entry) { runCatching { nav.getBackStackEntry(Routes.EXPLORE) }.getOrDefault(entry) }
+            ExploreSectionRoute(
+                section = section,
+                onBack = { nav.popBackStack() },
+                onOpenSong = { nav.navigate(Routes.song(it)) },
+                onOpenProgression = { nav.navigate(Routes.progression(it)) },
+                viewModel = viewModel(viewModelStoreOwner = owner, factory = ExploreViewModel.Factory),
+            )
+        }
         composable(Routes.TUNER) {
             TunerRoute(onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) })
         }
