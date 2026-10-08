@@ -11,6 +11,7 @@ interface FeedRepository {
     suspend fun progressionsPage(before: Long?, pageSize: Int): Result<FeedPage>
     suspend fun commentCounts(ids: List<String>): Result<Map<String, Int>>
     suspend fun activity(): Result<UserActivity>
+    fun likedIds(): Flow<Set<String>>
 }
 
 interface UserRepository {

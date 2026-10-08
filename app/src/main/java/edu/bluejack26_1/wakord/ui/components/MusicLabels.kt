@@ -26,6 +26,12 @@ fun levelLabel(difficulty: Difficulty): String = stringResource(
     },
 )
 
+fun levelContainer(difficulty: Difficulty, c: WakColors): Color = when (difficulty) {
+    Difficulty.EASY -> c.primary.copy(alpha = 0.12f)
+    Difficulty.INTERMEDIATE -> c.lavender.copy(alpha = 0.14f)
+    Difficulty.ADVANCED -> alertContainer(c)
+}
+
 fun levelColor(difficulty: Difficulty, c: WakColors): Color = when (difficulty) {
     Difficulty.EASY -> c.primaryText
     Difficulty.INTERMEDIATE -> c.lavender

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="greeting_morning">Selamat pagi</string>
+    <string name="greeting_afternoon">Selamat siang</string>
+    <string name="greeting_evening">Selamat malam</string>
+    <string name="home_profile_cd">Buka profil</string>
+    <string name="home_search_cd">Cari</string>
+
+    <string name="workout_title">Latihan telinga harian</string>
+    <plurals name="workout_streak">
+        <item quantity="other">%1$d hari</item>
+    </plurals>
+    <string name="workout_skill_default">Interval</string>
+    <string name="workout_level">%1$s · Level %2$d</string>
+    <string name="workout_progress">%1$d dari %2$d menit hari ini · akurasi %3$d%%</string>
+    <string name="workout_progress_short">%1$d dari %2$d menit hari ini</string>
+    <string name="workout_minutes">%1$d/%2$d</string>
+    <string name="workout_start_cd">Mulai latihan telinga harian</string>
+
+    <string name="recommended_title">Rekomendasi untukmu</string>
+    <string name="see_all">Lihat semua</string>
+    <string name="recommended_based_on">Berdasarkan %1$s</string>
+    <string name="recommended_and">%1$s &amp; %2$s</string>
+    <plurals name="recommended_chords">
+        <item quantity="other">%1$s · %2$d chord</item>
+    </plurals>
+    <string name="recommended_play_cd">Buka %1$s</string>
+
+    <string name="saved_chords_title">Chord yang baru disimpan</string>
+    <string name="saved_chords_empty">Simpan chord dari progression mana pun dan chord itu akan muncul di sini.</string>
+
+    <string name="feed_title">Feed-mu</string>
+    <string name="feed_subtitle">Lagu &amp; progression</string>
+    <string name="feed_key_of">Kunci %1$s</string>
+    <string name="feed_progression_meta">Progression chord · %1$s</string>
+    <string name="feed_play_cd">Putar %1$s</string>
+    <string name="feed_comments_cd">%1$s komentar</string>
+    <string name="feed_end">Kamu sudah melihat semuanya</string>
+    <string name="feed_empty">Feed-mu masih sepi. Tarik ke bawah untuk memuat ulang.</string>
+
+    <string name="mini_player_close_cd">Tutup pemutar</string>
+</resources>

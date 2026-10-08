@@ -194,12 +194,13 @@ fun MiniPlayer(
     currentChord: String,
     detail: String,
     isPlaying: Boolean,
-    isLiked: Boolean,
     progress: Float,
     onTogglePlay: () -> Unit,
-    onToggleLike: () -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isLiked: Boolean = false,
+    onToggleLike: (() -> Unit)? = null,
+    onClose: (() -> Unit)? = null,
     cover: Painter? = null,
 ) {
     val c = WakTheme.colors
@@ -261,13 +262,15 @@ fun MiniPlayer(
                         )
                     }
                 }
-                IconButton(onClick = onToggleLike) {
-                    Icon(
-                        painter = painterResource(if (isLiked) R.drawable.ic_heart_filled else R.drawable.ic_heart),
-                        contentDescription = stringResource(R.string.like),
-                        tint = if (isLiked) c.peach else c.text,
-                        modifier = Modifier.size(20.dp),
-                    )
+                if (onToggleLike != null) {
+                    IconButton(onClick = onToggleLike) {
+                        Icon(
+                            painter = painterResource(if (isLiked) R.drawable.ic_heart_filled else R.drawable.ic_heart),
+                            contentDescription = stringResource(R.string.like),
+                            tint = if (isLiked) c.peach else c.text,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
                 }
                 IconButton(onClick = onTogglePlay) {
                     Icon(
@@ -276,6 +279,16 @@ fun MiniPlayer(
                         tint = c.text,
                         modifier = Modifier.size(20.dp),
                     )
+                }
+                if (onClose != null) {
+                    IconButton(onClick = onClose) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_close),
+                            contentDescription = stringResource(R.string.mini_player_close_cd),
+                            tint = c.text3,
+                            modifier = Modifier.size(18.dp),
+                        )
+                    }
                 }
             }
             Box(

@@ -1,6 +1,7 @@
 package edu.bluejack26_1.wakord.ui.navigation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -28,6 +29,8 @@ import edu.bluejack26_1.wakord.ui.feature.auth.RegisterRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.ResetPasswordRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.SplashScreen
 import edu.bluejack26_1.wakord.ui.feature.auth.SplashViewModel
+import edu.bluejack26_1.wakord.ui.feature.home.HomeRoute
+import edu.bluejack26_1.wakord.ui.feature.player.MiniPlayerHost
 import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionCommentsRoute
 import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionDetailRoute
 import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionDetailViewModel
@@ -49,7 +52,13 @@ fun WakApp() {
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             if (showBottomBar) {
-                WakBottomBar(currentRoute = currentRoute, onNavigate = navController::navigateTopLevel)
+                Column {
+                    MiniPlayerHost(
+                        visible = currentRoute == Routes.HOME || currentRoute == Routes.PROFILE,
+                        onOpenProgression = { navController.navigate(Routes.progression(it)) },
+                    )
+                    WakBottomBar(currentRoute = currentRoute, onNavigate = navController::navigateTopLevel)
+                }
             }
         },
     ) { padding ->
@@ -102,7 +111,16 @@ private fun NavGraphBuilder.authGraph(nav: NavController) {
 
 private fun NavGraphBuilder.mainGraph(nav: NavController) {
     navigation(startDestination = Routes.HOME, route = Routes.MAIN_GRAPH) {
-        composable(Routes.HOME) { PlaceholderScreen("Home") }
+        composable(Routes.HOME) {
+            HomeRoute(
+                onOpenSong = { nav.navigate(Routes.song(it)) },
+                onOpenProgression = { nav.navigate(Routes.progression(it)) },
+                onOpenSearch = { nav.navigateTopLevel(Routes.EXPLORE) },
+                onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) },
+                onOpenProfile = { nav.navigateTopLevel(Routes.PROFILE) },
+                onOpenTraining = { nav.navigate(Routes.TRAINING) },
+            )
+        }
         composable(Routes.EXPLORE) { PlaceholderScreen("Explore") }
         composable(Routes.TUNER) {
             TunerRoute(onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) })
@@ -110,6 +128,7 @@ private fun NavGraphBuilder.mainGraph(nav: NavController) {
         composable(Routes.ANALYZE) { PlaceholderScreen("Analyze") }
         composable(Routes.PROFILE) { PlaceholderScreen("Profile") }
         composable(Routes.NOTIFICATIONS) { PlaceholderScreen("Notifications") }
+        composable(Routes.TRAINING) { PlaceholderScreen("Training") }
         composable(Routes.SONG) { entry ->
             val songId = entry.arguments?.getString(SongDetailViewModel.SONG_ID).orEmpty()
             SongDetailRoute(

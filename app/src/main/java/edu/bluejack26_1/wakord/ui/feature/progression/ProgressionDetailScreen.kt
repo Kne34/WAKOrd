@@ -50,7 +50,7 @@ import edu.bluejack26_1.wakord.ui.components.BackgroundArt
 import edu.bluejack26_1.wakord.ui.components.ChordDiagram
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
 import edu.bluejack26_1.wakord.ui.components.InitialsAvatar
-import edu.bluejack26_1.wakord.ui.components.alertContainer
+import edu.bluejack26_1.wakord.ui.components.levelContainer
 import edu.bluejack26_1.wakord.ui.components.compactCount
 import edu.bluejack26_1.wakord.ui.components.keyLabel
 import edu.bluejack26_1.wakord.ui.components.levelColor
@@ -58,7 +58,6 @@ import edu.bluejack26_1.wakord.ui.components.levelLabel
 import edu.bluejack26_1.wakord.ui.components.prettyChord
 import edu.bluejack26_1.wakord.ui.components.relativeTime
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
-import edu.bluejack26_1.wakord.ui.theme.WakColors
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 import edu.bluejack26_1.wakord.ui.theme.jakarta
 import edu.bluejack26_1.wakord.ui.theme.spaceGrotesk
@@ -69,15 +68,19 @@ private val Backgrounds = mapOf(
     "rainy-window-loop" to R.drawable.bg_prog_rainy_window_loop,
 )
 
+private val Covers = mapOf(
+    "neo-soul-04" to R.drawable.cover_prog_neo_soul_04,
+    "late-night-tension" to R.drawable.cover_prog_late_night_tension,
+    "rainy-window-loop" to R.drawable.cover_prog_rainy_window_loop,
+)
+
+@DrawableRes
+fun progressionCover(id: String): Int =
+    Covers[id] ?: Covers.values.toList()[Math.floorMod(id.hashCode(), Covers.size)]
+
 @DrawableRes
 fun progressionBackground(id: String): Int =
     Backgrounds[id] ?: Backgrounds.values.toList()[Math.floorMod(id.hashCode(), Backgrounds.size)]
-
-private fun levelContainer(difficulty: Difficulty, c: WakColors): Color = when (difficulty) {
-    Difficulty.EASY -> c.primary.copy(alpha = 0.12f)
-    Difficulty.INTERMEDIATE -> c.lavender.copy(alpha = 0.14f)
-    Difficulty.ADVANCED -> alertContainer(c)
-}
 
 @Composable
 fun ProgressionDetailScreen(
