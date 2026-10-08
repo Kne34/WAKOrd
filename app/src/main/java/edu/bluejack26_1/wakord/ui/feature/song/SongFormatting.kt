@@ -18,12 +18,21 @@ private val Backgrounds = mapOf(
     "midnight-waves" to R.drawable.bg_song_midnight_waves,
 )
 
+private val WideCovers = mapOf(
+    "subtle-resonance" to R.drawable.wide_subtle_resonance,
+    "golden-hour-glow" to R.drawable.wide_golden_hour_glow,
+    "midnight-waves" to R.drawable.wide_midnight_waves,
+)
+
 private val CoverOrder = Covers.keys.toList()
 
 private fun fallbackKey(id: String) = CoverOrder[Math.floorMod(id.hashCode(), CoverOrder.size)]
 
 @DrawableRes
 fun songCover(id: String): Int = Covers[id] ?: Covers.getValue(fallbackKey(id))
+
+@DrawableRes
+fun songWideCover(id: String): Int = WideCovers[id] ?: WideCovers.getValue(fallbackKey(id))
 
 @DrawableRes
 fun songBackground(id: String): Int = Backgrounds[id] ?: Backgrounds.getValue(fallbackKey(id))
