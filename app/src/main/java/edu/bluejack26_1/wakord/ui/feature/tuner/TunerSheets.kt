@@ -56,6 +56,8 @@ import edu.bluejack26_1.wakord.ui.components.WakButton
 import edu.bluejack26_1.wakord.ui.components.WakTextField
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
+import edu.bluejack26_1.wakord.ui.theme.jakarta
+import edu.bluejack26_1.wakord.ui.theme.spaceGrotesk
 
 private const val SEMITONE_RANGE = 12
 
