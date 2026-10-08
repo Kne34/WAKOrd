@@ -9,6 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,6 +28,9 @@ import edu.bluejack26_1.wakord.ui.feature.auth.RegisterRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.ResetPasswordRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.SplashScreen
 import edu.bluejack26_1.wakord.ui.feature.auth.SplashViewModel
+import edu.bluejack26_1.wakord.ui.feature.song.SongCommentsRoute
+import edu.bluejack26_1.wakord.ui.feature.song.SongDetailRoute
+import edu.bluejack26_1.wakord.ui.feature.song.SongDetailViewModel
 import edu.bluejack26_1.wakord.ui.feature.tuner.TunerRoute
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 
@@ -103,6 +107,20 @@ private fun NavGraphBuilder.mainGraph(nav: NavController) {
         composable(Routes.ANALYZE) { PlaceholderScreen("Analyze") }
         composable(Routes.PROFILE) { PlaceholderScreen("Profile") }
         composable(Routes.NOTIFICATIONS) { PlaceholderScreen("Notifications") }
+        composable(Routes.SONG) { entry ->
+            val songId = entry.arguments?.getString(SongDetailViewModel.SONG_ID).orEmpty()
+            SongDetailRoute(
+                onBack = { nav.popBackStack() },
+                onOpenComments = { nav.navigate(Routes.songComments(songId)) },
+            )
+        }
+        composable(Routes.SONG_COMMENTS) { entry ->
+            val owner = remember(entry) { runCatching { nav.getBackStackEntry(Routes.SONG) }.getOrDefault(entry) }
+            SongCommentsRoute(
+                onBack = { nav.popBackStack() },
+                viewModel = viewModel(viewModelStoreOwner = owner, factory = SongDetailViewModel.Factory),
+            )
+        }
     }
 }
 

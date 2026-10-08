@@ -42,6 +42,7 @@ class SongDetailViewModel(
 
     private var original: Song? = null
     private var playJob: Job? = null
+    private var previewJob: Job? = null
     private val voicingCache = mutableMapOf<String, List<Int>>()
 
     init {
@@ -69,8 +70,10 @@ class SongDetailViewModel(
         when (action) {
             is SongDetailAction.Transpose -> transpose(_uiState.value.transposeSteps + action.steps)
             SongDetailAction.ResetTranspose -> transpose(0)
-            SongDetailAction.TogglePlay -> if (_uiState.value.isPlaying) stopPlayback() else startPlayback()
+            SongDetailAction.TogglePlay -> if (_uiState.value.isPlaying) pausePlayback() else startPlayback(currentIndex().coerceAtLeast(0))
             is SongDetailAction.SetSpeed -> _uiState.update { it.copy(playbackSpeed = action.speed) }
+            is SongDetailAction.SkipChord -> skipChord(action.steps)
+            SongDetailAction.ToggleLoop -> _uiState.update { it.copy(isLooping = !it.isLooping) }
             SongDetailAction.ToggleLike -> toggleLike()
             SongDetailAction.ToggleSave -> toggleSave()
             is SongDetailAction.CommentChanged -> _uiState.update { it.copy(commentDraft = action.text) }
@@ -90,29 +93,85 @@ class SongDetailViewModel(
         }
     }
 
-    private fun startPlayback() {
+    private fun chordMs(song: Song): Long =
+        (60_000L * BEATS_PER_CHORD / song.tempo.coerceAtLeast(1) / _uiState.value.playbackSpeed).toLong()
+
+    private fun currentIndex(): Int {
+        val song = _uiState.value.song ?: return -1
+        return chordPositions(song).indexOf(_uiState.value.playingPosition)
+    }
+
+    private fun nextOf(positions: List<ChordPosition>, index: Int): ChordPosition? =
+        positions.getOrNull(index + 1) ?: if (_uiState.value.isLooping) positions.firstOrNull() else null
+
+    private fun chordAt(song: Song, position: ChordPosition): String =
+        song.sections[position.section].lines[position.line].segments[position.segment].chord.orEmpty()
+
+    private fun startPlayback(from: Int) {
         val song = _uiState.value.song ?: return
         val positions = chordPositions(song)
         if (positions.isEmpty()) return
+        cancelJobs()
         playJob = viewModelScope.launch {
-            val chordMs = (60_000L * BEATS_PER_CHORD / song.tempo / _uiState.value.playbackSpeed).toLong()
-            _uiState.update { it.copy(isPlaying = true, elapsedMs = 0, totalMs = chordMs * positions.size) }
-            positions.forEachIndexed { index, position ->
-                val chord = song.sections[position.section].lines[position.line].segments[position.segment].chord.orEmpty()
+            val chordMs = chordMs(song)
+            var index = from.coerceIn(positions.indices)
+            _uiState.update { it.copy(isPlaying = true, elapsedMs = chordMs * index, totalMs = chordMs * positions.size) }
+            while (true) {
+                val position = positions[index]
                 _uiState.update {
-                    it.copy(playingPosition = position, nextPosition = positions.getOrNull(index + 1), elapsedMs = chordMs * index)
+                    it.copy(playingPosition = position, nextPosition = nextOf(positions, index), elapsedMs = chordMs * index)
                 }
-                tonePlayer.playChord(midisFor(chord), chordMs)
+                tonePlayer.playChord(midisFor(chordAt(song, position)), chordMs)
+                index++
+                if (index >= positions.size) {
+                    if (_uiState.value.isLooping) index = 0 else break
+                }
             }
             _uiState.update { it.copy(isPlaying = false, playingPosition = null, nextPosition = null, elapsedMs = it.totalMs) }
         }
     }
 
+    private fun pausePlayback() {
+        cancelJobs()
+        _uiState.update { it.copy(isPlaying = false) }
+    }
+
     private fun stopPlayback() {
+        cancelJobs()
+        _uiState.update { it.copy(isPlaying = false, playingPosition = null, nextPosition = null, elapsedMs = 0) }
+    }
+
+    private fun cancelJobs() {
         playJob?.cancel()
         playJob = null
+        previewJob?.cancel()
+        previewJob = null
         tonePlayer.stop()
-        _uiState.update { it.copy(isPlaying = false, playingPosition = null, nextPosition = null) }
+    }
+
+    private fun skipChord(steps: Int) {
+        val song = _uiState.value.song ?: return
+        val positions = chordPositions(song)
+        if (positions.isEmpty() || steps == 0) return
+        val current = currentIndex()
+        val raw = if (current < 0) (if (steps > 0) 0 else positions.lastIndex) else current + steps
+        val target = if (_uiState.value.isLooping) Math.floorMod(raw, positions.size) else raw.coerceIn(positions.indices)
+        if (_uiState.value.isPlaying) {
+            startPlayback(target)
+            return
+        }
+        cancelJobs()
+        val chordMs = chordMs(song)
+        val position = positions[target]
+        _uiState.update {
+            it.copy(
+                playingPosition = position,
+                nextPosition = nextOf(positions, target),
+                elapsedMs = chordMs * target,
+                totalMs = chordMs * positions.size,
+            )
+        }
+        previewJob = viewModelScope.launch { tonePlayer.playChord(midisFor(chordAt(song, position)), chordMs) }
     }
 
     private suspend fun midisFor(chord: String): List<Int> = voicingCache.getOrPut(chord) {

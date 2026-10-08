@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="song_chord_sheet">Chord sheet</string>
+    <string name="more_options">More options</string>
+    <string name="song_cover_cd">%1$s cover</string>
+    <string name="song_stats">%1$s likes · %2$s saves</string>
+    <string name="song_key">Key</string>
+    <string name="song_capo">Capo</string>
+    <string name="song_tempo">Tempo</string>
+    <string name="song_level">Level</string>
+    <string name="song_capo_none">None</string>
+    <string name="ordinal_st">%1$dst</string>
+    <string name="ordinal_nd">%1$dnd</string>
+    <string name="ordinal_rd">%1$drd</string>
+    <string name="ordinal_th">%1$dth</string>
+    <string name="level_easy">Easy</string>
+    <string name="level_intermediate">Mid</string>
+    <string name="level_advanced">Pro</string>
+    <string name="key_major">%1$s major</string>
+    <string name="key_minor">%1$s minor</string>
+
+    <string name="song_like_cd">Like song, %1$s likes</string>
+    <string name="song_unlike_cd">Unlike song, %1$s likes</string>
+    <string name="song_save">Save</string>
+    <string name="song_saved">Saved</string>
+    <string name="song_comments_cd">Comments, %1$s</string>
+    <string name="share">Share</string>
+    <string name="song_share_text">%1$s by %2$s on WAKord</string>
+    <string name="song_reset_transpose">Reset transpose</string>
+
+    <string name="transpose">Transpose</string>
+    <string name="transpose_original">Original key %1$s</string>
+    <string name="transpose_change">%1$s → %2$s</string>
+    <string name="transpose_down_cd">Transpose down a semitone</string>
+    <string name="transpose_up_cd">Transpose up a semitone</string>
+
+    <string name="player_now">Now</string>
+    <string name="player_next">next</string>
+    <string name="play_progression">Play chords</string>
+    <string name="pause_progression">Pause chords</string>
+    <string name="playback_speed_cd">Playback speed %1$s</string>
+    <string name="loop_on_cd">Loop on</string>
+    <string name="loop_off_cd">Loop off</string>
+    <string name="previous_chord">Previous chord</string>
+    <string name="next_chord">Next chord</string>
+
+    <string name="comments">Comments</string>
+    <string name="comments_count">Comments %1$s</string>
+    <string name="view_all">View all</string>
+    <string name="comments_subtitle">%1$s · %2$s</string>
+    <string name="comment_placeholder">Share a voicing tip…</string>
+    <string name="comment_reply">Reply</string>
+    <string name="comment_replying_to">Replying to %1$s</string>
+    <string name="comment_cancel_reply">Cancel reply</string>
+    <string name="comment_post">Post comment</string>
+    <plurals name="comment_like_cd">
+        <item quantity="one">Like comment, %1$d like</item>
+        <item quantity="other">Like comment, %1$d likes</item>
+    </plurals>
+    <string name="comment_sort_top">Top</string>
+    <string name="comment_sort_newest">Newest</string>
+    <string name="comments_empty_title">No comments yet</string>
+    <string name="comments_empty_message">Be the first to share a voicing tip or a story about this song.</string>
+    <string name="comment_blocked_title">Comment blocked</string>
+    <string name="comment_blocked_message">This looks like it breaks our community rules. Edit it and try again.</string>
+    <string name="time_now">now</string>
+    <string name="time_minutes">%1$dm</string>
+    <string name="time_hours">%1$dh</string>
+    <string name="time_days">%1$dd</string>
+    <string name="time_weeks">%1$dw</string>
+    <string name="time_ago">%1$s ago</string>
+    <string name="song_not_found">This song is no longer available</string>
+</resources>

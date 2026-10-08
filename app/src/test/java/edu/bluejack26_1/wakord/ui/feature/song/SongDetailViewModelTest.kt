@@ -1,6 +1,7 @@
 package edu.bluejack26_1.wakord.ui.feature.song
 
 import edu.bluejack26_1.wakord.R
+import edu.bluejack26_1.wakord.core.audio.TonePlayer
 import edu.bluejack26_1.wakord.core.error.AppError
 import edu.bluejack26_1.wakord.data.fake.FakeCommentRepository
 import edu.bluejack26_1.wakord.data.fake.FakeSavedItemsRepository
@@ -10,6 +11,8 @@ import edu.bluejack26_1.wakord.domain.model.SavedType
 import edu.bluejack26_1.wakord.testutil.MainDispatcherRule
 import edu.bluejack26_1.wakord.testutil.RecordingTonePlayer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -29,8 +32,25 @@ class SongDetailViewModelTest {
     private val saved = FakeSavedItemsRepository()
     private val player = RecordingTonePlayer()
 
-    private fun viewModel(id: String = SampleMusic.song.id) =
-        SongDetailViewModel(id, songs, comments, saved, player, computeDispatcher = main.dispatcher)
+    private class TimedTonePlayer : TonePlayer {
+        val chords = mutableListOf<List<Int>>()
+
+        override suspend fun playNote(midi: Int, durationMs: Long, referencePitch: Float) =
+            playChord(listOf(midi), durationMs, referencePitch)
+
+        override suspend fun playChord(midis: List<Int>, durationMs: Long, referencePitch: Float) {
+            chords += midis
+            delay(durationMs)
+        }
+
+        override fun stop() = Unit
+    }
+
+    private val positions = SongDetailViewModel.chordPositions(SampleMusic.song)
+    private val chordMs = 60_000L * 2 / SampleMusic.song.tempo
+
+    private fun viewModel(id: String = SampleMusic.song.id, tonePlayer: TonePlayer = player) =
+        SongDetailViewModel(id, songs, comments, saved, tonePlayer, computeDispatcher = main.dispatcher)
 
     @Test
     fun `loads song`() = runTest(main.dispatcher) {
@@ -155,5 +175,97 @@ class SongDetailViewModelTest {
         advanceUntilIdle()
         assertEquals(1, vm.uiState.value.comments.single().likeCount)
         assertTrue(vm.uiState.value.comments.single().likedByMe)
+    }
+
+    @Test
+    fun `next chord while stopped previews it and play starts there`() = runTest(main.dispatcher) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        vm.onAction(SongDetailAction.SkipChord(1))
+        advanceUntilIdle()
+        assertEquals(positions[0], vm.uiState.value.playingPosition)
+        vm.onAction(SongDetailAction.SkipChord(1))
+        advanceUntilIdle()
+        assertEquals(positions[1], vm.uiState.value.playingPosition)
+        assertEquals(positions[2], vm.uiState.value.nextPosition)
+        assertEquals(2, player.chords.size)
+
+        vm.onAction(SongDetailAction.TogglePlay)
+        advanceUntilIdle()
+        assertEquals(2 + positions.size - 1, player.chords.size)
+        assertFalse(vm.uiState.value.isPlaying)
+    }
+
+    @Test
+    fun `pause keeps the current chord and play resumes from it`() = runTest(main.dispatcher) {
+        val timed = TimedTonePlayer()
+        val vm = viewModel(tonePlayer = timed)
+        advanceUntilIdle()
+        vm.onAction(SongDetailAction.TogglePlay)
+        advanceTimeBy(chordMs * 2 + 1)
+        assertEquals(positions[2], vm.uiState.value.playingPosition)
+
+        vm.onAction(SongDetailAction.TogglePlay)
+        assertFalse(vm.uiState.value.isPlaying)
+        assertEquals(positions[2], vm.uiState.value.playingPosition)
+        assertEquals(3, timed.chords.size)
+
+        vm.onAction(SongDetailAction.TogglePlay)
+        advanceUntilIdle()
+        assertEquals(3 + positions.size - 2, timed.chords.size)
+        assertNull(vm.uiState.value.playingPosition)
+    }
+
+    @Test
+    fun `skipping while playing jumps to the next chord`() = runTest(main.dispatcher) {
+        val timed = TimedTonePlayer()
+        val vm = viewModel(tonePlayer = timed)
+        advanceUntilIdle()
+        vm.onAction(SongDetailAction.TogglePlay)
+        advanceTimeBy(1)
+        vm.onAction(SongDetailAction.SkipChord(2))
+        advanceTimeBy(1)
+        assertTrue(vm.uiState.value.isPlaying)
+        assertEquals(positions[2], vm.uiState.value.playingPosition)
+        vm.onAction(SongDetailAction.TogglePlay)
+    }
+
+    @Test
+    fun `next at the last chord stays there without loop`() = runTest(main.dispatcher) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        vm.onAction(SongDetailAction.SkipChord(-1))
+        vm.onAction(SongDetailAction.SkipChord(1))
+        advanceUntilIdle()
+        assertEquals(positions.last(), vm.uiState.value.playingPosition)
+        assertNull(vm.uiState.value.nextPosition)
+    }
+
+    @Test
+    fun `loop wraps previous chord to the last one`() = runTest(main.dispatcher) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        vm.onAction(SongDetailAction.ToggleLoop)
+        vm.onAction(SongDetailAction.SkipChord(1))
+        vm.onAction(SongDetailAction.SkipChord(-1))
+        advanceUntilIdle()
+        assertTrue(vm.uiState.value.isLooping)
+        assertEquals(positions.last(), vm.uiState.value.playingPosition)
+        assertEquals(positions.first(), vm.uiState.value.nextPosition)
+    }
+
+    @Test
+    fun `loop keeps playing past the last chord`() = runTest(main.dispatcher) {
+        val timed = TimedTonePlayer()
+        val vm = viewModel(tonePlayer = timed)
+        advanceUntilIdle()
+        vm.onAction(SongDetailAction.ToggleLoop)
+        vm.onAction(SongDetailAction.SkipChord(-1))
+        vm.onAction(SongDetailAction.TogglePlay)
+        advanceTimeBy(chordMs + 1)
+        assertTrue(vm.uiState.value.isPlaying)
+        assertEquals(positions.first(), vm.uiState.value.playingPosition)
+        vm.onAction(SongDetailAction.TogglePlay)
+        assertFalse(vm.uiState.value.isPlaying)
     }
 }
