@@ -13,6 +13,7 @@ data class SongDetailUiState(
     val transposeSteps: Int = 0,
     val isPlaying: Boolean = false,
     val playbackSpeed: Float = 1f,
+    val isLooping: Boolean = false,
     val playingPosition: ChordPosition? = null,
     val nextPosition: ChordPosition? = null,
     val elapsedMs: Long = 0,
@@ -32,6 +33,8 @@ sealed interface SongDetailAction {
     data object ResetTranspose : SongDetailAction
     data object TogglePlay : SongDetailAction
     data class SetSpeed(val speed: Float) : SongDetailAction
+    data class SkipChord(val steps: Int) : SongDetailAction
+    data object ToggleLoop : SongDetailAction
     data object ToggleLike : SongDetailAction
     data object ToggleSave : SongDetailAction
     data class CommentChanged(val text: String) : SongDetailAction
