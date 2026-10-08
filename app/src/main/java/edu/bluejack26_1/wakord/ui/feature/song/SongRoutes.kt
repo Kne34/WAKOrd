@@ -1,9 +1,7 @@
 package edu.bluejack26_1.wakord.ui.feature.song
 
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -12,6 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.WAKordApp
+import edu.bluejack26_1.wakord.ui.components.ErrorToast
 
 @Composable
 fun SongDetailRoute(
@@ -54,15 +53,4 @@ fun SongCommentsRoute(
         myName = me?.fullName.orEmpty(),
         myId = me?.uid.orEmpty(),
     )
-}
-
-@Composable
-private fun ErrorToast(message: Int?, onShown: () -> Unit) {
-    val context = LocalContext.current
-    LaunchedEffect(message) {
-        if (message != null) {
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            onShown()
-        }
-    }
 }

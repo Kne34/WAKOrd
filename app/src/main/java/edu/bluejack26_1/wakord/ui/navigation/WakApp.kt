@@ -28,6 +28,9 @@ import edu.bluejack26_1.wakord.ui.feature.auth.RegisterRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.ResetPasswordRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.SplashScreen
 import edu.bluejack26_1.wakord.ui.feature.auth.SplashViewModel
+import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionCommentsRoute
+import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionDetailRoute
+import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionDetailViewModel
 import edu.bluejack26_1.wakord.ui.feature.song.SongCommentsRoute
 import edu.bluejack26_1.wakord.ui.feature.song.SongDetailRoute
 import edu.bluejack26_1.wakord.ui.feature.song.SongDetailViewModel
@@ -119,6 +122,20 @@ private fun NavGraphBuilder.mainGraph(nav: NavController) {
             SongCommentsRoute(
                 onBack = { nav.popBackStack() },
                 viewModel = viewModel(viewModelStoreOwner = owner, factory = SongDetailViewModel.Factory),
+            )
+        }
+        composable(Routes.PROGRESSION) { entry ->
+            val progressionId = entry.arguments?.getString(ProgressionDetailViewModel.PROGRESSION_ID).orEmpty()
+            ProgressionDetailRoute(
+                onBack = { nav.popBackStack() },
+                onOpenComments = { nav.navigate(Routes.progressionComments(progressionId)) },
+            )
+        }
+        composable(Routes.PROGRESSION_COMMENTS) { entry ->
+            val owner = remember(entry) { runCatching { nav.getBackStackEntry(Routes.PROGRESSION) }.getOrDefault(entry) }
+            ProgressionCommentsRoute(
+                onBack = { nav.popBackStack() },
+                viewModel = viewModel(viewModelStoreOwner = owner, factory = ProgressionDetailViewModel.Factory),
             )
         }
     }
