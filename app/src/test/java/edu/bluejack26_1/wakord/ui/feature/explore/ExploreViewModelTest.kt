@@ -2,6 +2,7 @@ package edu.bluejack26_1.wakord.ui.feature.explore
 
 import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.data.fake.FakeExploreRepository
+import edu.bluejack26_1.wakord.data.fake.SampleDiscover
 import edu.bluejack26_1.wakord.domain.model.Difficulty
 import edu.bluejack26_1.wakord.testutil.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,22 +31,27 @@ class ExploreViewModelTest {
         val s = vm.uiState.value
         assertFalse(s.isLoading)
         assertEquals("subtle-resonance", s.trendingSongs.first().id)
-        assertEquals(ExploreViewModel.PAGE_SIZE, s.trendingProgressions.size)
+        assertEquals(ExploreViewModel.FETCH_LIMIT, s.trendingProgressions.size)
         assertEquals("p25", s.trendingProgressions.first().id)
         assertEquals(2, s.topThisWeek.size)
+        assertTrue(s.endReached)
     }
 
     @Test
-    fun `load more grows trending progressions until the end`() = runTest(main.dispatcher) {
+    fun `load more grows top songs this week until the end`() = runTest(main.dispatcher) {
+        repository.weeklyTop = (1..25).map { n -> SampleDiscover.songs.first().copy(id = "w$n") }
         val vm = viewModel()
         advanceUntilIdle()
+        assertEquals(ExploreViewModel.PAGE_SIZE, vm.uiState.value.topThisWeek.size)
+        assertFalse(vm.uiState.value.endReached)
         vm.onAction(ExploreAction.LoadMore)
         advanceUntilIdle()
-        assertEquals(20, vm.uiState.value.trendingProgressions.size)
+        assertEquals(20, vm.uiState.value.topThisWeek.size)
         vm.onAction(ExploreAction.LoadMore)
         advanceUntilIdle()
-        assertEquals(25, vm.uiState.value.trendingProgressions.size)
+        assertEquals(25, vm.uiState.value.topThisWeek.size)
         assertTrue(vm.uiState.value.endReached)
+        assertEquals(ExploreViewModel.FETCH_LIMIT, vm.uiState.value.trendingProgressions.size)
     }
 
     @Test
