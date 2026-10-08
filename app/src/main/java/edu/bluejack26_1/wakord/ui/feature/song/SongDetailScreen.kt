@@ -254,7 +254,7 @@ private fun SongInfo(song: Song) {
         InfoCell(stringResource(R.string.song_key), prettyChord(song.key), c.text, divider = false)
         InfoCell(stringResource(R.string.song_capo), capoLabel(song.capo), c.text)
         InfoCell(stringResource(R.string.song_tempo), song.tempo.toString(), c.text)
-        InfoCell(stringResource(R.string.song_level), levelLabel(song.difficulty), levelColor(song.difficulty, c))
+        InfoCell(stringResource(R.string.song_level), levelLabel(song.difficulty, short = true), levelColor(song.difficulty, c))
     }
 }
 
