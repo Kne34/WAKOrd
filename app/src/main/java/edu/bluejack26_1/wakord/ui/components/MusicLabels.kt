@@ -18,11 +18,11 @@ fun keyLabel(key: String): String {
 }
 
 @Composable
-fun levelLabel(difficulty: Difficulty): String = stringResource(
+fun levelLabel(difficulty: Difficulty, short: Boolean = false): String = stringResource(
     when (difficulty) {
-        Difficulty.EASY -> R.string.level_easy
-        Difficulty.INTERMEDIATE -> R.string.level_intermediate
-        Difficulty.ADVANCED -> R.string.level_advanced
+        Difficulty.EASY -> if (short) R.string.level_easy else R.string.explore_level_easy
+        Difficulty.INTERMEDIATE -> if (short) R.string.level_intermediate else R.string.explore_level_intermediate
+        Difficulty.ADVANCED -> if (short) R.string.level_advanced else R.string.explore_level_advanced
     },
 )
 
