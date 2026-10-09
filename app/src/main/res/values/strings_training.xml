@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="level_notes_basic">Single notes: C, E, G</string>
+    <string name="level_notes_octave">Single notes: full octave</string>
+    <string name="level_intervals_basic">Intervals: thirds and fifths</string>
+    <string name="level_intervals_all">Intervals: within an octave</string>
+    <string name="level_quality_triads">Chord quality: major and minor</string>
+    <string name="level_quality_sevenths">Chord quality: seventh chords</string>
+    <string name="level_progressions_basic">Progressions: I, IV, V</string>
+    <string name="level_progressions_jazz">Progressions: ii, V, I and vi</string>
+    <string name="interval_1">Minor 2nd</string>
+    <string name="interval_2">Major 2nd</string>
+    <string name="interval_3">Minor 3rd</string>
+    <string name="interval_4">Major 3rd</string>
+    <string name="interval_5">Perfect 4th</string>
+    <string name="interval_6">Tritone</string>
+    <string name="interval_7">Perfect 5th</string>
+    <string name="interval_8">Minor 6th</string>
+    <string name="interval_9">Major 6th</string>
+    <string name="interval_10">Minor 7th</string>
+    <string name="interval_11">Major 7th</string>
+    <string name="interval_12">Octave</string>
+    <string name="quality_major">Major</string>
+    <string name="quality_minor">Minor</string>
+    <string name="quality_diminished">Diminished</string>
+    <string name="quality_augmented">Augmented</string>
+    <string name="quality_major7">Major 7th</string>
+    <string name="quality_minor7">Minor 7th</string>
+    <string name="quality_dominant7">Dominant 7th</string>
+    <string name="quality_half_diminished">Half-diminished</string>
+    <string name="explain_note">That note was %1$s.</string>
+    <string name="explain_interval">%1$s. Semitones between the notes: %2$d</string>
+    <string name="explain_quality">That was a %1$s chord.</string>
+    <string name="explain_progression">The chords moved %1$s.</string>
+</resources>
