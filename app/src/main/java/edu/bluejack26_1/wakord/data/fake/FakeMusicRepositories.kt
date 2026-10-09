@@ -5,6 +5,7 @@ import edu.bluejack26_1.wakord.core.music.ChordProParser
 import edu.bluejack26_1.wakord.domain.model.ChordProgression
 import edu.bluejack26_1.wakord.domain.model.Comment
 import edu.bluejack26_1.wakord.domain.model.Difficulty
+import edu.bluejack26_1.wakord.domain.model.ProgressionDraft
 import edu.bluejack26_1.wakord.domain.model.SavedType
 import edu.bluejack26_1.wakord.domain.model.Song
 import edu.bluejack26_1.wakord.domain.model.SongSection
@@ -86,6 +87,14 @@ class FakeProgressionRepository(initial: ChordProgression? = SampleMusic.progres
     override suspend fun recordPlay(id: String): Result<Unit> {
         plays += id
         return Result.success(Unit)
+    }
+
+    override suspend fun create(draft: ProgressionDraft): Result<String> {
+        val id = "new${progressions.value.size + 1}"
+        progressions.update {
+            it + (id to ChordProgression(id, draft.title, draft.key, draft.bpm, draft.genre, draft.difficulty, draft.chords, "me", "Me", draft.description))
+        }
+        return Result.success(id)
     }
 }
 

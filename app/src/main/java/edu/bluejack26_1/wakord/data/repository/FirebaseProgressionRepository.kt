@@ -7,6 +7,7 @@ import edu.bluejack26_1.wakord.data.remote.firebaseCall
 import edu.bluejack26_1.wakord.data.remote.requireUid
 import edu.bluejack26_1.wakord.data.remote.valueFlow
 import edu.bluejack26_1.wakord.domain.model.ChordProgression
+import edu.bluejack26_1.wakord.domain.model.ProgressionDraft
 import edu.bluejack26_1.wakord.domain.repository.ProgressionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -30,5 +31,29 @@ class FirebaseProgressionRepository(
         auth.currentUser?.uid?.let { updates["plays/$it/$id"] = ServerValue.TIMESTAMP }
         database.reference.updateChildren(updates).await()
         Unit
+    }
+
+    override suspend fun create(draft: ProgressionDraft): Result<String> = firebaseCall {
+        val uid = auth.requireUid()
+        val authorName = database.getReference("users/$uid/fullName").get().await().getValue(String::class.java).orEmpty()
+        val ref = database.getReference("progressions").push()
+        ref.setValue(
+            mapOf(
+                "title" to draft.title.trim(),
+                "key" to draft.key,
+                "bpm" to draft.bpm,
+                "genre" to draft.genre,
+                "difficulty" to draft.difficulty.name,
+                "chords" to draft.chords,
+                "description" to draft.description.trim(),
+                "authorId" to uid,
+                "authorName" to authorName,
+                "playCount" to 0,
+                "likeCount" to 0,
+                "saveCount" to 0,
+                "createdAt" to ServerValue.TIMESTAMP,
+            ),
+        ).await()
+        requireNotNull(ref.key)
     }
 }
