@@ -7,8 +7,11 @@ import edu.bluejack26_1.wakord.data.fake.FakeProgressionRepository
 import edu.bluejack26_1.wakord.data.fake.FakeSavedItemsRepository
 import edu.bluejack26_1.wakord.data.fake.FakeUserRepository
 import edu.bluejack26_1.wakord.data.fake.SampleDiscover
+import edu.bluejack26_1.wakord.data.fake.FakeTrainingRepository
 import edu.bluejack26_1.wakord.domain.model.FeedItem
 import edu.bluejack26_1.wakord.domain.model.SavedType
+import edu.bluejack26_1.wakord.domain.model.SkillType
+import edu.bluejack26_1.wakord.domain.model.TrainingSession
 import edu.bluejack26_1.wakord.domain.model.User
 import edu.bluejack26_1.wakord.testutil.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,6 +23,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import java.time.ZoneOffset
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
@@ -31,8 +35,27 @@ class HomeViewModelTest {
     private val saved = FakeSavedItemsRepository()
     private val progressions = FakeProgressionRepository()
     private val playback = FakePlaybackController()
+    private val now = 1_791_100_000_000L
+    private val training = FakeTrainingRepository(
+        listOf(TrainingSession("s1", 1, SkillType.SINGLE_NOTE, 8, 10, 180_000, now - 3_600_000)),
+    )
 
-    private fun viewModel() = HomeViewModel(users, feed, saved, progressions, playback, computeDispatcher = main.dispatcher)
+    private fun viewModel() = HomeViewModel(
+        users, feed, saved, progressions, playback, training,
+        computeDispatcher = main.dispatcher, clock = { now }, zone = ZoneOffset.UTC,
+    )
+
+    @Test
+    fun `daily workout card shows today's training`() = runTest(main.dispatcher) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        val workout = vm.uiState.value.workout
+        assertEquals(3, workout.minutesDone)
+        assertEquals(5, workout.minutesGoal)
+        assertEquals(1, workout.streakDays)
+        assertEquals(2, workout.level)
+        assertEquals(80, workout.accuracy)
+    }
 
     @Test
     fun `first page loads greeting, recommendations and feed`() = runTest(main.dispatcher) {
