@@ -2,6 +2,7 @@ package edu.bluejack26_1.wakord.domain.repository
 
 import edu.bluejack26_1.wakord.domain.model.ChordProgression
 import edu.bluejack26_1.wakord.domain.model.Comment
+import edu.bluejack26_1.wakord.domain.model.ProgressionDraft
 import edu.bluejack26_1.wakord.domain.model.SavedType
 import edu.bluejack26_1.wakord.domain.model.Song
 import kotlinx.coroutines.flow.Flow
@@ -17,6 +18,7 @@ interface ProgressionRepository {
     fun isLiked(id: String): Flow<Boolean>
     suspend fun setLiked(id: String, liked: Boolean): Result<Unit>
     suspend fun recordPlay(id: String): Result<Unit>
+    suspend fun create(draft: ProgressionDraft): Result<String>
 }
 
 interface CommentRepository {
