@@ -11,6 +11,7 @@ import edu.bluejack26_1.wakord.core.discover.FeedRanker
 import edu.bluejack26_1.wakord.core.discover.Recommender
 import edu.bluejack26_1.wakord.core.error.messageRes
 import edu.bluejack26_1.wakord.core.music.VoicingGenerator
+import edu.bluejack26_1.wakord.core.training.TrainingStatsCalculator
 import edu.bluejack26_1.wakord.domain.model.ChordProgression
 import edu.bluejack26_1.wakord.domain.model.FeedItem
 import edu.bluejack26_1.wakord.domain.model.FeedPage
@@ -21,6 +22,7 @@ import edu.bluejack26_1.wakord.domain.model.UserActivity
 import edu.bluejack26_1.wakord.domain.repository.FeedRepository
 import edu.bluejack26_1.wakord.domain.repository.ProgressionRepository
 import edu.bluejack26_1.wakord.domain.repository.SavedItemsRepository
+import edu.bluejack26_1.wakord.domain.repository.TrainingRepository
 import edu.bluejack26_1.wakord.domain.repository.UserRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +34,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.ZoneId
+import kotlin.math.roundToInt
 
 class HomeViewModel(
     private val userRepository: UserRepository,
@@ -39,7 +43,10 @@ class HomeViewModel(
     private val savedItemsRepository: SavedItemsRepository,
     private val progressionRepository: ProgressionRepository,
     private val playbackController: PlaybackController,
+    private val trainingRepository: TrainingRepository,
     private val computeDispatcher: CoroutineDispatcher = Dispatchers.Default,
+    private val clock: () -> Long = System::currentTimeMillis,
+    private val zone: ZoneId = ZoneId.systemDefault(),
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -69,6 +76,19 @@ class HomeViewModel(
         }
         viewModelScope.launch {
             feedRepository.likedIds().collect { ids -> applyLikes(ids) }
+        }
+        viewModelScope.launch {
+            trainingRepository.sessions.collect { sessions ->
+                val w = TrainingStatsCalculator.calculate(sessions, clock(), zone).workout
+                val workout = DailyWorkout(
+                    minutesDone = w.minutesToday,
+                    minutesGoal = w.goalMinutes,
+                    streakDays = w.streakDays,
+                    level = w.currentLevel,
+                    accuracy = if (w.trialsToday > 0) (w.accuracyToday * 100).roundToInt() else null,
+                )
+                _uiState.update { it.copy(workout = workout) }
+            }
         }
         refresh()
     }
@@ -184,6 +204,7 @@ class HomeViewModel(
                     savedItemsRepository = container.savedItemsRepository,
                     progressionRepository = container.progressionRepository,
                     playbackController = container.playbackController,
+                    trainingRepository = container.trainingRepository,
                 )
             }
         }
