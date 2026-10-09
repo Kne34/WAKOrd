@@ -60,7 +60,12 @@ private fun WakDialogContent(
     tone: DialogTone,
 ) {
     val c = WakTheme.colors
-    val accent = if (tone == DialogTone.Default) c.primary else c.error
+    val accent = when (tone) {
+        DialogTone.Default -> c.primary
+        DialogTone.Error -> c.error
+        DialogTone.Destructive -> c.peach
+    }
+    val iconContainer = if (tone == DialogTone.Destructive) alertContainer(c) else accent.copy(alpha = 0.12f)
     Surface(
         modifier = Modifier.widthIn(max = 326.dp),
         shape = RoundedCornerShape(30.dp),
@@ -75,7 +80,7 @@ private fun WakDialogContent(
                 Box(
                     modifier = Modifier
                         .size(64.dp)
-                        .background(accent.copy(alpha = 0.12f), RoundedCornerShape(22.dp)),
+                        .background(iconContainer, RoundedCornerShape(22.dp)),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(icon, contentDescription = null, tint = accent, modifier = Modifier.size(28.dp))
