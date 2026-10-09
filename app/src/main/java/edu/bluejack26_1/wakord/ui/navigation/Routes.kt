@@ -17,6 +17,7 @@ object Routes {
 
     const val NOTIFICATIONS = "notifications"
     const val SEARCH = "search"
+    const val EXPLORE_SECTION = "explore/section/{section}"
     const val SETTINGS = "settings"
     const val EDIT_PROFILE = "edit_profile"
     const val NEW_PROGRESSION = "new_progression"
@@ -27,12 +28,15 @@ object Routes {
     const val SONG = "song/{songId}"
     const val SONG_COMMENTS = "song/{songId}/comments"
     const val PROGRESSION = "progression/{progressionId}"
+    const val PROGRESSION_COMMENTS = "progression/{progressionId}/comments"
     const val ANALYSIS_RESULT = "analyze/result/{analysisId}"
     const val USER = "user/{userId}"
 
     fun song(id: String) = "song/$id"
     fun songComments(id: String) = "song/$id/comments"
     fun progression(id: String) = "progression/$id"
+    fun exploreSection(section: String) = "explore/section/$section"
+    fun progressionComments(id: String) = "progression/$id/comments"
     fun user(id: String) = "user/$id"
     fun trainingExercise(levelId: String) = "training/exercise/$levelId"
     fun trainingComplete(sessionId: String) = "training/complete/$sessionId"

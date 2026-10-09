@@ -16,7 +16,6 @@
     <string name="back">Back</string>
     <string name="continue_label">Continue</string>
     <string name="skip">Skip</string>
-    <string name="allow">Allow</string>
     <string name="not_now">Not now</string>
     <string name="open_settings">Open settings</string>
     <string name="step_of">Step %1$d of %2$d</string>

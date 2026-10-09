@@ -22,7 +22,11 @@ fun Query.valueFlow(): Flow<DataSnapshot> = callbackFlow {
         }
 
         override fun onCancelled(error: DatabaseError) {
-            close(error.toException())
+            if (error.code == DatabaseError.PERMISSION_DENIED && FirebaseAuth.getInstance().currentUser == null) {
+                close()
+            } else {
+                close(error.toException())
+            }
         }
     }
     addValueEventListener(listener)

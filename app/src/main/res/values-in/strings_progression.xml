@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="progression_header">Progression</string>
+    <string name="progression_key_bpm">%1$s · %2$d BPM</string>
+    <string name="progression_author_stats">%1$s diputar · %2$s disimpan</string>
+    <string name="progression_play">Putar progression</string>
+    <string name="progression_pause">Jeda progression</string>
+    <string name="progression_like_cd">Suka, %1$s suka</string>
+    <string name="progression_unlike_cd">Batal suka, %1$s suka</string>
+    <string name="progression_save_cd">Simpan progression</string>
+    <string name="progression_unsave_cd">Hapus dari simpanan</string>
+    <string name="progression_likes">%1$s suka</string>
+    <string name="progression_comments">%1$s komentar</string>
+    <string name="progression_view_all">Lihat semua %1$s</string>
+    <string name="progression_add_comment">Tulis komentar…</string>
+    <string name="progression_share_text">%1$s oleh %2$s di WAKord</string>
+    <string name="progression_not_found">Progression ini sudah tidak tersedia</string>
+    <string name="progression_chord_cd">%1$s, ketuk untuk melihat voicing</string>
+
+    <string name="chord_open">terbuka</string>
+    <string name="chord_base_fret">%1$dfr</string>
+    <string name="chord_voicing">Voicing</string>
+    <string name="chord_fingers">Jari</string>
+    <string name="chord_mute">Diredam</string>
+    <string name="chord_mute_none">Tidak ada</string>
+    <string name="chord_mute_and">%1$s dan %2$s</string>
+    <string name="voicing_open">Terbuka</string>
+    <string name="voicing_fret_st">Fret %1$d</string>
+    <string name="voicing_fret_nd">Fret %1$d</string>
+    <string name="voicing_fret_rd">Fret %1$d</string>
+    <string name="voicing_fret_th">Fret %1$d</string>
+    <string name="voicing_position">%1$s, %2$d dari %3$d</string>
+    <string name="chord_play_preview">Putar contoh</string>
+    <string name="chord_save">Simpan chord</string>
+    <string name="chord_saved">Tersimpan</string>
+    <string name="chord_no_voicing">Voicing gitar untuk chord ini tidak ditemukan</string>
+    <string name="string_low_e">E rendah</string>
+    <string name="string_a">A</string>
+    <string name="string_d">D</string>
+    <string name="string_g">G</string>
+    <string name="string_b">B</string>
+    <string name="string_high_e">E tinggi</string>
+</resources>

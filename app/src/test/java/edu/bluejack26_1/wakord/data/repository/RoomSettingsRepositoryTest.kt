@@ -52,6 +52,14 @@ class RoomSettingsRepositoryTest {
     }
 
     @Test
+    fun `saved items stay offline until turned off`() = runTest {
+        assertEquals(true, repository.keepOffline.first())
+        repository.setKeepOffline(false)
+        assertEquals(false, repository.keepOffline.first())
+        assertEquals(false, dao.row.value?.keepOffline)
+    }
+
+    @Test
     fun `unknown stored theme falls back to system`() = runTest {
         dao.row.value = SettingsEntity(themeMode = "PURPLE")
         assertEquals(ThemeMode.SYSTEM, repository.themeMode.first())

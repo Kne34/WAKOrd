@@ -11,6 +11,7 @@ import edu.bluejack26_1.wakord.core.discover.FeedRanker
 import edu.bluejack26_1.wakord.core.discover.Recommender
 import edu.bluejack26_1.wakord.core.error.messageRes
 import edu.bluejack26_1.wakord.core.music.VoicingGenerator
+import edu.bluejack26_1.wakord.core.training.TrainingStatsCalculator
 import edu.bluejack26_1.wakord.domain.model.ChordProgression
 import edu.bluejack26_1.wakord.domain.model.FeedItem
 import edu.bluejack26_1.wakord.domain.model.FeedPage
@@ -21,6 +22,7 @@ import edu.bluejack26_1.wakord.domain.model.UserActivity
 import edu.bluejack26_1.wakord.domain.repository.FeedRepository
 import edu.bluejack26_1.wakord.domain.repository.ProgressionRepository
 import edu.bluejack26_1.wakord.domain.repository.SavedItemsRepository
+import edu.bluejack26_1.wakord.domain.repository.TrainingRepository
 import edu.bluejack26_1.wakord.domain.repository.UserRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +34,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.ZoneId
+import kotlin.math.roundToInt
 
 class HomeViewModel(
     private val userRepository: UserRepository,
@@ -39,7 +43,10 @@ class HomeViewModel(
     private val savedItemsRepository: SavedItemsRepository,
     private val progressionRepository: ProgressionRepository,
     private val playbackController: PlaybackController,
+    private val trainingRepository: TrainingRepository,
     private val computeDispatcher: CoroutineDispatcher = Dispatchers.Default,
+    private val clock: () -> Long = System::currentTimeMillis,
+    private val zone: ZoneId = ZoneId.systemDefault(),
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -50,6 +57,7 @@ class HomeViewModel(
     private var cursor: Long? = null
     private val shownSongIds = mutableSetOf<String>()
     private var loadJob: Job? = null
+    private val baseLikes = mutableMapOf<String, Pair<Int, Boolean>>()
 
     init {
         viewModelScope.launch {
@@ -66,6 +74,22 @@ class HomeViewModel(
                 _uiState.update { it.copy(savedChords = chords) }
             }
         }
+        viewModelScope.launch {
+            feedRepository.likedIds().collect { ids -> applyLikes(ids) }
+        }
+        viewModelScope.launch {
+            trainingRepository.sessions.collect { sessions ->
+                val w = TrainingStatsCalculator.calculate(sessions, clock(), zone).workout
+                val workout = DailyWorkout(
+                    minutesDone = w.minutesToday,
+                    minutesGoal = w.goalMinutes,
+                    streakDays = w.streakDays,
+                    level = w.currentLevel,
+                    accuracy = if (w.trialsToday > 0) (w.accuracyToday * 100).roundToInt() else null,
+                )
+                _uiState.update { it.copy(workout = workout) }
+            }
+        }
         refresh()
     }
 
@@ -74,6 +98,7 @@ class HomeViewModel(
             HomeAction.LoadMore -> loadMore()
             HomeAction.Refresh -> refresh()
             is HomeAction.PlayProgression -> play(action.progression)
+            is HomeAction.ToggleProgressionLike -> toggleLike(action.progression)
             HomeAction.DismissError -> _uiState.update { it.copy(errorMessage = null) }
         }
     }
@@ -84,6 +109,7 @@ class HomeViewModel(
             _uiState.update { it.copy(isLoading = true, feed = emptyList(), endReached = false, errorMessage = null) }
             cursor = null
             shownSongIds.clear()
+            baseLikes.clear()
             user = userRepository.currentUser().first()
             val result = feedRepository.songs().mapCatching { all ->
                 songs = all
@@ -128,7 +154,35 @@ class HomeViewModel(
             }
         }
         cursor = page.nextCursor
+        val liked = _uiState.value.likedIds
+        withCounts.forEach { item -> baseLikes.getOrPut(item.id) { item.likeCount to (item.id in liked) } }
         _uiState.update { it.copy(feed = it.feed + FeedRanker.rank(withCounts, user, affinity), endReached = isLast) }
+    }
+
+    private fun applyLikes(ids: Set<String>) {
+        _uiState.update { state ->
+            state.copy(
+                likedIds = ids,
+                feed = state.feed.map { item ->
+                    if (item !is FeedItem.ProgressionItem) return@map item
+                    val (count, likedAtLoad) = baseLikes[item.id] ?: return@map item
+                    val adjusted = count + (if (item.id in ids) 1 else 0) - (if (likedAtLoad) 1 else 0)
+                    item.copy(progression = item.progression.copy(likeCount = adjusted.coerceAtLeast(0)))
+                },
+            )
+        }
+    }
+
+    private fun toggleLike(progression: ChordProgression) {
+        val before = _uiState.value.likedIds
+        val liked = progression.id !in before
+        applyLikes(if (liked) before + progression.id else before - progression.id)
+        viewModelScope.launch {
+            progressionRepository.setLiked(progression.id, liked).onFailure { e ->
+                applyLikes(before)
+                _uiState.update { it.copy(errorMessage = e.messageRes()) }
+            }
+        }
     }
 
     private fun play(progression: ChordProgression) {
@@ -150,6 +204,7 @@ class HomeViewModel(
                     savedItemsRepository = container.savedItemsRepository,
                     progressionRepository = container.progressionRepository,
                     playbackController = container.playbackController,
+                    trainingRepository = container.trainingRepository,
                 )
             }
         }

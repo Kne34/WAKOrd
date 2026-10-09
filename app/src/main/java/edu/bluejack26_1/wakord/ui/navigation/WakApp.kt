@@ -1,6 +1,7 @@
 package edu.bluejack26_1.wakord.ui.navigation
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,8 +10,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -19,7 +23,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.ui.components.TopLevelDestinations
+import edu.bluejack26_1.wakord.ui.components.WakButton
+import edu.bluejack26_1.wakord.ui.components.WakButtonVariant
 import edu.bluejack26_1.wakord.ui.components.WakBottomBar
 import edu.bluejack26_1.wakord.ui.feature.auth.LoginRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.PreferencesRoute
@@ -27,6 +34,19 @@ import edu.bluejack26_1.wakord.ui.feature.auth.RegisterRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.ResetPasswordRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.SplashScreen
 import edu.bluejack26_1.wakord.ui.feature.auth.SplashViewModel
+import edu.bluejack26_1.wakord.ui.feature.explore.ExploreRoute
+import edu.bluejack26_1.wakord.ui.feature.explore.ExploreSection
+import edu.bluejack26_1.wakord.ui.feature.explore.ExploreSectionRoute
+import edu.bluejack26_1.wakord.ui.feature.explore.ExploreViewModel
+import edu.bluejack26_1.wakord.ui.feature.home.HomeRoute
+import edu.bluejack26_1.wakord.ui.feature.player.MiniPlayerHost
+import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionCommentsRoute
+import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionDetailRoute
+import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionDetailViewModel
+import edu.bluejack26_1.wakord.ui.feature.settings.SettingsRoute
+import edu.bluejack26_1.wakord.ui.feature.song.SongCommentsRoute
+import edu.bluejack26_1.wakord.ui.feature.song.SongDetailRoute
+import edu.bluejack26_1.wakord.ui.feature.song.SongDetailViewModel
 import edu.bluejack26_1.wakord.ui.feature.tuner.TunerRoute
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 
@@ -42,7 +62,13 @@ fun WakApp() {
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             if (showBottomBar) {
-                WakBottomBar(currentRoute = currentRoute, onNavigate = navController::navigateTopLevel)
+                Column {
+                    MiniPlayerHost(
+                        visible = currentRoute == Routes.HOME || currentRoute == Routes.PROFILE,
+                        onOpenProgression = { navController.navigate(Routes.progression(it)) },
+                    )
+                    WakBottomBar(currentRoute = currentRoute, onNavigate = navController::navigateTopLevel)
+                }
             }
         },
     ) { padding ->
@@ -95,14 +121,88 @@ private fun NavGraphBuilder.authGraph(nav: NavController) {
 
 private fun NavGraphBuilder.mainGraph(nav: NavController) {
     navigation(startDestination = Routes.HOME, route = Routes.MAIN_GRAPH) {
-        composable(Routes.HOME) { PlaceholderScreen("Home") }
-        composable(Routes.EXPLORE) { PlaceholderScreen("Explore") }
+        composable(Routes.HOME) {
+            HomeRoute(
+                onOpenSong = { nav.navigate(Routes.song(it)) },
+                onOpenProgression = { nav.navigate(Routes.progression(it)) },
+                onOpenSearch = { nav.navigateTopLevel(Routes.EXPLORE) },
+                onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) },
+                onOpenProfile = { nav.navigateTopLevel(Routes.PROFILE) },
+                onOpenTraining = { nav.navigate(Routes.TRAINING) },
+            )
+        }
+        composable(Routes.EXPLORE) {
+            ExploreRoute(
+                onOpenSong = { nav.navigate(Routes.song(it)) },
+                onOpenProgression = { nav.navigate(Routes.progression(it)) },
+                onOpenSection = { nav.navigate(Routes.exploreSection(it.name)) },
+                onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) },
+            )
+        }
+        composable(Routes.EXPLORE_SECTION) { entry ->
+            val section = entry.arguments?.getString("section")
+                ?.let { name -> ExploreSection.entries.firstOrNull { it.name == name } }
+                ?: ExploreSection.TRENDING_SONGS
+            val owner = remember(entry) { runCatching { nav.getBackStackEntry(Routes.EXPLORE) }.getOrDefault(entry) }
+            ExploreSectionRoute(
+                section = section,
+                onBack = { nav.popBackStack() },
+                onOpenSong = { nav.navigate(Routes.song(it)) },
+                onOpenProgression = { nav.navigate(Routes.progression(it)) },
+                viewModel = viewModel(viewModelStoreOwner = owner, factory = ExploreViewModel.Factory),
+            )
+        }
         composable(Routes.TUNER) {
             TunerRoute(onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) })
         }
         composable(Routes.ANALYZE) { PlaceholderScreen("Analyze") }
-        composable(Routes.PROFILE) { PlaceholderScreen("Profile") }
+        composable(Routes.PROFILE) {
+            PlaceholderScreen("Profile") {
+                WakButton(
+                    text = stringResource(R.string.settings_title),
+                    onClick = { nav.navigate(Routes.SETTINGS) },
+                    variant = WakButtonVariant.Secondary,
+                )
+            }
+        }
+        composable(Routes.SETTINGS) {
+            SettingsRoute(
+                onBack = { nav.popBackStack() },
+                onLoggedOut = {
+                    nav.navigate(Routes.LOGIN) { popUpTo(Routes.MAIN_GRAPH) { inclusive = true } }
+                },
+            )
+        }
         composable(Routes.NOTIFICATIONS) { PlaceholderScreen("Notifications") }
+        composable(Routes.TRAINING) { PlaceholderScreen("Training") }
+        composable(Routes.SONG) { entry ->
+            val songId = entry.arguments?.getString(SongDetailViewModel.SONG_ID).orEmpty()
+            SongDetailRoute(
+                onBack = { nav.popBackStack() },
+                onOpenComments = { nav.navigate(Routes.songComments(songId)) },
+            )
+        }
+        composable(Routes.SONG_COMMENTS) { entry ->
+            val owner = remember(entry) { runCatching { nav.getBackStackEntry(Routes.SONG) }.getOrDefault(entry) }
+            SongCommentsRoute(
+                onBack = { nav.popBackStack() },
+                viewModel = viewModel(viewModelStoreOwner = owner, factory = SongDetailViewModel.Factory),
+            )
+        }
+        composable(Routes.PROGRESSION) { entry ->
+            val progressionId = entry.arguments?.getString(ProgressionDetailViewModel.PROGRESSION_ID).orEmpty()
+            ProgressionDetailRoute(
+                onBack = { nav.popBackStack() },
+                onOpenComments = { nav.navigate(Routes.progressionComments(progressionId)) },
+            )
+        }
+        composable(Routes.PROGRESSION_COMMENTS) { entry ->
+            val owner = remember(entry) { runCatching { nav.getBackStackEntry(Routes.PROGRESSION) }.getOrDefault(entry) }
+            ProgressionCommentsRoute(
+                onBack = { nav.popBackStack() },
+                viewModel = viewModel(viewModelStoreOwner = owner, factory = ProgressionDetailViewModel.Factory),
+            )
+        }
     }
 }
 
@@ -119,8 +219,13 @@ fun NavController.navigateTopLevel(route: String) {
 }
 
 @Composable
-fun PlaceholderScreen(name: String) {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+fun PlaceholderScreen(name: String, action: @Composable () -> Unit = {}) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         Text(name, style = MaterialTheme.typography.headlineMedium, color = WakTheme.colors.text)
+        action()
     }
 }

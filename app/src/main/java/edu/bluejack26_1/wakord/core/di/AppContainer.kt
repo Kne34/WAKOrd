@@ -21,9 +21,11 @@ import edu.bluejack26_1.wakord.data.repository.FirebaseFeedRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseProgressionRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseSavedItemsRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseSongRepository
+import edu.bluejack26_1.wakord.data.repository.FirebaseSyncRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseTuningRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseUserRepository
 import edu.bluejack26_1.wakord.data.repository.RoomSettingsRepository
+import edu.bluejack26_1.wakord.data.repository.RoomTrainingRepository
 import edu.bluejack26_1.wakord.domain.repository.AuthRepository
 import edu.bluejack26_1.wakord.domain.repository.CommentRepository
 import edu.bluejack26_1.wakord.domain.repository.ExploreRepository
@@ -32,6 +34,8 @@ import edu.bluejack26_1.wakord.domain.repository.ProgressionRepository
 import edu.bluejack26_1.wakord.domain.repository.SavedItemsRepository
 import edu.bluejack26_1.wakord.domain.repository.SettingsRepository
 import edu.bluejack26_1.wakord.domain.repository.SongRepository
+import edu.bluejack26_1.wakord.domain.repository.SyncRepository
+import edu.bluejack26_1.wakord.domain.repository.TrainingRepository
 import edu.bluejack26_1.wakord.domain.repository.TuningRepository
 import edu.bluejack26_1.wakord.domain.repository.UserRepository
 import edu.bluejack26_1.wakord.domain.validation.AuthValidator
@@ -44,7 +48,7 @@ class AppContainer(context: Context) {
     private val appContext = context.applicationContext
     private val database: AppDatabase by lazy { AppDatabase.build(appContext) }
     private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
-    private val firebaseDatabase: FirebaseDatabase by lazy { FirebaseDatabase.getInstance() }
+    private val firebaseDatabase: FirebaseDatabase by lazy { FirebaseDatabase.getInstance().apply { setPersistenceEnabled(true) } }
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     val connectivityObserver: ConnectivityObserver by lazy { AndroidConnectivityObserver(appContext) }
@@ -61,6 +65,8 @@ class AppContainer(context: Context) {
     val feedRepository: FeedRepository by lazy { FirebaseFeedRepository(firebaseAuth, firebaseDatabase) }
     val playbackController: PlaybackController by lazy { TonePlaybackController(tonePlayer, appScope) }
     val exploreRepository: ExploreRepository by lazy { FirebaseExploreRepository(firebaseDatabase) }
+    val trainingRepository: TrainingRepository by lazy { RoomTrainingRepository(database.trainingDao(), firebaseAuth, firebaseDatabase) }
     val authValidator: AuthValidator = DefaultAuthValidator()
     val tuningRepository: TuningRepository by lazy { FirebaseTuningRepository(firebaseAuth, firebaseDatabase) }
+    val syncRepository: SyncRepository = FirebaseSyncRepository(firebaseDatabase, authRepository, savedItemsRepository, settingsRepository, appScope)
 }

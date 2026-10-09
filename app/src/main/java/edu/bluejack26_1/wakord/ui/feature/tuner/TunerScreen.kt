@@ -42,12 +42,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import edu.bluejack26_1.wakord.R
@@ -57,11 +56,13 @@ import edu.bluejack26_1.wakord.domain.model.TunerInstrument
 import edu.bluejack26_1.wakord.ui.components.BackgroundArt
 import edu.bluejack26_1.wakord.ui.components.NotificationBell
 import edu.bluejack26_1.wakord.ui.components.WakButton
-import edu.bluejack26_1.wakord.ui.theme.PlusJakartaSans
-import edu.bluejack26_1.wakord.ui.theme.SpaceGrotesk
+import edu.bluejack26_1.wakord.ui.components.alertContainer
+import edu.bluejack26_1.wakord.ui.components.glassBorder
+import edu.bluejack26_1.wakord.ui.components.glassColor
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
-import edu.bluejack26_1.wakord.ui.theme.WakColors
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
+import edu.bluejack26_1.wakord.ui.theme.jakarta
+import edu.bluejack26_1.wakord.ui.theme.spaceGrotesk
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -77,18 +78,6 @@ fun TunerInstrument.nameRes(): Int = when (this) {
 internal fun noteName(note: String): String = NoteMapper.pretty(NoteMapper.nameOf(NoteMapper.midiOf(note)))
 
 internal fun noteOctave(note: String): Int = NoteMapper.octaveOf(NoteMapper.midiOf(note))
-
-internal fun glassColor(c: WakColors) = c.s2.copy(alpha = if (c.isDark) 0.62f else 0.74f)
-
-internal fun glassBorder(c: WakColors) = BorderStroke(1.dp, c.text.copy(alpha = if (c.isDark) 0.09f else 0.08f))
-
-internal fun alertContainer(c: WakColors) = if (c.isDark) Color(0xFF893200).copy(alpha = 0.38f) else c.peachText.copy(alpha = 0.12f)
-
-internal fun spaceGrotesk(size: TextUnit, weight: FontWeight = FontWeight.Bold) =
-    TextStyle(fontFamily = SpaceGrotesk, fontWeight = weight, fontSize = size, lineHeight = size * 1.25f)
-
-internal fun jakarta(size: TextUnit, weight: FontWeight = FontWeight.Normal) =
-    TextStyle(fontFamily = PlusJakartaSans, fontWeight = weight, fontSize = size, lineHeight = size * 1.3f)
 
 private fun signed(cents: Float): String {
     val value = cents.roundToInt()
@@ -496,7 +485,7 @@ private fun AutoSwitch(checked: Boolean, onToggle: () -> Unit) {
     ) {
         Box(
             Modifier
-                .offset(x = knobOffset, y = 3.dp)
+                .offset { IntOffset(knobOffset.roundToPx(), 3.dp.roundToPx()) }
                 .size(24.dp)
                 .background(if (checked) c.onPrimary else c.text2, CircleShape),
         )

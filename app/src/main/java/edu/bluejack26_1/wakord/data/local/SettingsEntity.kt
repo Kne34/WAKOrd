@@ -1,5 +1,6 @@
 package edu.bluejack26_1.wakord.data.local
 
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -14,6 +15,7 @@ data class SettingsEntity(
     val themeMode: String = ThemeMode.SYSTEM.name,
     val referencePitch: Float = 440f,
     val pushEnabled: Boolean = true,
+    @ColumnInfo(defaultValue = "1") val keepOffline: Boolean = true,
 )
 
 @Dao

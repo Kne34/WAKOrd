@@ -20,6 +20,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -62,6 +63,13 @@ class FirebaseFeedRepository(
             }
             UserActivity(likedIds = liked.await(), savedIds = saved.await(), playedIds = played.await())
         }
+    }
+
+    override fun likedIds(): Flow<Set<String>> {
+        val uid = auth.currentUser?.uid ?: return flowOf(emptySet())
+        return database.getReference("userLikes/$uid").valueFlow()
+            .map { snapshot -> snapshot.children.mapNotNull { it.key }.toSet() }
+            .catch { emit(emptySet()) }
     }
 }
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="explore_title">Jelajah</string>
+    <string name="explore_search_placeholder">Lagu, chord, atau artis</string>
+    <string name="explore_clear_search">Hapus pencarian</string>
+    <string name="explore_filters">Filter</string>
+    <string name="explore_all">Semua</string>
+    <string name="explore_level">Level</string>
+    <string name="explore_any">Semua</string>
+    <string name="explore_level_easy">Mudah</string>
+    <string name="explore_level_intermediate">Menengah</string>
+    <string name="explore_level_advanced">Mahir</string>
+
+    <string name="explore_trending_now">Lagi tren</string>
+    <string name="explore_trending_progressions">Progression populer</string>
+    <string name="explore_top_week">Lagu teratas minggu ini</string>
+    <string name="explore_progression_meta">%1$s · %2$s kali diputar</string>
+    <string name="explore_song_meta">%1$s · Kunci %2$s</string>
+    <string name="explore_rank_cd">Nomor %1$d, %2$s</string>
+    <string name="explore_section_empty">Belum ada untuk filter ini</string>
+    <string name="explore_top_empty">Belum ada lagu yang disukai minggu ini</string>
+
+    <string name="search_tab_songs">Lagu %1$d</string>
+    <string name="search_tab_chords">Chord %1$d</string>
+    <string name="search_tab_artists">Artis %1$d</string>
+    <string name="search_lyric_match">Lirik: “%1$s”</string>
+    <string name="search_progressions">Progression</string>
+    <plurals name="search_artist_songs">
+        <item quantity="other">%1$d lagu</item>
+    </plurals>
+    <string name="search_artist_meta">%1$s · %2$s</string>
+    <string name="search_no_results_title">Tidak ada hasil untuk “%1$s”</string>
+    <string name="search_no_results_message">Cek ejaannya, atau coba nama chord seperti “Cadd9” atau nama artis.</string>
+    <string name="search_back_to_explore">Kembali ke Jelajah</string>
+    <string name="search_tab_empty">Tidak ada di tab ini. Coba tab lain.</string>
+</resources>

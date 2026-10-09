@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="explore_title">Explore</string>
+    <string name="explore_search_placeholder">Songs, chords or artists</string>
+    <string name="explore_clear_search">Clear search</string>
+    <string name="explore_filters">Filters</string>
+    <string name="explore_all">All</string>
+    <string name="explore_level">Level</string>
+    <string name="explore_any">Any</string>
+    <string name="explore_level_easy">Easy</string>
+    <string name="explore_level_intermediate">Intermediate</string>
+    <string name="explore_level_advanced">Advanced</string>
+
+    <string name="explore_trending_now">Trending now</string>
+    <string name="explore_trending_progressions">Trending progressions</string>
+    <string name="explore_top_week">Top songs this week</string>
+    <string name="explore_progression_meta">%1$s · %2$s plays</string>
+    <string name="explore_song_meta">%1$s · Key of %2$s</string>
+    <string name="explore_rank_cd">Number %1$d, %2$s</string>
+    <string name="explore_section_empty">Nothing here yet for these filters</string>
+    <string name="explore_top_empty">No songs have been liked this week yet</string>
+
+    <string name="search_tab_songs">Songs %1$d</string>
+    <string name="search_tab_chords">Chords %1$d</string>
+    <string name="search_tab_artists">Artists %1$d</string>
+    <string name="search_lyric_match">Lyric: “%1$s”</string>
+    <string name="search_progressions">Progressions</string>
+    <plurals name="search_artist_songs">
+        <item quantity="one">%1$d song</item>
+        <item quantity="other">%1$d songs</item>
+    </plurals>
+    <string name="search_artist_meta">%1$s · %2$s</string>
+    <string name="search_no_results_title">No results for “%1$s”</string>
+    <string name="search_no_results_message">Check the spelling, or try a chord name like “Cadd9” or an artist.</string>
+    <string name="search_back_to_explore">Back to Explore</string>
+    <string name="search_tab_empty">Nothing in this tab. Try another tab.</string>
+</resources>

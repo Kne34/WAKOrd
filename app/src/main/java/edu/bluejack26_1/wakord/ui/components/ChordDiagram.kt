@@ -24,6 +24,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import edu.bluejack26_1.wakord.ui.theme.SpaceGrotesk
@@ -38,26 +39,28 @@ fun ChordDiagram(
     baseFret: Int = 1,
     fretCount: Int = 4,
     chordName: String = "",
+    width: Dp = 98.dp,
 ) {
     val c = WakTheme.colors
     val measurer = rememberTextMeasurer()
-    val markerStyle = TextStyle(fontFamily = SpaceGrotesk, fontWeight = FontWeight.Bold, fontSize = 8.sp, color = c.text3)
-    val fretStyle = TextStyle(fontFamily = SpaceGrotesk, fontWeight = FontWeight.Bold, fontSize = 7.sp, color = c.text3)
-    val fingerStyle = TextStyle(fontFamily = SpaceGrotesk, fontWeight = FontWeight.Bold, fontSize = 7.sp, color = c.onPrimary)
+    val scale = width.value / 98f
+    val markerStyle = TextStyle(fontFamily = SpaceGrotesk, fontWeight = FontWeight.Bold, fontSize = 8.sp * scale, color = c.text3)
+    val fretStyle = TextStyle(fontFamily = SpaceGrotesk, fontWeight = FontWeight.Bold, fontSize = 7.sp * scale, color = c.text3)
+    val fingerStyle = TextStyle(fontFamily = SpaceGrotesk, fontWeight = FontWeight.Bold, fontSize = 7.sp * scale, color = c.onPrimary)
     Canvas(
         modifier = modifier
-            .size(width = 98.dp, height = 126.dp)
+            .size(width = width, height = width * 126f / 98f)
             .semantics { contentDescription = "$chordName ${frets.joinToString(" ") { if (it < 0) "x" else "$it" }}" },
     ) {
         val strings = frets.size
         if (strings < 2) return@Canvas
-        val left = 21.dp.toPx()
-        val gridWidth = 62.3.dp.toPx()
-        val top = 35.dp.toPx()
-        val fretGap = 21.dp.toPx()
+        val left = 21.dp.toPx() * scale
+        val gridWidth = 62.3.dp.toPx() * scale
+        val top = 35.dp.toPx() * scale
+        val fretGap = 21.dp.toPx() * scale
         val gridHeight = fretGap * fretCount
         val stringGap = gridWidth / (strings - 1)
-        val line = 1.dp.toPx()
+        val line = 1.dp.toPx() * scale
 
         for (s in 0 until strings) {
             drawRect(c.s5, Offset(left + s * stringGap - line / 2, top), Size(line, gridHeight))
@@ -66,16 +69,16 @@ fun ChordDiagram(
             drawRect(c.s5, Offset(left, top + f * fretGap - line / 2), Size(gridWidth, line))
         }
         if (baseFret == 1) {
-            val nut = 3.5.dp.toPx()
+            val nut = 3.5.dp.toPx() * scale
             drawRect(c.text2, Offset(left, top - nut + line), Size(gridWidth, nut))
         } else {
             drawRect(c.text2, Offset(left, top), Size(gridWidth, line))
             val label = measurer.measure("${baseFret}fr", fretStyle)
-            drawText(label, topLeft = Offset(left - 7.5.dp.toPx() - label.size.width, top + fretGap / 2 - label.size.height / 2f))
+            drawText(label, topLeft = Offset(left - 7.5.dp.toPx() * scale - label.size.width, top + fretGap / 2 - label.size.height / 2f))
         }
 
-        val dotRadius = 5.95.dp.toPx()
-        val markerY = 26.dp.toPx()
+        val dotRadius = 5.95.dp.toPx() * scale
+        val markerY = 26.dp.toPx() * scale
         frets.forEachIndexed { s, fret ->
             val x = left + s * stringGap
             when {

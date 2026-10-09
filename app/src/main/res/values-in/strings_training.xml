@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="level_notes_basic">Nada tunggal: C, E, G</string>
+    <string name="level_notes_octave">Nada tunggal: satu oktaf</string>
+    <string name="level_intervals_basic">Interval: terts dan kuint</string>
+    <string name="level_intervals_all">Interval: dalam satu oktaf</string>
+    <string name="level_quality_triads">Kualitas chord: mayor dan minor</string>
+    <string name="level_quality_sevenths">Kualitas chord: chord septim</string>
+    <string name="level_progressions_basic">Progresi: I, IV, V</string>
+    <string name="level_progressions_jazz">Progresi: ii, V, I, dan vi</string>
+    <string name="interval_1">Sekon minor</string>
+    <string name="interval_2">Sekon mayor</string>
+    <string name="interval_3">Terts minor</string>
+    <string name="interval_4">Terts mayor</string>
+    <string name="interval_5">Kuart murni</string>
+    <string name="interval_6">Tritonus</string>
+    <string name="interval_7">Kuint murni</string>
+    <string name="interval_8">Sekst minor</string>
+    <string name="interval_9">Sekst mayor</string>
+    <string name="interval_10">Septim minor</string>
+    <string name="interval_11">Septim mayor</string>
+    <string name="interval_12">Oktaf</string>
+    <string name="quality_major">Mayor</string>
+    <string name="quality_minor">Minor</string>
+    <string name="quality_diminished">Diminished</string>
+    <string name="quality_augmented">Augmented</string>
+    <string name="quality_major7">Mayor septim</string>
+    <string name="quality_minor7">Minor septim</string>
+    <string name="quality_dominant7">Dominan septim</string>
+    <string name="quality_half_diminished">Half-diminished</string>
+    <string name="explain_note">Nada tadi adalah %1$s.</string>
+    <string name="explain_interval">%1$s. Jarak semitone antar nada: %2$d</string>
+    <string name="explain_quality">Tadi chord %1$s.</string>
+    <string name="explain_progression">Urutan chord-nya %1$s.</string>
+</resources>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Settings</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_general">General</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_follow">Follow system · %1$s</string>
+    <string name="settings_reference_pitch">Reference pitch</string>
+    <string name="settings_pitch_value">A4 = %1$d Hz</string>
+    <string name="settings_push">Push notifications</string>
+    <string name="settings_offline">Offline &amp; sync</string>
+    <string name="settings_synced">Saved items synced</string>
+    <string name="settings_waiting_sync">Waiting to sync</string>
+    <plurals name="settings_saved_songs">
+        <item quantity="one">%1$d song</item>
+        <item quantity="other">%1$d songs</item>
+    </plurals>
+    <plurals name="settings_saved_chords">
+        <item quantity="one">%1$d chord</item>
+        <item quantity="other">%1$d chords</item>
+    </plurals>
+    <string name="settings_sync_detail">%1$s · %2$s · %3$s</string>
+    <string name="settings_just_now">just now</string>
+    <string name="settings_last_synced">last synced %1$s</string>
+    <string name="settings_saved_on_phone">kept on this phone</string>
+    <string name="settings_keep_offline">Keep saved items offline</string>
+    <string name="settings_log_out">Log out</string>
+    <string name="settings_footer">WAKord %1$s · made by KO &amp; WA</string>
+
+    <string name="settings_pitch_subtitle">The tuner and pitch training tune A4 to this frequency</string>
+    <string name="settings_pitch_lower">Lower by 1 Hz</string>
+    <string name="settings_pitch_higher">Raise by 1 Hz</string>
+    <string name="settings_pitch_presets">Common choices</string>
+    <string name="settings_pitch_reset">Reset to 440 Hz</string>
+    <string name="settings_done">Done</string>
+
+    <string name="logout_title">Log out of WAKord?</string>
+    <string name="logout_message">Your saved songs and chords stay synced. You can log back in any time.</string>
+    <string name="cancel">Cancel</string>
+</resources>

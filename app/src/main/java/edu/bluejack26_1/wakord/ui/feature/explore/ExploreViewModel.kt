@@ -35,7 +35,7 @@ class ExploreViewModel(
 
     private val searchRequests = MutableStateFlow(SearchRequest("", ExploreFilter()))
     private var catalog: Catalog? = null
-    private var progressionLimit = PAGE_SIZE
+    private var topLimit = PAGE_SIZE
     private var loadJob: Job? = null
 
     init {
@@ -74,7 +74,7 @@ class ExploreViewModel(
     private fun filter() = _uiState.value.let { ExploreFilter(it.selectedGenre, it.selectedLevel) }
 
     private fun reload() {
-        progressionLimit = PAGE_SIZE
+        topLimit = PAGE_SIZE
         loadTrending()
         requestSearch()
     }
@@ -107,18 +107,18 @@ class ExploreViewModel(
         loadJob = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, endReached = false) }
             val f = filter()
-            val songs = async { exploreRepository.trendingSongs(FETCH_LIMIT) }
-            val weekly = async { exploreRepository.topSongsThisWeek(FETCH_LIMIT) }
-            val progressions = async { exploreRepository.trendingProgressions(fetchSizeFor(progressionLimit)) }
+            val songs = async { exploreRepository.trendingSongs(fetchSizeFor(FETCH_LIMIT)) }
+            val weekly = async { exploreRepository.topSongsThisWeek(fetchSizeFor(topLimit)) }
+            val progressions = async { exploreRepository.trendingProgressions(fetchSizeFor(FETCH_LIMIT)) }
             val error = listOf(songs.await(), weekly.await(), progressions.await()).firstNotNullOfOrNull { it.exceptionOrNull() }
+            val weeklySongs = weekly.await().getOrDefault(emptyList())
             _uiState.update { s ->
-                val trendingProgressions = SearchEngine.applyFilter(progressions.await().getOrDefault(emptyList()), f)
                 s.copy(
                     isLoading = false,
-                    trendingSongs = SearchEngine.applyFilter(songs.await().getOrDefault(emptyList()), f).take(SECTION_SIZE),
-                    topThisWeek = SearchEngine.applyFilter(weekly.await().getOrDefault(emptyList()), f).take(SECTION_SIZE),
-                    trendingProgressions = trendingProgressions.take(progressionLimit),
-                    endReached = progressions.await().getOrDefault(emptyList()).size < fetchSizeFor(progressionLimit),
+                    trendingSongs = SearchEngine.applyFilter(songs.await().getOrDefault(emptyList()), f).take(FETCH_LIMIT),
+                    topThisWeek = SearchEngine.applyFilter(weeklySongs, f).take(topLimit),
+                    trendingProgressions = SearchEngine.applyFilter(progressions.await().getOrDefault(emptyList()), f).take(FETCH_LIMIT),
+                    endReached = weeklySongs.size < fetchSizeFor(topLimit),
                     errorMessage = error?.messageRes() ?: s.errorMessage,
                 )
             }
@@ -130,13 +130,13 @@ class ExploreViewModel(
         if (s.isLoading || s.isLoadingMore || s.endReached) return
         loadJob = viewModelScope.launch {
             _uiState.update { it.copy(isLoadingMore = true) }
-            val nextLimit = progressionLimit + PAGE_SIZE
-            exploreRepository.trendingProgressions(fetchSizeFor(nextLimit))
+            val nextLimit = topLimit + PAGE_SIZE
+            exploreRepository.topSongsThisWeek(fetchSizeFor(nextLimit))
                 .onSuccess { list ->
-                    progressionLimit = nextLimit
+                    topLimit = nextLimit
                     _uiState.update {
                         it.copy(
-                            trendingProgressions = SearchEngine.applyFilter(list, filter()).take(nextLimit),
+                            topThisWeek = SearchEngine.applyFilter(list, filter()).take(nextLimit),
                             endReached = list.size < fetchSizeFor(nextLimit),
                         )
                     }
@@ -152,8 +152,8 @@ class ExploreViewModel(
 
     companion object {
         const val PAGE_SIZE = 10
-        private const val SECTION_SIZE = 5
-        private const val FETCH_LIMIT = 20
+        const val SECTION_SIZE = 5
+        const val FETCH_LIMIT = 20
         private const val FILTER_OVERFETCH = 3
         private const val SEARCH_DEBOUNCE_MS = 300L
 

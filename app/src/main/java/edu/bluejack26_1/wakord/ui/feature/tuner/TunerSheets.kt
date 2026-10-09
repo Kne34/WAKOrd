@@ -7,12 +7,10 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,14 +18,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -52,10 +46,14 @@ import edu.bluejack26_1.wakord.core.audio.NoteMapper
 import edu.bluejack26_1.wakord.domain.model.TunerInstrument
 import edu.bluejack26_1.wakord.domain.model.Tuning
 import edu.bluejack26_1.wakord.domain.model.TuningPresets
+import edu.bluejack26_1.wakord.ui.components.SheetHeader
 import edu.bluejack26_1.wakord.ui.components.WakButton
+import edu.bluejack26_1.wakord.ui.components.WakSheet
 import edu.bluejack26_1.wakord.ui.components.WakTextField
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
+import edu.bluejack26_1.wakord.ui.theme.jakarta
+import edu.bluejack26_1.wakord.ui.theme.spaceGrotesk
 
 private const val SEMITONE_RANGE = 12
 
@@ -67,67 +65,11 @@ private fun stringCountLabel(instrument: TunerInstrument): String =
         pluralStringResource(R.plurals.tuner_string_count, instrument.stringCount, instrument.stringCount)
     }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TunerSheet(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
-    val c = WakTheme.colors
-    val shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        modifier = Modifier.border(1.dp, c.text2.copy(alpha = 0.10f), shape),
-        shape = shape,
-        containerColor = c.s2,
-        scrimColor = Color(0xFF03060F).copy(alpha = 0.66f),
-        dragHandle = {
-            Box(
-                Modifier
-                    .padding(top = 11.dp, bottom = 18.dp)
-                    .size(width = 40.dp, height = 5.dp)
-                    .background(c.s5, CircleShape),
-            )
-        },
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 24.dp)
-                .navigationBarsPadding(),
-            content = content,
-        )
-    }
-}
-
-@Composable
-private fun SheetHeader(title: String, subtitle: String, onClose: () -> Unit) {
-    val c = WakTheme.colors
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Column(Modifier.weight(1f)) {
-            Text(title, style = spaceGrotesk(20.sp), color = c.text)
-            Spacer(Modifier.height(2.dp))
-            Text(subtitle, style = jakarta(12.sp), color = c.text3)
-        }
-        Surface(
-            onClick = onClose,
-            modifier = Modifier.size(44.dp),
-            shape = CircleShape,
-            color = c.s3,
-            border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(painterResource(R.drawable.ic_close), contentDescription = stringResource(R.string.close), tint = c.text, modifier = Modifier.size(20.dp))
-            }
-        }
-    }
-}
-
 @Composable
 fun InstrumentPickerSheet(state: TunerUiState, onAction: (TunerAction) -> Unit) {
     var pending by rememberSaveable { mutableStateOf(state.instrument) }
     val close = { onAction(TunerAction.CloseSheet) }
-    TunerSheet(onDismiss = close) {
+    WakSheet(onDismiss = close) {
         SheetHeader(
             title = stringResource(R.string.tuner_instrument_title),
             subtitle = stringResource(R.string.tuner_instrument_subtitle),
@@ -201,7 +143,7 @@ fun CustomTuningSheet(state: TunerUiState, onAction: (TunerAction) -> Unit) {
     val match = options.firstOrNull { it.notes == draft.toList() }
     val close = { onAction(TunerAction.CloseSheet) }
 
-    TunerSheet(onDismiss = close) {
+    WakSheet(onDismiss = close) {
         SheetHeader(
             title = stringResource(R.string.tuner_custom_title),
             subtitle = "${stringResource(instrument.nameRes())} · ${stringCountLabel(instrument)}",
