@@ -8,6 +8,7 @@ class FakeSettingsRepository : SettingsRepository {
     override val themeMode = MutableStateFlow(ThemeMode.SYSTEM)
     override val referencePitch = MutableStateFlow(440f)
     override val pushEnabled = MutableStateFlow(true)
+    override val keepOffline = MutableStateFlow(true)
 
     override suspend fun setThemeMode(mode: ThemeMode) {
         themeMode.value = mode
@@ -19,5 +20,9 @@ class FakeSettingsRepository : SettingsRepository {
 
     override suspend fun setPushEnabled(enabled: Boolean) {
         pushEnabled.value = enabled
+    }
+
+    override suspend fun setKeepOffline(enabled: Boolean) {
+        keepOffline.value = enabled
     }
 }

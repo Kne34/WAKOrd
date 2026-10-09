@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Pengaturan</string>
+    <string name="settings_appearance">Tampilan</string>
+    <string name="settings_theme_dark">Gelap</string>
+    <string name="settings_theme_light">Terang</string>
+    <string name="settings_general">Umum</string>
+    <string name="settings_language">Bahasa</string>
+    <string name="settings_language_follow">Ikuti sistem · %1$s</string>
+    <string name="settings_reference_pitch">Nada referensi</string>
+    <string name="settings_pitch_value">A4 = %1$d Hz</string>
+    <string name="settings_push">Notifikasi push</string>
+    <string name="settings_offline">Offline &amp; sinkronisasi</string>
+    <string name="settings_synced">Item tersimpan sudah sinkron</string>
+    <string name="settings_waiting_sync">Menunggu sinkronisasi</string>
+    <plurals name="settings_saved_songs">
+        <item quantity="other">%1$d lagu</item>
+    </plurals>
+    <plurals name="settings_saved_chords">
+        <item quantity="other">%1$d chord</item>
+    </plurals>
+    <string name="settings_sync_detail">%1$s · %2$s · %3$s</string>
+    <string name="settings_just_now">baru saja</string>
+    <string name="settings_last_synced">terakhir sinkron %1$s</string>
+    <string name="settings_saved_on_phone">tersimpan di HP ini</string>
+    <string name="settings_keep_offline">Simpan item untuk offline</string>
+    <string name="settings_log_out">Keluar</string>
+    <string name="settings_footer">WAKord %1$s · dibuat oleh KO &amp; WA</string>
+
+    <string name="settings_pitch_subtitle">Tuner dan latihan nada menyetel A4 ke frekuensi ini</string>
+    <string name="settings_pitch_lower">Turunkan 1 Hz</string>
+    <string name="settings_pitch_higher">Naikkan 1 Hz</string>
+    <string name="settings_pitch_presets">Pilihan umum</string>
+    <string name="settings_pitch_reset">Kembalikan ke 440 Hz</string>
+    <string name="settings_done">Selesai</string>
+
+    <string name="logout_title">Keluar dari WAKord?</string>
+    <string name="logout_message">Lagu dan chord yang kamu simpan tetap tersinkron. Kamu bisa masuk lagi kapan saja.</string>
+    <string name="cancel">Batal</string>
+</resources>
