@@ -83,6 +83,22 @@
         ".write": "auth != null && auth.uid === $uid"
       }
     },
+    "follows": {
+      "$uid": {
+        ".read": "auth != null",
+        "$followee": {
+          ".write": "auth != null && auth.uid === $uid && $followee !== $uid"
+        }
+      }
+    },
+    "followers": {
+      "$uid": {
+        ".read": "auth != null",
+        "$follower": {
+          ".write": "auth != null && auth.uid === $follower && $follower !== $uid"
+        }
+      }
+    },
     "tunings": {
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
