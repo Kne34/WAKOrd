@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.work.runtime.ktx)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.turbine)
     testImplementation(libs.kotlinx.coroutines.test)
