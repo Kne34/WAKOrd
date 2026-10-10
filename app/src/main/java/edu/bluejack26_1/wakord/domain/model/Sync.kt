@@ -5,4 +5,5 @@ data class SyncStatus(
     val savedChords: Int = 0,
     val isOnline: Boolean = false,
     val lastSyncedAt: Long? = null,
+    val pendingCount: Int = 0,
 )
