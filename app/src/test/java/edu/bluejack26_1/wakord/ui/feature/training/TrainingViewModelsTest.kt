@@ -1,5 +1,6 @@
 package edu.bluejack26_1.wakord.ui.feature.training
 
+import edu.bluejack26_1.wakord.core.error.AppError
 import edu.bluejack26_1.wakord.core.training.Curriculum
 import edu.bluejack26_1.wakord.core.training.PitchSource
 import edu.bluejack26_1.wakord.core.training.QuestionGenerator
@@ -13,6 +14,7 @@ import edu.bluejack26_1.wakord.testutil.RecordingTonePlayer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -125,5 +127,14 @@ class TrainingViewModelsTest {
         vm.onAction(PitchMonitorAction.ToggleListening)
         assertFalse(vm.uiState.value.isListening)
         assertTrue(vm.uiState.value.reading == null)
+    }
+
+    @Test
+    fun `pitch monitor shows mic off when the microphone is blocked`() = runTest(main.dispatcher) {
+        val vm = PitchMonitorViewModel(PitchSource { flow { throw AppError.MicrophoneOff } }, player, settings)
+        vm.onAction(PitchMonitorAction.ToggleListening)
+        advanceUntilIdle()
+        assertTrue(vm.uiState.value.microphoneOff)
+        assertFalse(vm.uiState.value.isListening)
     }
 }
