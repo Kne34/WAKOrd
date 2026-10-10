@@ -10,6 +10,7 @@ sealed class AppError(message: String? = null) : Exception(message) {
     object NotLoggedIn : AppError()
     object NotFound : AppError()
     object CommentBlocked : AppError()
+    object MicrophoneOff : AppError()
     class Unknown(message: String?) : AppError(message)
 }
 
@@ -21,5 +22,6 @@ fun Throwable.messageRes(): Int = when (this) {
     AppError.NotLoggedIn -> R.string.error_not_logged_in
     AppError.NotFound -> R.string.error_not_found
     AppError.CommentBlocked -> R.string.error_comment_blocked
+    AppError.MicrophoneOff -> R.string.error_microphone_off
     else -> R.string.error_unknown
 }
