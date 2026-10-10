@@ -11,5 +11,6 @@ class WAKordApp : Application() {
         super.onCreate()
         container = AppContainer(this)
         container.syncScheduler.schedule()
+        container.notificationWatcher.start()
     }
 }
