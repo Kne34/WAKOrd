@@ -24,23 +24,31 @@ import edu.bluejack26_1.wakord.data.repository.FirebaseAuthRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseCommentRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseExploreRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseFeedRepository
+import edu.bluejack26_1.wakord.data.repository.FirebaseProfileRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseProgressionRepository
-import edu.bluejack26_1.wakord.data.repository.FirebaseSavedItemsRepository
+import edu.bluejack26_1.wakord.data.repository.FirebaseSavedItemsRemote
 import edu.bluejack26_1.wakord.data.repository.FirebaseSongRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseSyncRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseTuningRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseUserRepository
+import edu.bluejack26_1.wakord.data.repository.OfflineSavedItemsRepository
 import edu.bluejack26_1.wakord.data.repository.RoomAnalysisRepository
+import edu.bluejack26_1.wakord.data.repository.RoomDraftRepository
 import edu.bluejack26_1.wakord.data.repository.RoomSettingsRepository
 import edu.bluejack26_1.wakord.data.repository.RoomTrainingRepository
+import edu.bluejack26_1.wakord.data.repository.SyncScheduler
+import edu.bluejack26_1.wakord.data.sync.WorkManagerSyncScheduler
 import edu.bluejack26_1.wakord.domain.repository.AnalysisRepository
 import edu.bluejack26_1.wakord.domain.repository.AuthRepository
 import edu.bluejack26_1.wakord.domain.repository.ChordAnalyzer
 import edu.bluejack26_1.wakord.domain.repository.CommentRepository
+import edu.bluejack26_1.wakord.domain.repository.DraftRepository
 import edu.bluejack26_1.wakord.domain.repository.ExploreRepository
 import edu.bluejack26_1.wakord.domain.repository.FeedRepository
+import edu.bluejack26_1.wakord.domain.repository.ProfileRepository
 import edu.bluejack26_1.wakord.domain.repository.ProgressionRepository
 import edu.bluejack26_1.wakord.domain.repository.SavedItemsRepository
+import edu.bluejack26_1.wakord.domain.repository.SavedLibraryRepository
 import edu.bluejack26_1.wakord.domain.repository.SettingsRepository
 import edu.bluejack26_1.wakord.domain.repository.SongRepository
 import edu.bluejack26_1.wakord.domain.repository.SyncRepository
@@ -68,7 +76,12 @@ class AppContainer(context: Context) {
     val authRepository: AuthRepository by lazy { FirebaseAuthRepository(firebaseAuth, firebaseDatabase) }
     val songRepository: SongRepository by lazy { FirebaseSongRepository(firebaseAuth, firebaseDatabase) }
     val commentRepository: CommentRepository by lazy { FirebaseCommentRepository(firebaseAuth, firebaseDatabase, GeminiCommentModerator()) }
-    val savedItemsRepository: SavedItemsRepository by lazy { FirebaseSavedItemsRepository(firebaseAuth, firebaseDatabase) }
+    private val offlineSaved: OfflineSavedItemsRepository by lazy {
+        OfflineSavedItemsRepository(database.savedItemDao(), FirebaseSavedItemsRemote(firebaseAuth, firebaseDatabase), syncScheduler)
+    }
+    val syncScheduler: SyncScheduler by lazy { WorkManagerSyncScheduler(appContext) }
+    val savedItemsRepository: SavedItemsRepository get() = offlineSaved
+    val savedLibraryRepository: SavedLibraryRepository get() = offlineSaved
     val progressionRepository: ProgressionRepository by lazy { FirebaseProgressionRepository(firebaseAuth, firebaseDatabase) }
     val userRepository: UserRepository by lazy { FirebaseUserRepository(firebaseAuth, firebaseDatabase) }
     val feedRepository: FeedRepository by lazy { FirebaseFeedRepository(firebaseAuth, firebaseDatabase) }
@@ -78,7 +91,9 @@ class AppContainer(context: Context) {
     val analysisRepository: AnalysisRepository by lazy { RoomAnalysisRepository(database.analysisDao(), firebaseAuth, firebaseDatabase) }
     val audioCapture: AudioCapture by lazy { AndroidAudioCapture(appContext) }
     val chordAnalyzer: ChordAnalyzer by lazy { FallbackChordAnalyzer(GeminiChordAnalyzer(), AlgorithmChordAnalyzer()) }
+    val profileRepository: ProfileRepository by lazy { FirebaseProfileRepository(firebaseAuth, firebaseDatabase, appContext.contentResolver) }
+    val draftRepository: DraftRepository by lazy { RoomDraftRepository(database.draftDao(), firebaseAuth) }
     val authValidator: AuthValidator = DefaultAuthValidator()
     val tuningRepository: TuningRepository by lazy { FirebaseTuningRepository(firebaseAuth, firebaseDatabase) }
-    val syncRepository: SyncRepository = FirebaseSyncRepository(firebaseDatabase, authRepository, savedItemsRepository, settingsRepository, appScope)
+    val syncRepository: SyncRepository = FirebaseSyncRepository(firebaseDatabase, authRepository, savedItemsRepository, settingsRepository, savedLibraryRepository, appScope)
 }

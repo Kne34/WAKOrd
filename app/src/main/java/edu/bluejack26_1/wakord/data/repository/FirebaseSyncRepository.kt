@@ -7,6 +7,7 @@ import edu.bluejack26_1.wakord.domain.model.SavedType
 import edu.bluejack26_1.wakord.domain.model.SyncStatus
 import edu.bluejack26_1.wakord.domain.repository.AuthRepository
 import edu.bluejack26_1.wakord.domain.repository.SavedItemsRepository
+import edu.bluejack26_1.wakord.domain.repository.SavedLibraryRepository
 import edu.bluejack26_1.wakord.domain.repository.SettingsRepository
 import edu.bluejack26_1.wakord.domain.repository.SyncRepository
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +27,7 @@ class FirebaseSyncRepository(
     private val authRepository: AuthRepository,
     private val savedItemsRepository: SavedItemsRepository,
     settingsRepository: SettingsRepository,
+    private val library: SavedLibraryRepository,
     scope: CoroutineScope,
 ) : SyncRepository {
     @Volatile
@@ -56,9 +58,17 @@ class FirebaseSyncRepository(
                 connected,
                 savedItemsRepository.saved(SavedType.SONG).catch { emit(emptyList()) },
                 savedItemsRepository.saved(SavedType.CHORD).catch { emit(emptyList()) },
-            ) { online, songs, chords ->
+                library.pendingCount.catch { emit(0) },
+                library.lastSyncedAt.catch { emit(null) },
+            ) { online, songs, chords, pending, synced ->
                 if (online) lastSyncedAt = System.currentTimeMillis()
-                SyncStatus(savedSongs = songs.size, savedChords = chords.size, isOnline = online, lastSyncedAt = lastSyncedAt)
+                SyncStatus(
+                    savedSongs = songs.size,
+                    savedChords = chords.size,
+                    isOnline = online,
+                    lastSyncedAt = synced ?: lastSyncedAt,
+                    pendingCount = pending,
+                )
             }
         }
     }
