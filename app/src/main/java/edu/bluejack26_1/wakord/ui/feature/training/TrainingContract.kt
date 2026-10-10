@@ -70,10 +70,12 @@ data class PitchMonitorUiState(
     val referenceMidi: Int = 60,
     val isListening: Boolean = false,
     val reading: PitchReading? = null,
+    val microphoneOff: Boolean = false,
 )
 
 sealed interface PitchMonitorAction {
     data class SelectReference(val midi: Int) : PitchMonitorAction
     data object PlayReference : PitchMonitorAction
     data object ToggleListening : PitchMonitorAction
+    data object MicrophoneDenied : PitchMonitorAction
 }
