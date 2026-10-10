@@ -7,7 +7,9 @@ import edu.bluejack26_1.wakord.data.remote.firebaseCall
 import edu.bluejack26_1.wakord.data.remote.requireUid
 import edu.bluejack26_1.wakord.data.remote.valueFlow
 import edu.bluejack26_1.wakord.domain.model.ChordProgression
+import edu.bluejack26_1.wakord.domain.model.NotificationType
 import edu.bluejack26_1.wakord.domain.model.ProgressionDraft
+import edu.bluejack26_1.wakord.domain.model.TargetType
 import edu.bluejack26_1.wakord.domain.repository.ProgressionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -23,7 +25,20 @@ class FirebaseProgressionRepository(
     override fun isLiked(id: String): Flow<Boolean> = database.likedFlow(auth, id)
 
     override suspend fun setLiked(id: String, liked: Boolean): Result<Unit> = firebaseCall {
-        database.toggleLike(auth.requireUid(), id, "progressions/$id", liked)
+        val uid = auth.requireUid()
+        database.toggleLike(uid, id, "progressions/$id", liked)
+        if (liked) {
+            val progression = database.getReference("progressions/$id").get().await()
+            database.notify(
+                recipientId = progression.child("authorId").getValue(String::class.java).orEmpty(),
+                actorId = uid,
+                type = NotificationType.LIKE,
+                targetType = TargetType.PROGRESSION,
+                targetId = id,
+                targetTitle = progression.child("title").getValue(String::class.java).orEmpty(),
+            )
+        }
+        Unit
     }
 
     override suspend fun recordPlay(id: String): Result<Unit> = firebaseCall {

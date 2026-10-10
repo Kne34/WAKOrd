@@ -20,6 +20,7 @@ import edu.bluejack26_1.wakord.domain.model.Song
 import edu.bluejack26_1.wakord.domain.model.User
 import edu.bluejack26_1.wakord.domain.model.UserActivity
 import edu.bluejack26_1.wakord.domain.repository.FeedRepository
+import edu.bluejack26_1.wakord.domain.repository.NotificationRepository
 import edu.bluejack26_1.wakord.domain.repository.ProgressionRepository
 import edu.bluejack26_1.wakord.domain.repository.SavedItemsRepository
 import edu.bluejack26_1.wakord.domain.repository.TrainingRepository
@@ -44,6 +45,7 @@ class HomeViewModel(
     private val progressionRepository: ProgressionRepository,
     private val playbackController: PlaybackController,
     private val trainingRepository: TrainingRepository,
+    private val notificationRepository: NotificationRepository,
     private val computeDispatcher: CoroutineDispatcher = Dispatchers.Default,
     private val clock: () -> Long = System::currentTimeMillis,
     private val zone: ZoneId = ZoneId.systemDefault(),
@@ -76,6 +78,9 @@ class HomeViewModel(
         }
         viewModelScope.launch {
             feedRepository.likedIds().collect { ids -> applyLikes(ids) }
+        }
+        viewModelScope.launch {
+            notificationRepository.unreadCount.collect { count -> _uiState.update { it.copy(unreadNotifications = count) } }
         }
         viewModelScope.launch {
             trainingRepository.sessions.collect { sessions ->
@@ -205,6 +210,7 @@ class HomeViewModel(
                     progressionRepository = container.progressionRepository,
                     playbackController = container.playbackController,
                     trainingRepository = container.trainingRepository,
+                    notificationRepository = container.notificationRepository,
                 )
             }
         }

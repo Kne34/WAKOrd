@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_channel">Aktivitas</string>
+    <string name="notification_like">%1$s menyukai %2$s</string>
+    <string name="notification_comment">%1$s berkomentar: %2$s</string>
+    <string name="notification_reply">%1$s membalasmu: %2$s</string>
+    <string name="notification_follow">%1$s mulai mengikutimu</string>
+</resources>
