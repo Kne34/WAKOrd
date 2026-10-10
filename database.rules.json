@@ -77,6 +77,12 @@
         ".write": "auth != null && auth.uid === $uid"
       }
     },
+    "analyses": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
     "tunings": {
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",

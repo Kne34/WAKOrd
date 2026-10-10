@@ -24,8 +24,10 @@ import edu.bluejack26_1.wakord.data.repository.FirebaseSongRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseSyncRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseTuningRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseUserRepository
+import edu.bluejack26_1.wakord.data.repository.RoomAnalysisRepository
 import edu.bluejack26_1.wakord.data.repository.RoomSettingsRepository
 import edu.bluejack26_1.wakord.data.repository.RoomTrainingRepository
+import edu.bluejack26_1.wakord.domain.repository.AnalysisRepository
 import edu.bluejack26_1.wakord.domain.repository.AuthRepository
 import edu.bluejack26_1.wakord.domain.repository.CommentRepository
 import edu.bluejack26_1.wakord.domain.repository.ExploreRepository
@@ -66,6 +68,7 @@ class AppContainer(context: Context) {
     val playbackController: PlaybackController by lazy { TonePlaybackController(tonePlayer, appScope) }
     val exploreRepository: ExploreRepository by lazy { FirebaseExploreRepository(firebaseDatabase) }
     val trainingRepository: TrainingRepository by lazy { RoomTrainingRepository(database.trainingDao(), firebaseAuth, firebaseDatabase) }
+    val analysisRepository: AnalysisRepository by lazy { RoomAnalysisRepository(database.analysisDao(), firebaseAuth, firebaseDatabase) }
     val authValidator: AuthValidator = DefaultAuthValidator()
     val tuningRepository: TuningRepository by lazy { FirebaseTuningRepository(firebaseAuth, firebaseDatabase) }
     val syncRepository: SyncRepository = FirebaseSyncRepository(firebaseDatabase, authRepository, savedItemsRepository, settingsRepository, appScope)
