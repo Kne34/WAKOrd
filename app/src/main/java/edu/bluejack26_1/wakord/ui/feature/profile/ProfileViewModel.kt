@@ -9,6 +9,7 @@ import edu.bluejack26_1.wakord.WAKordApp
 import edu.bluejack26_1.wakord.core.error.messageRes
 import edu.bluejack26_1.wakord.core.music.VoicingGenerator
 import edu.bluejack26_1.wakord.domain.model.SavedType
+import edu.bluejack26_1.wakord.domain.repository.FollowRepository
 import edu.bluejack26_1.wakord.domain.repository.ProfileRepository
 import edu.bluejack26_1.wakord.domain.repository.SavedItemsRepository
 import edu.bluejack26_1.wakord.domain.repository.SavedLibraryRepository
@@ -31,6 +32,7 @@ import kotlinx.coroutines.withContext
 class ProfileViewModel(
     private val userRepository: UserRepository,
     private val profileRepository: ProfileRepository,
+    private val followRepository: FollowRepository,
     private val savedLibraryRepository: SavedLibraryRepository,
     private val savedItemsRepository: SavedItemsRepository,
     private val syncRepository: SyncRepository,
@@ -48,6 +50,10 @@ class ProfileViewModel(
         viewModelScope.launch {
             currentUser.filterNotNull().flatMapLatest { profileRepository.progressionsBy(it.uid) }
                 .collect { list -> _uiState.update { it.copy(myProgressions = list) } }
+        }
+        viewModelScope.launch {
+            currentUser.filterNotNull().flatMapLatest { followRepository.stats(it.uid) }
+                .collect { stats -> _uiState.update { it.copy(stats = stats) } }
         }
         viewModelScope.launch {
             savedLibraryRepository.entries(SavedType.SONG).collect { list -> _uiState.update { it.copy(savedSongs = list) } }
@@ -98,6 +104,7 @@ class ProfileViewModel(
                 ProfileViewModel(
                     userRepository = container.userRepository,
                     profileRepository = container.profileRepository,
+                    followRepository = container.followRepository,
                     savedLibraryRepository = container.savedLibraryRepository,
                     savedItemsRepository = container.savedItemsRepository,
                     syncRepository = container.syncRepository,

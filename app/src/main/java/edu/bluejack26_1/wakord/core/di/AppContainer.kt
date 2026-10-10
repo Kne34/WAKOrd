@@ -24,6 +24,7 @@ import edu.bluejack26_1.wakord.data.repository.FirebaseAuthRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseCommentRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseExploreRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseFeedRepository
+import edu.bluejack26_1.wakord.data.repository.FirebaseFollowRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseProfileRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseProgressionRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseSavedItemsRemote
@@ -45,6 +46,7 @@ import edu.bluejack26_1.wakord.domain.repository.CommentRepository
 import edu.bluejack26_1.wakord.domain.repository.DraftRepository
 import edu.bluejack26_1.wakord.domain.repository.ExploreRepository
 import edu.bluejack26_1.wakord.domain.repository.FeedRepository
+import edu.bluejack26_1.wakord.domain.repository.FollowRepository
 import edu.bluejack26_1.wakord.domain.repository.ProfileRepository
 import edu.bluejack26_1.wakord.domain.repository.ProgressionRepository
 import edu.bluejack26_1.wakord.domain.repository.SavedItemsRepository
@@ -93,6 +95,7 @@ class AppContainer(context: Context) {
     val chordAnalyzer: ChordAnalyzer by lazy { FallbackChordAnalyzer(GeminiChordAnalyzer(), AlgorithmChordAnalyzer()) }
     val profileRepository: ProfileRepository by lazy { FirebaseProfileRepository(firebaseAuth, firebaseDatabase, appContext.contentResolver) }
     val draftRepository: DraftRepository by lazy { RoomDraftRepository(database.draftDao(), firebaseAuth) }
+    val followRepository: FollowRepository by lazy { FirebaseFollowRepository(firebaseAuth, firebaseDatabase) }
     val authValidator: AuthValidator = DefaultAuthValidator()
     val tuningRepository: TuningRepository by lazy { FirebaseTuningRepository(firebaseAuth, firebaseDatabase) }
     val syncRepository: SyncRepository = FirebaseSyncRepository(firebaseDatabase, authRepository, savedItemsRepository, settingsRepository, savedLibraryRepository, appScope)

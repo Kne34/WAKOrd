@@ -2,6 +2,7 @@ package edu.bluejack26_1.wakord.ui.feature.profile
 
 import edu.bluejack26_1.wakord.core.music.DiatonicChords
 import edu.bluejack26_1.wakord.data.fake.FakeDraftRepository
+import edu.bluejack26_1.wakord.data.fake.FakeFollowRepository
 import edu.bluejack26_1.wakord.data.fake.FakeProfileRepository
 import edu.bluejack26_1.wakord.data.fake.FakeProgressionRepository
 import edu.bluejack26_1.wakord.data.fake.FakeSavedItemsRepository
@@ -38,7 +39,7 @@ class ProfileViewModelsTest {
 
     @Test
     fun `profile shows saved items and asks before removing`() = runTest(main.dispatcher) {
-        val vm = ProfileViewModel(users, profiles, library, saved, FakeSyncRepository(), main.dispatcher)
+        val vm = ProfileViewModel(users, profiles, FakeFollowRepository(), library, saved, FakeSyncRepository(), main.dispatcher)
         advanceUntilIdle()
         val s = vm.uiState.value
         assertEquals("Keane Wilson", s.user?.fullName)
@@ -59,7 +60,7 @@ class ProfileViewModelsTest {
     @Test
     fun `my progressions come from my uid`() = runTest(main.dispatcher) {
         profiles.progressions.value = profiles.progressions.value.map { it.copy(authorId = "me") }
-        val vm = ProfileViewModel(users, profiles, library, saved, FakeSyncRepository(), main.dispatcher)
+        val vm = ProfileViewModel(users, profiles, FakeFollowRepository(), library, saved, FakeSyncRepository(), main.dispatcher)
         advanceUntilIdle()
         assertEquals(3, vm.uiState.value.myProgressions.size)
     }
