@@ -6,5 +6,6 @@
     <string name="error_not_logged_in">Sesimu berakhir. Masuk lagi untuk melanjutkan.</string>
     <string name="error_not_found">Data tidak ditemukan. Mungkin sudah dihapus.</string>
     <string name="error_comment_blocked">Komentar ini melanggar aturan komunitas.</string>
+    <string name="error_microphone_off">Akses mikrofon mati. Izinkan di pengaturan untuk mendengarkan.</string>
     <string name="error_unknown">Terjadi kesalahan. Coba lagi.</string>
 </resources>

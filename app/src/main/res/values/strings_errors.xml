@@ -6,5 +6,6 @@
     <string name="error_not_logged_in">Your session ended. Log in again to continue.</string>
     <string name="error_not_found">We couldn\'t find that. It may have been removed.</string>
     <string name="error_comment_blocked">This comment breaks the community rules.</string>
+    <string name="error_microphone_off">Microphone access is off. Allow it in settings to listen.</string>
     <string name="error_unknown">Something went wrong. Try again.</string>
 </resources>
