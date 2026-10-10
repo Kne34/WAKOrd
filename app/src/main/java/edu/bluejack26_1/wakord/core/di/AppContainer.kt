@@ -17,6 +17,7 @@ import edu.bluejack26_1.wakord.core.audio.TonePlayer
 import edu.bluejack26_1.wakord.core.audio.YinPitchDetector
 import edu.bluejack26_1.wakord.core.network.AndroidConnectivityObserver
 import edu.bluejack26_1.wakord.core.network.ConnectivityObserver
+import edu.bluejack26_1.wakord.core.notification.NotificationWatcher
 import edu.bluejack26_1.wakord.data.local.AppDatabase
 import edu.bluejack26_1.wakord.data.remote.GeminiChordAnalyzer
 import edu.bluejack26_1.wakord.data.remote.GeminiCommentModerator
@@ -25,6 +26,7 @@ import edu.bluejack26_1.wakord.data.repository.FirebaseCommentRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseExploreRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseFeedRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseFollowRepository
+import edu.bluejack26_1.wakord.data.repository.FirebaseNotificationRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseProfileRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseProgressionRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseSavedItemsRemote
@@ -47,6 +49,7 @@ import edu.bluejack26_1.wakord.domain.repository.DraftRepository
 import edu.bluejack26_1.wakord.domain.repository.ExploreRepository
 import edu.bluejack26_1.wakord.domain.repository.FeedRepository
 import edu.bluejack26_1.wakord.domain.repository.FollowRepository
+import edu.bluejack26_1.wakord.domain.repository.NotificationRepository
 import edu.bluejack26_1.wakord.domain.repository.ProfileRepository
 import edu.bluejack26_1.wakord.domain.repository.ProgressionRepository
 import edu.bluejack26_1.wakord.domain.repository.SavedItemsRepository
@@ -96,6 +99,8 @@ class AppContainer(context: Context) {
     val profileRepository: ProfileRepository by lazy { FirebaseProfileRepository(firebaseAuth, firebaseDatabase, appContext.contentResolver) }
     val draftRepository: DraftRepository by lazy { RoomDraftRepository(database.draftDao(), firebaseAuth) }
     val followRepository: FollowRepository by lazy { FirebaseFollowRepository(firebaseAuth, firebaseDatabase) }
+    val notificationRepository: NotificationRepository by lazy { FirebaseNotificationRepository(firebaseAuth, firebaseDatabase) }
+    val notificationWatcher: NotificationWatcher by lazy { NotificationWatcher(appContext, notificationRepository, settingsRepository, appScope) }
     val authValidator: AuthValidator = DefaultAuthValidator()
     val tuningRepository: TuningRepository by lazy { FirebaseTuningRepository(firebaseAuth, firebaseDatabase) }
     val syncRepository: SyncRepository = FirebaseSyncRepository(firebaseDatabase, authRepository, savedItemsRepository, settingsRepository, savedLibraryRepository, appScope)
