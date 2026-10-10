@@ -10,6 +10,8 @@ import edu.bluejack26_1.wakord.data.remote.requireUid
 import edu.bluejack26_1.wakord.data.remote.string
 import edu.bluejack26_1.wakord.data.remote.valueFlow
 import edu.bluejack26_1.wakord.domain.model.Comment
+import edu.bluejack26_1.wakord.domain.model.NotificationType
+import edu.bluejack26_1.wakord.domain.model.TargetType
 import edu.bluejack26_1.wakord.domain.repository.CommentModerator
 import edu.bluejack26_1.wakord.domain.repository.CommentRepository
 import kotlinx.coroutines.flow.Flow
@@ -52,7 +54,21 @@ class FirebaseCommentRepository(
                 "createdAt" to ServerValue.TIMESTAMP,
             ),
         ).await()
-        Unit
+        notifyAuthor(uid, targetId, text, parentId)
+    }
+
+    private suspend fun notifyAuthor(uid: String, targetId: String, text: String, parentId: String?) {
+        val progression = database.getReference("progressions/$targetId").get().await()
+        val targetType = if (progression.exists()) TargetType.PROGRESSION else TargetType.SONG
+        val title = (if (progression.exists()) progression else database.getReference("songs/$targetId").get().await())
+            .child("title").getValue(String::class.java).orEmpty()
+        val recipient = if (parentId != null) {
+            database.getReference("comments/$targetId/$parentId/authorId").get().await().getValue(String::class.java).orEmpty()
+        } else {
+            progression.child("authorId").getValue(String::class.java).orEmpty()
+        }
+        val type = if (parentId != null) NotificationType.REPLY else NotificationType.COMMENT
+        database.notify(recipient, uid, type, targetType, targetId, title, text.trim())
     }
 
     override suspend fun setLiked(targetId: String, commentId: String, liked: Boolean): Result<Unit> = firebaseCall {

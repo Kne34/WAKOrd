@@ -6,7 +6,9 @@ import com.google.firebase.database.ServerValue
 import edu.bluejack26_1.wakord.data.remote.firebaseCall
 import edu.bluejack26_1.wakord.data.remote.requireUid
 import edu.bluejack26_1.wakord.data.remote.valueFlow
+import edu.bluejack26_1.wakord.domain.model.NotificationType
 import edu.bluejack26_1.wakord.domain.model.ProfileStats
+import edu.bluejack26_1.wakord.domain.model.TargetType
 import edu.bluejack26_1.wakord.domain.repository.FollowRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -38,6 +40,7 @@ class FirebaseFollowRepository(
                 "followers/$uid/$me" to value,
             ),
         ).await()
+        if (follow) database.notify(uid, me, NotificationType.FOLLOW, TargetType.PROFILE, me)
         Unit
     }
 }
