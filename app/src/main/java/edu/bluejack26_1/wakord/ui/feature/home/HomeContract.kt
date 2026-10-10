@@ -23,6 +23,7 @@ data class HomeUiState(
     val recommended: List<Song> = emptyList(),
     val savedChords: List<SavedChord> = emptyList(),
     val workout: DailyWorkout = DailyWorkout(),
+    val unreadNotifications: Int = 0,
     val feed: List<FeedItem> = emptyList(),
     val likedIds: Set<String> = emptySet(),
     val isLoading: Boolean = true,
