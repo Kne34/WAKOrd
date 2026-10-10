@@ -18,6 +18,8 @@ import edu.bluejack26_1.wakord.core.audio.YinPitchDetector
 import edu.bluejack26_1.wakord.core.network.AndroidConnectivityObserver
 import edu.bluejack26_1.wakord.core.network.ConnectivityObserver
 import edu.bluejack26_1.wakord.core.notification.NotificationWatcher
+import edu.bluejack26_1.wakord.core.training.MicPitchSource
+import edu.bluejack26_1.wakord.core.training.PitchSource
 import edu.bluejack26_1.wakord.data.local.AppDatabase
 import edu.bluejack26_1.wakord.data.remote.GeminiChordAnalyzer
 import edu.bluejack26_1.wakord.data.remote.GeminiCommentModerator
@@ -78,6 +80,7 @@ class AppContainer(context: Context) {
     val tonePlayer: TonePlayer by lazy { SynthTonePlayer() }
     val audioInput: AudioInput by lazy { MicAudioInput() }
     val pitchDetector: PitchDetector by lazy { YinPitchDetector() }
+    val pitchSource: PitchSource by lazy { MicPitchSource(appContext, audioInput, pitchDetector) }
     val authRepository: AuthRepository by lazy { FirebaseAuthRepository(firebaseAuth, firebaseDatabase) }
     val songRepository: SongRepository by lazy { FirebaseSongRepository(firebaseAuth, firebaseDatabase) }
     val commentRepository: CommentRepository by lazy { FirebaseCommentRepository(firebaseAuth, firebaseDatabase, GeminiCommentModerator()) }
