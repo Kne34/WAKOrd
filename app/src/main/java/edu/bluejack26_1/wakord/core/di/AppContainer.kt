@@ -19,6 +19,7 @@ import edu.bluejack26_1.wakord.core.network.AndroidConnectivityObserver
 import edu.bluejack26_1.wakord.core.network.ConnectivityObserver
 import edu.bluejack26_1.wakord.data.local.AppDatabase
 import edu.bluejack26_1.wakord.data.remote.GeminiChordAnalyzer
+import edu.bluejack26_1.wakord.data.remote.GeminiCommentModerator
 import edu.bluejack26_1.wakord.data.repository.FirebaseAuthRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseCommentRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseExploreRepository
@@ -66,7 +67,7 @@ class AppContainer(context: Context) {
     val pitchDetector: PitchDetector by lazy { YinPitchDetector() }
     val authRepository: AuthRepository by lazy { FirebaseAuthRepository(firebaseAuth, firebaseDatabase) }
     val songRepository: SongRepository by lazy { FirebaseSongRepository(firebaseAuth, firebaseDatabase) }
-    val commentRepository: CommentRepository by lazy { FirebaseCommentRepository(firebaseAuth, firebaseDatabase) }
+    val commentRepository: CommentRepository by lazy { FirebaseCommentRepository(firebaseAuth, firebaseDatabase, GeminiCommentModerator()) }
     val savedItemsRepository: SavedItemsRepository by lazy { FirebaseSavedItemsRepository(firebaseAuth, firebaseDatabase) }
     val progressionRepository: ProgressionRepository by lazy { FirebaseProgressionRepository(firebaseAuth, firebaseDatabase) }
     val userRepository: UserRepository by lazy { FirebaseUserRepository(firebaseAuth, firebaseDatabase) }

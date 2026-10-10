@@ -3,12 +3,14 @@ package edu.bluejack26_1.wakord.data.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
+import edu.bluejack26_1.wakord.core.error.AppError
 import edu.bluejack26_1.wakord.data.remote.firebaseCall
 import edu.bluejack26_1.wakord.data.remote.long
 import edu.bluejack26_1.wakord.data.remote.requireUid
 import edu.bluejack26_1.wakord.data.remote.string
 import edu.bluejack26_1.wakord.data.remote.valueFlow
 import edu.bluejack26_1.wakord.domain.model.Comment
+import edu.bluejack26_1.wakord.domain.repository.CommentModerator
 import edu.bluejack26_1.wakord.domain.repository.CommentRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,6 +19,7 @@ import kotlinx.coroutines.tasks.await
 class FirebaseCommentRepository(
     private val auth: FirebaseAuth,
     private val database: FirebaseDatabase,
+    private val moderator: CommentModerator,
 ) : CommentRepository {
     override fun comments(targetId: String): Flow<List<Comment>> {
         val uid = auth.currentUser?.uid
@@ -38,6 +41,7 @@ class FirebaseCommentRepository(
 
     override suspend fun post(targetId: String, text: String, parentId: String?): Result<Unit> = firebaseCall {
         val uid = auth.requireUid()
+        if (!moderator.isAllowed(text)) throw AppError.CommentBlocked
         val authorName = database.getReference("users/$uid/fullName").get().await().getValue(String::class.java).orEmpty()
         database.getReference("comments/$targetId").push().setValue(
             mapOf(
