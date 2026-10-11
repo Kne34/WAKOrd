@@ -105,6 +105,15 @@ class ChordEngineTest {
     }
 
     @Test
+    fun `piano notes start from the root in the third octave and stay on the keyboard`() {
+        assertEquals(listOf(48, 52, 55), VoicingGenerator.pianoNotes("C"))
+        assertEquals(listOf(54, 57, 61, 64), VoicingGenerator.pianoNotes("F#m7"))
+        assertEquals(listOf(59, 64, 68, 71), VoicingGenerator.pianoNotes("E/B"))
+        assertTrue(VoicingGenerator.pianoNotes("Badd9").all { it in 48..71 })
+        assertTrue(VoicingGenerator.pianoNotes("nope").isEmpty())
+    }
+
+    @Test
     fun `ukulele C is 0003`() {
         val c = VoicingGenerator.voicings("C", VoicingGenerator.UKULELE_STANDARD).first()
         assertEquals(listOf(0, 0, 0, 3), c.frets)

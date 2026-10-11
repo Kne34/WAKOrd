@@ -9,6 +9,8 @@ import kotlin.math.sqrt
 object ChordRecognizer {
     private const val SILENCE_RMS = 0.01f
     private const val COMPLEXITY_PENALTY = 0.04f
+    private const val TIE = 0.001f
+    const val MIN_BUILT_NOTES = 3
     private val SUFFIXES = listOf("", "m", "7", "maj7", "m7", "dim", "aug", "sus2", "sus4", "m7b5", "6", "m6", "dim7", "add9")
     private val INTERVAL_NAMES = listOf("R", "m2", "M2", "m3", "M3", "P4", "d5", "P5", "A5", "M6", "m7", "M7")
 
@@ -41,6 +43,17 @@ object ChordRecognizer {
         val best = ranked.first()
         val alternative = ranked.drop(1).firstOrNull { it.symbol != best.symbol }
         return reading(best, alternative)
+    }
+
+    fun fromNotes(midis: Collection<Int>): LiveChordReading? {
+        val pitchClasses = midis.map { Math.floorMod(it, 12) }.toSet()
+        if (pitchClasses.size < MIN_BUILT_NOTES) return null
+        val chroma = FloatArray(12).also { c -> pitchClasses.forEach { c[it] = 1f } }
+        val bass = Math.floorMod(midis.min(), 12)
+        val ranked = rank(chroma)
+        val top = ranked.first().score
+        val best = ranked.firstOrNull { it.score >= top - TIE && it.root == bass } ?: ranked.first()
+        return reading(best, ranked.firstOrNull { it.symbol != best.symbol })
     }
 
     fun reading(best: Match, alternative: Match?): LiveChordReading {

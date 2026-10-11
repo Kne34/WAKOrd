@@ -6,6 +6,9 @@ object VoicingGenerator {
     val GUITAR_STANDARD = listOf(40, 45, 50, 55, 59, 64)
     val UKULELE_STANDARD = listOf(67, 60, 64, 69)
 
+    const val PIANO_LOWEST = 48
+    const val PIANO_HIGHEST = 71
+
     private const val WINDOW = 3
     private const val MAX_POSITION = 10
 
@@ -32,6 +35,19 @@ object VoicingGenerator {
 
     fun midiNotes(voicing: ChordVoicing, tuning: List<Int> = GUITAR_STANDARD): List<Int> =
         voicing.frets.mapIndexedNotNull { string, fret -> if (fret < 0) null else tuning[string] + fret }
+
+    fun pianoNotes(symbol: String, lowest: Int = PIANO_LOWEST, highest: Int = PIANO_HIGHEST): List<Int> {
+        val chord = Chord.parse(symbol) ?: return emptyList()
+        val root = lowest + NoteNames.pitchClass(chord.root)
+        val tones = ChordTheory.intervals(chord.suffix).map { root + it }
+        val bass = chord.bass?.let { lowest + NoteNames.pitchClass(it) }
+        val notes = if (bass == null) {
+            tones
+        } else {
+            listOf(bass) + tones.map { tone -> bass + 1 + Math.floorMod(tone - bass - 1, 12) }
+        }
+        return notes.map { if (it > highest) it - 12 else it }.distinct().sorted()
+    }
 
     private fun bestAt(
         position: Int,
