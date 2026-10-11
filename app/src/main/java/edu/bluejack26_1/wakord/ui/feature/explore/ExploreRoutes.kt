@@ -1,6 +1,7 @@
 package edu.bluejack26_1.wakord.ui.feature.explore
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -15,12 +16,20 @@ fun ExploreRoute(
     onOpenProgression: (String) -> Unit,
     onOpenSection: (ExploreSection) -> Unit,
     onOpenNotifications: () -> Unit,
+    searchQuery: String? = null,
+    onSearchConsumed: () -> Unit = {},
     viewModel: ExploreViewModel = viewModel(factory = ExploreViewModel.Factory),
     chordSheetViewModel: ChordSheetViewModel = viewModel(factory = ChordSheetViewModel.Factory),
     badgeViewModel: NotificationBadgeViewModel = viewModel(factory = NotificationBadgeViewModel.Factory),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val unread by badgeViewModel.unreadCount.collectAsStateWithLifecycle()
+    LaunchedEffect(searchQuery) {
+        if (!searchQuery.isNullOrBlank()) {
+            viewModel.onAction(ExploreAction.QueryChanged(searchQuery))
+            onSearchConsumed()
+        }
+    }
     val chordSheet by chordSheetViewModel.uiState.collectAsStateWithLifecycle()
     ErrorToast(state.errorMessage) { viewModel.onAction(ExploreAction.DismissError) }
     ErrorToast(chordSheet.errorMessage) { chordSheetViewModel.onAction(ChordSheetAction.DismissError) }

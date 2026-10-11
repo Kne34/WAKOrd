@@ -29,6 +29,7 @@ object Routes {
     const val SONG_COMMENTS = "song/{songId}/comments"
     const val PROGRESSION = "progression/{progressionId}"
     const val PROGRESSION_COMMENTS = "progression/{progressionId}/comments"
+    const val ANALYZING = "analyze/analyzing"
     const val ANALYSIS_RESULT = "analyze/result/{analysisId}"
     const val USER = "user/{userId}"
 

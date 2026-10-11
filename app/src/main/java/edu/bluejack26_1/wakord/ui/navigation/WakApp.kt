@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -27,9 +28,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.ui.components.TopLevelDestinations
+import edu.bluejack26_1.wakord.ui.components.WakBottomBar
 import edu.bluejack26_1.wakord.ui.components.WakButton
 import edu.bluejack26_1.wakord.ui.components.WakButtonVariant
-import edu.bluejack26_1.wakord.ui.components.WakBottomBar
+import edu.bluejack26_1.wakord.ui.feature.analyze.AnalysisResultRoute
+import edu.bluejack26_1.wakord.ui.feature.analyze.AnalyzeRoute
+import edu.bluejack26_1.wakord.ui.feature.analyze.AnalyzeViewModel
+import edu.bluejack26_1.wakord.ui.feature.analyze.AnalyzingRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.LoginRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.PreferencesRoute
 import edu.bluejack26_1.wakord.ui.feature.auth.RegisterRoute
@@ -139,12 +144,15 @@ private fun NavGraphBuilder.mainGraph(nav: NavController) {
                 onOpenTraining = { nav.navigate(Routes.TRAINING) },
             )
         }
-        composable(Routes.EXPLORE) {
+        composable(Routes.EXPLORE) { entry ->
+            val search by entry.savedStateHandle.getStateFlow<String?>(EXPLORE_SEARCH, null).collectAsStateWithLifecycle()
             ExploreRoute(
                 onOpenSong = { nav.navigate(Routes.song(it)) },
                 onOpenProgression = { nav.navigate(Routes.progression(it)) },
                 onOpenSection = { nav.navigate(Routes.exploreSection(it.name)) },
                 onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) },
+                searchQuery = search,
+                onSearchConsumed = { entry.savedStateHandle[EXPLORE_SEARCH] = null },
             )
         }
         composable(Routes.EXPLORE_SECTION) { entry ->
@@ -163,7 +171,36 @@ private fun NavGraphBuilder.mainGraph(nav: NavController) {
         composable(Routes.TUNER) {
             TunerRoute(onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) })
         }
-        composable(Routes.ANALYZE) { PlaceholderScreen("Analyze") }
+        composable(Routes.ANALYZE) {
+            AnalyzeRoute(
+                onOpenAnalyzing = { nav.navigate(Routes.ANALYZING) { launchSingleTop = true } },
+                onOpenResult = { id -> nav.navigate(Routes.analysisResult(id)) { launchSingleTop = true } },
+                onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) },
+            )
+        }
+        composable(Routes.ANALYZING) { entry ->
+            val owner = remember(entry) { runCatching { nav.getBackStackEntry(Routes.ANALYZE) }.getOrDefault(entry) }
+            AnalyzingRoute(
+                onShowResult = { id ->
+                    nav.navigate(Routes.analysisResult(id)) {
+                        popUpTo(Routes.ANALYZING) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                onBack = { nav.popBackStack(Routes.ANALYZE, inclusive = false) },
+                viewModel = viewModel(viewModelStoreOwner = owner, factory = AnalyzeViewModel.Factory),
+            )
+        }
+        composable(Routes.ANALYSIS_RESULT) { entry ->
+            val owner = remember(entry) { runCatching { nav.getBackStackEntry(Routes.ANALYZE) }.getOrDefault(entry) }
+            AnalysisResultRoute(
+                onBack = { nav.popBackStack(Routes.ANALYZE, inclusive = false) },
+                onOpenSong = { nav.navigate(Routes.song(it)) },
+                onOpenProgression = { nav.navigate(Routes.progression(it)) },
+                onOpenArtist = nav::openExploreSearch,
+                viewModel = viewModel(viewModelStoreOwner = owner, factory = AnalyzeViewModel.Factory),
+            )
+        }
         composable(Routes.PROFILE) {
             PlaceholderScreen("Profile") {
                 WakButton(
@@ -241,6 +278,13 @@ private fun NavGraphBuilder.mainGraph(nav: NavController) {
 
 fun NavController.navigateToMain() {
     navigate(Routes.MAIN_GRAPH) { popUpTo(Routes.AUTH_GRAPH) { inclusive = true } }
+}
+
+private const val EXPLORE_SEARCH = "exploreSearch"
+
+fun NavController.openExploreSearch(query: String) {
+    navigateTopLevel(Routes.EXPLORE)
+    currentBackStackEntry?.savedStateHandle?.set(EXPLORE_SEARCH, query)
 }
 
 fun NavController.navigateTopLevel(route: String) {
