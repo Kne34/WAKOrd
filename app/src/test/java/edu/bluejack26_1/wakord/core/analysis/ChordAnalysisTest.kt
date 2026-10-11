@@ -85,16 +85,16 @@ class ChordAnalysisTest {
     @Test
     fun `algorithm reports nothing for silence`() = runTest {
         val result = AlgorithmChordAnalyzer().analyze(FloatArray(rate * 2), rate)
-        assertEquals(AppError.NotFound, result.exceptionOrNull())
+        assertEquals(AppError.NoChordsHeard, result.exceptionOrNull())
     }
 
     @Test
-    fun `fallback runs only when the ai fails or hears nothing`() = runTest {
+    fun `fallback runs only when the ai fails`() = runTest {
         val algorithm = FakeChordAnalyzer(Result.success(SampleAnalysis.result.copy(source = AnalysisSource.ALGORITHM)))
         val failing = FallbackChordAnalyzer(FakeChordAnalyzer(Result.failure(AppError.Network)), algorithm)
         assertEquals(AnalysisSource.ALGORITHM, failing.analyze(FloatArray(10), rate).getOrThrow().source)
         val empty = FallbackChordAnalyzer(FakeChordAnalyzer(Result.success(SampleAnalysis.result.copy(chords = emptyList()))), algorithm)
-        assertEquals(AnalysisSource.ALGORITHM, empty.analyze(FloatArray(10), rate).getOrThrow().source)
+        assertEquals(AppError.NoChordsHeard, empty.analyze(FloatArray(10), rate).exceptionOrNull())
         val working = FallbackChordAnalyzer(FakeChordAnalyzer(), algorithm)
         assertEquals(AnalysisSource.AI, working.analyze(FloatArray(10), rate).getOrThrow().source)
     }
