@@ -68,7 +68,7 @@ fun fingerText(voicing: ChordVoicing): String =
     }.joinToString(" · ")
 
 @Composable
-private fun voicingLabel(voicing: ChordVoicing): String {
+fun voicingLabel(voicing: ChordVoicing): String {
     val position = voicing.position
     if (position <= 0) return stringResource(R.string.voicing_open)
     val res = when {
