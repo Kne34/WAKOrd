@@ -101,7 +101,7 @@ class ExerciseViewModel(
         if (s.feedback != null) return
         val feedback = Grader.grade(question, selected)
         answers += feedback.isCorrect
-        _uiState.update { it.copy(feedback = feedback) }
+        _uiState.update { it.copy(feedback = feedback, answers = answers.toList()) }
     }
 
     private fun next() {

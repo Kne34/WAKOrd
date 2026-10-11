@@ -47,6 +47,7 @@ data class ExerciseUiState(
     val question: Question? = null,
     val selectedId: String? = null,
     val feedback: AnswerFeedback? = null,
+    val answers: List<Boolean> = emptyList(),
     val isPlaying: Boolean = false,
     val summary: SessionSummary? = null,
     @param:StringRes val errorMessage: Int? = null,
