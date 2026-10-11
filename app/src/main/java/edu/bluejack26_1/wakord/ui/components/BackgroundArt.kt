@@ -14,19 +14,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 
+private val DesignWidth = 390.dp
+
+@Composable
+fun windowWidth(): Dp {
+    val width = LocalWindowInfo.current.containerSize.width
+    return if (width > 0) with(LocalDensity.current) { width.toDp() } else DesignWidth
+}
+
 @Composable
 fun BackgroundArt(@DrawableRes image: Int, height: Dp, modifier: Modifier = Modifier) {
     val c = WakTheme.colors
+    val width = maxOf(510.dp, windowWidth() + 120.dp)
     Box(
         modifier = modifier
             .offset(x = (-60).dp, y = (-80).dp)
             .wrapContentSize(align = Alignment.TopStart, unbounded = true)
-            .size(width = 510.dp, height = height),
+            .size(width = width, height = height),
     ) {
         Crossfade(targetState = image, label = "background") { res ->
             Image(
