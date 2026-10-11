@@ -1,5 +1,6 @@
 package edu.bluejack26_1.wakord.core.analysis
 
+import edu.bluejack26_1.wakord.core.music.Chord
 import edu.bluejack26_1.wakord.core.music.ChordTheory
 import edu.bluejack26_1.wakord.core.music.NoteNames
 import edu.bluejack26_1.wakord.domain.model.LiveChordReading
@@ -54,6 +55,11 @@ object ChordRecognizer {
         val top = ranked.first().score
         val best = ranked.firstOrNull { it.score >= top - TIE && it.root == bass } ?: ranked.first()
         return reading(best, ranked.firstOrNull { it.symbol != best.symbol })
+    }
+
+    fun readingOf(symbol: String): LiveChordReading? {
+        val chord = Chord.parse(symbol) ?: return null
+        return reading(Match(NoteNames.pitchClass(chord.root), chord.suffix, 1f), null)
     }
 
     fun reading(best: Match, alternative: Match?): LiveChordReading {

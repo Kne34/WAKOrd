@@ -39,6 +39,16 @@ class ChordAnalysisTest {
     }
 
     @Test
+    fun `describes a chord from its symbol`() {
+        val reading = ChordRecognizer.readingOf("Am7")
+        assertEquals("Am7", reading?.symbol)
+        assertEquals("minor", reading?.quality)
+        assertEquals(listOf("A", "C", "E", "G"), reading?.notes)
+        assertEquals("Bbmaj7", ChordRecognizer.readingOf("Bbmaj7")?.symbol)
+        assertNull(ChordRecognizer.readingOf("nope"))
+    }
+
+    @Test
     fun `needs at least three different notes to name a chord`() {
         assertNull(ChordRecognizer.fromNotes(listOf(60, 64)))
         assertNull(ChordRecognizer.fromNotes(listOf(60, 64, 72, 76)))
