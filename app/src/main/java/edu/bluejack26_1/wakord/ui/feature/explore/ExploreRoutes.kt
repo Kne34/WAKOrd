@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.bluejack26_1.wakord.ui.components.ErrorToast
 import edu.bluejack26_1.wakord.ui.feature.chord.ChordSheetAction
 import edu.bluejack26_1.wakord.ui.feature.chord.ChordSheetViewModel
+import edu.bluejack26_1.wakord.ui.feature.notifications.NotificationBadgeViewModel
 
 @Composable
 fun ExploreRoute(
@@ -16,8 +17,10 @@ fun ExploreRoute(
     onOpenNotifications: () -> Unit,
     viewModel: ExploreViewModel = viewModel(factory = ExploreViewModel.Factory),
     chordSheetViewModel: ChordSheetViewModel = viewModel(factory = ChordSheetViewModel.Factory),
+    badgeViewModel: NotificationBadgeViewModel = viewModel(factory = NotificationBadgeViewModel.Factory),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val unread by badgeViewModel.unreadCount.collectAsStateWithLifecycle()
     val chordSheet by chordSheetViewModel.uiState.collectAsStateWithLifecycle()
     ErrorToast(state.errorMessage) { viewModel.onAction(ExploreAction.DismissError) }
     ErrorToast(chordSheet.errorMessage) { chordSheetViewModel.onAction(ChordSheetAction.DismissError) }
@@ -30,6 +33,7 @@ fun ExploreRoute(
         onOpenProgression = onOpenProgression,
         onOpenSection = onOpenSection,
         onOpenNotifications = onOpenNotifications,
+        unreadNotifications = unread,
     )
 }
 

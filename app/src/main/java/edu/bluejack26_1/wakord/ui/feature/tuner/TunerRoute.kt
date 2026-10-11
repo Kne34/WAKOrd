@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.ui.components.WakDialog
+import edu.bluejack26_1.wakord.ui.feature.notifications.NotificationBadgeViewModel
 
 private fun Context.hasMicPermission() =
     ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
@@ -30,8 +31,10 @@ private fun Context.hasMicPermission() =
 fun TunerRoute(
     onOpenNotifications: () -> Unit,
     viewModel: TunerViewModel = viewModel(factory = TunerViewModel.Factory),
+    badgeViewModel: NotificationBadgeViewModel = viewModel(factory = NotificationBadgeViewModel.Factory),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val unread by badgeViewModel.unreadCount.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var showAllowMic by rememberSaveable { mutableStateOf(false) }
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -74,5 +77,6 @@ fun TunerRoute(
             )
         },
         onOpenNotifications = onOpenNotifications,
+        unreadNotifications = unread,
     )
 }
