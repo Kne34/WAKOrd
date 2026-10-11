@@ -31,6 +31,9 @@
     <string name="pitch_sharp">Sharp</string>
     <string name="pitch_reference_note">Reference note</string>
     <string name="pitch_play_reference">Play reference note</string>
+    <string name="pitch_more">More</string>
+    <string name="pitch_note_range">Pick any note from C2 to B5</string>
+    <string name="pitch_octave">Octave</string>
     <string name="pitch_mic_off_message">Turn on microphone access so WAKord can hear you sing.</string>
 
     <string name="curriculum_title">Curriculum</string>

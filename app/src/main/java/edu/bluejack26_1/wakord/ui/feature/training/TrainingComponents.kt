@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,8 +26,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -371,6 +376,8 @@ private fun MicOffNotice(onOpenSettings: () -> Unit) {
 @Composable
 private fun ReferenceSelector(selected: Int, onSelect: (Int) -> Unit) {
     val c = WakTheme.colors
+    var showSheet by rememberSaveable { mutableStateOf(false) }
+    val custom = selected !in ReferenceNotes
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -382,18 +389,38 @@ private fun ReferenceSelector(selected: Int, onSelect: (Int) -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         ReferenceNotes.forEach { midi ->
-            val isSelected = midi == selected
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxSize()
-                    .background(if (isSelected) c.s1 else Color.Transparent, RoundedCornerShape(12.dp))
-                    .selectable(selected = isSelected, onClick = { onSelect(midi) }, role = Role.RadioButton),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(NoteMapper.labelOf(midi), style = jakarta(13.sp), color = if (isSelected) c.text else c.text3)
-            }
+            ReferenceSegment(NoteMapper.labelOf(midi), midi == selected, onClick = { onSelect(midi) })
         }
+        ReferenceSegment(
+            label = if (custom) NoteMapper.pretty(NoteMapper.labelOf(selected)) else stringResource(R.string.pitch_more),
+            selected = custom,
+            onClick = { showSheet = true },
+        )
+    }
+    if (showSheet) {
+        ReferenceNoteSheet(
+            selected = selected,
+            onSelect = {
+                onSelect(it)
+                showSheet = false
+            },
+            onClose = { showSheet = false },
+        )
+    }
+}
+
+@Composable
+private fun RowScope.ReferenceSegment(label: String, selected: Boolean, onClick: () -> Unit) {
+    val c = WakTheme.colors
+    Box(
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxSize()
+            .background(if (selected) c.s1 else Color.Transparent, RoundedCornerShape(12.dp))
+            .selectable(selected = selected, onClick = onClick, role = Role.RadioButton),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(label, style = jakarta(13.sp), color = if (selected) c.text else c.text3, maxLines = 1)
     }
 }
 
