@@ -27,7 +27,7 @@
 
     <string name="result_title">Hasil</string>
     <string name="result_share_cd">Bagikan hasil</string>
-    <string name="result_detected">Terdeteksi di %1$s · keyakinan %2$d%%</string>
+    <string name="result_confidence">Keyakinan %1$d%%</string>
     <plurals name="result_chords_found">
         <item quantity="other">%1$d chord ditemukan</item>
     </plurals>

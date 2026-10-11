@@ -38,7 +38,7 @@ import edu.bluejack26_1.wakord.ui.theme.spaceGrotesk
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WakSheet(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+fun WakSheetFrame(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
     val c = WakTheme.colors
     val shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
     ModalBottomSheet(
@@ -63,17 +63,24 @@ fun WakSheet(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit)
                         .size(width = 40.dp, height = 5.dp)
                         .background(c.s5, CircleShape),
                 )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 20.dp)
-                        .padding(bottom = 24.dp)
-                        .navigationBarsPadding(),
-                    content = content,
-                )
+                content()
             }
         }
+    }
+}
+
+@Composable
+fun WakSheet(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+    WakSheetFrame(onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 24.dp)
+                .navigationBarsPadding(),
+            content = content,
+        )
     }
 }
 

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -47,9 +48,11 @@ fun TrainingRoute(
             }
         }
     }
+    val activity = LocalActivity.current
     LifecycleStartEffect(pitchViewModel) {
         onStopOrDispose {
-            if (pitchViewModel.uiState.value.isListening) pitchViewModel.onAction(PitchMonitorAction.ToggleListening)
+            val rotating = activity?.isChangingConfigurations == true
+            if (!rotating && pitchViewModel.uiState.value.isListening) pitchViewModel.onAction(PitchMonitorAction.ToggleListening)
         }
     }
     ErrorToast(state.errorMessage) { viewModel.onAction(TrainingAction.DismissError) }

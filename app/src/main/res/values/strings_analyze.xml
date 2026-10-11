@@ -27,7 +27,7 @@
 
     <string name="result_title">Result</string>
     <string name="result_share_cd">Share result</string>
-    <string name="result_detected">Detected in %1$s · %2$d%% confidence</string>
+    <string name="result_confidence">%1$d%% confidence</string>
     <plurals name="result_chords_found">
         <item quantity="one">%1$d chord found</item>
         <item quantity="other">%1$d chords found</item>

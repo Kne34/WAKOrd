@@ -100,7 +100,7 @@ class AnalyzeViewModel(
             when {
                 failure is AppError.MicrophoneOff -> _uiState.update { it.copy(microphoneOff = true) }
                 failure != null -> _uiState.update { it.copy(errorMessage = failure?.messageRes()) }
-                recorded < rate -> _uiState.update { it.copy(errorMessage = AppError.NotFound.messageRes()) }
+                recorded < rate -> _uiState.update { it.copy(errorMessage = AppError.NoChordsHeard.messageRes()) }
                 else -> analyze(buffer.copyOf(recorded), rate)
             }
         }

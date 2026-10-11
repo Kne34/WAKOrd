@@ -36,7 +36,7 @@ class AlgorithmChordAnalyzer(private val clock: () -> Long = System::currentTime
             else segments += DetectedChord(symbol, start, end)
         }
         val chords = mergeShort(segments)
-        if (chords.isEmpty()) return Result.failure(AppError.NotFound)
+        if (chords.isEmpty()) return Result.failure(AppError.NoChordsHeard)
 
         val total = FloatArray(12)
         frames.forEach { f -> f.chroma?.forEachIndexed { i, v -> total[i] += v } }
@@ -83,8 +83,8 @@ class FallbackChordAnalyzer(
     private val primary: ChordAnalyzer,
     private val fallback: ChordAnalyzer,
 ) : ChordAnalyzer {
-    override suspend fun analyze(samples: FloatArray, sampleRate: Int): Result<AnalysisResult> =
-        primary.analyze(samples, sampleRate)
-            .takeIf { it.getOrNull()?.chords?.isNotEmpty() == true }
-            ?: fallback.analyze(samples, sampleRate)
+    override suspend fun analyze(samples: FloatArray, sampleRate: Int): Result<AnalysisResult> {
+        val ai = primary.analyze(samples, sampleRate).getOrNull() ?: return fallback.analyze(samples, sampleRate)
+        return if (ai.chords.isEmpty()) Result.failure(AppError.NoChordsHeard) else Result.success(ai)
+    }
 }

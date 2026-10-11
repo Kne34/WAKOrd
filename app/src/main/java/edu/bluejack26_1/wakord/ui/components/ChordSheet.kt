@@ -19,12 +19,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -94,7 +91,6 @@ private fun muteText(voicing: ChordVoicing): String {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChordSheet(
     symbol: String,
@@ -106,24 +102,7 @@ fun ChordSheet(
     onToggleSaved: () -> Unit,
     onClose: () -> Unit,
 ) {
-    val c = WakTheme.colors
-    val shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
-    ModalBottomSheet(
-        onDismissRequest = onClose,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        modifier = Modifier.border(1.dp, c.text2.copy(alpha = 0.10f), shape),
-        shape = shape,
-        containerColor = c.s2,
-        scrimColor = Color(0xFF03060F).copy(alpha = 0.66f),
-        dragHandle = {
-            Box(
-                Modifier
-                    .padding(top = 11.dp, bottom = 18.dp)
-                    .size(width = 40.dp, height = 5.dp)
-                    .background(c.s5, CircleShape),
-            )
-        },
-    ) {
+    WakSheetFrame(onDismiss = onClose) {
         ChordSheetContent(symbol, voicings, selectedVoicing, isSaved, onSelectVoicing, onPreview, onToggleSaved, onClose)
     }
 }

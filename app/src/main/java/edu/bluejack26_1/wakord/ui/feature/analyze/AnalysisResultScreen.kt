@@ -46,6 +46,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -84,6 +85,8 @@ import edu.bluejack26_1.wakord.ui.theme.spaceGrotesk
 import kotlin.math.roundToInt
 
 private const val PREVIEW_SONGS = 3
+private const val HIGH_CONFIDENCE = 0.7f
+private const val LOW_CONFIDENCE = 0.5f
 
 private fun chordIdentity(symbol: String): Pair<Int, Set<Int>>? =
     Chord.parse(symbol)?.let { NoteNames.pitchClass(it.root) to ChordTheory.intervals(it.suffix).take(3).toSet() }
@@ -131,12 +134,8 @@ fun AnalysisResultScreen(
             }
             Column(Modifier.padding(horizontal = 20.dp)) {
                 Spacer(Modifier.height(12.dp))
-                Text(
-                    stringResource(R.string.result_detected, keyLabel(result.key), (result.confidence * 100).roundToInt()).uppercase(),
-                    style = spaceGrotesk(11.sp).copy(letterSpacing = 1.1.sp),
-                    color = c.text3,
-                )
-                Spacer(Modifier.height(6.dp))
+                DetectionTags(key = result.key, confidence = result.confidence)
+                Spacer(Modifier.height(10.dp))
                 Text(
                     pluralStringResource(R.plurals.result_chords_found, result.uniqueChords.size, result.uniqueChords.size),
                     style = spaceGrotesk(34.sp),
@@ -198,6 +197,40 @@ fun AnalysisResultScreen(
 
 private val timelineColors: List<(WakColors) -> Color> = listOf({ it.primary }, { it.lavender }, { it.peach }, { it.primary2 })
 
+@Composable
+private fun DetectionTags(key: String, confidence: Float) {
+    val c = WakTheme.colors
+    val percent = (confidence * 100).roundToInt()
+    val (container, content) = when {
+        confidence >= HIGH_CONFIDENCE -> c.primary.copy(alpha = 0.12f) to c.primaryText
+        confidence >= LOW_CONFIDENCE -> c.lavender.copy(alpha = 0.14f) to c.lavender
+        else -> alertContainer(c) to c.peachText
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            modifier = Modifier
+                .height(30.dp)
+                .background(c.s3, RoundedCornerShape(10.dp))
+                .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(10.dp))
+                .padding(horizontal = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(painterResource(R.drawable.ic_music_note), contentDescription = null, tint = c.text2, modifier = Modifier.size(14.dp))
+            Spacer(Modifier.width(6.dp))
+            Text(keyLabel(key), style = jakarta(13.sp, FontWeight.Medium), color = c.text)
+        }
+        Box(
+            modifier = Modifier
+                .height(30.dp)
+                .background(container, RoundedCornerShape(10.dp))
+                .padding(horizontal = 10.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(stringResource(R.string.result_confidence, percent), style = jakarta(13.sp, FontWeight.Medium), color = content)
+        }
+    }
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ResultCard(
@@ -217,7 +250,7 @@ private fun ResultCard(
     ) {
         Column(Modifier.padding(17.dp)) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                result.uniqueChords.forEach { symbol ->
+                result.uniqueChords.forEachIndexed { index, symbol ->
                     val active = symbol == playingSymbol
                     Surface(
                         onClick = { onOpenChord(symbol) },
@@ -228,8 +261,18 @@ private fun ResultCard(
                         color = if (active) c.primary else c.s3,
                         border = BorderStroke(1.dp, if (active) c.primary else c.text2.copy(alpha = 0.10f)),
                     ) {
-                        Box(Modifier.padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
+                        Column(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
                             Text(prettyChord(symbol), style = spaceGrotesk(20.sp), color = if (active) c.onPrimary else c.text)
+                            Spacer(Modifier.height(6.dp))
+                            Box(
+                                Modifier
+                                    .size(width = 16.dp, height = 4.dp)
+                                    .background(timelineColors[index % timelineColors.size](c), CircleShape),
+                            )
                         }
                     }
                 }
@@ -274,14 +317,15 @@ private fun Timeline(result: AnalysisResult, state: AnalyzeUiState) {
             .height(28.dp)
             .semantics { contentDescription = description },
     ) {
+        val colorOf = result.uniqueChords.withIndex().associate { (i, symbol) -> symbol to timelineColors[i % timelineColors.size](c) }
         Row(Modifier.fillMaxSize()) {
-            result.chords.forEachIndexed { i, chord ->
+            result.chords.forEach { chord ->
                 val weight = ((chord.endMs - chord.startMs).toFloat() / total).coerceAtLeast(0.01f)
                 Box(
                     Modifier
                         .weight(weight)
                         .fillMaxHeight()
-                        .background(timelineColors[i % timelineColors.size](c), RoundedCornerShape(6.dp)),
+                        .background(colorOf.getValue(chord.symbol), RoundedCornerShape(6.dp)),
                 )
             }
         }
