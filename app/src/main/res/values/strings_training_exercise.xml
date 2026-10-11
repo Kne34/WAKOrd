@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="skill_notes">Notes</string>
+    <string name="skill_intervals">Intervals</string>
+    <string name="skill_chord_quality">Chord quality</string>
+    <string name="skill_progressions">Progressions</string>
+
+    <string name="exercise_quit_cd">Quit exercise</string>
+    <string name="exercise_counter">%1$d/%2$d</string>
+    <string name="exercise_progress_cd">Question %1$d of %2$d</string>
+    <string name="exercise_listen">Listen and identify</string>
+    <string name="exercise_prompt_note">Which note is this?</string>
+    <string name="exercise_prompt_interval">Which interval is this?</string>
+    <string name="exercise_prompt_quality">Which chord is this?</string>
+    <string name="exercise_prompt_progression">Which progression is this?</string>
+    <string name="exercise_play_cd">Play the sound again</string>
+    <string name="exercise_hear_first">Hear %1$s first</string>
+    <string name="exercise_play_slower">Play slower</string>
+    <string name="exercise_check">Check answer</string>
+    <string name="exercise_correct">Correct! %1$s</string>
+    <string name="exercise_wrong">Not quite. The answer was %1$s</string>
+    <string name="exercise_next">Next question</string>
+    <string name="exercise_finish">See results</string>
+    <string name="exercise_quit_title">Quit this set?</string>
+    <string name="exercise_quit_message">Your answers so far will not be saved.</string>
+    <string name="exercise_quit">Quit</string>
+    <string name="exercise_keep_going">Keep going</string>
+
+    <string name="complete_title">Session complete</string>
+    <string name="complete_share_cd">Share result</string>
+    <string name="complete_score">%1$d/%2$d</string>
+    <string name="complete_correct">correct</string>
+    <string name="complete_great">Great ear!</string>
+    <string name="complete_nice">Nice work</string>
+    <string name="complete_keep">Keep practicing</string>
+    <string name="complete_subtitle">%1$s · Level %2$d</string>
+    <string name="complete_time">Time</string>
+    <string name="complete_streak">Streak</string>
+    <string name="complete_answers">Your answers</string>
+    <string name="complete_answer_right">Question %1$d, correct</string>
+    <string name="complete_answer_wrong">Question %1$d, wrong</string>
+    <string name="complete_level_progress">Progress in Level %1$d</string>
+    <string name="complete_best">Best %1$d%%</string>
+    <string name="complete_unlock_hint">Score 80%% or more in one set to unlock Level %1$d · %2$s</string>
+    <string name="complete_unlocked">Level %1$d · %2$s is now unlocked</string>
+    <string name="complete_master_hint">Score 80%% or more in one set to master this level</string>
+    <string name="complete_mastered">Level mastered. Keep your best score sharp.</string>
+    <string name="complete_next_level">Continue to Level %1$d</string>
+    <string name="complete_try_again">Try again</string>
+    <string name="complete_practice_again">Practice again</string>
+    <string name="complete_retry_level">Retry Level %1$d</string>
+    <string name="complete_back">Back to training</string>
+    <string name="complete_share_text">I scored %1$d/%2$d on %3$s · Level %4$d in WAKord</string>
+</resources>

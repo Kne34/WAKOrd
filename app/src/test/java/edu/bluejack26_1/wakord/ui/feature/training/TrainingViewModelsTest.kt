@@ -69,6 +69,8 @@ class TrainingViewModelsTest {
             vm.onAction(ExerciseAction.Select(pick))
             vm.onAction(ExerciseAction.Check)
             assertEquals(it < 8, vm.uiState.value.feedback?.isCorrect)
+            assertEquals(it + 1, vm.uiState.value.answers.size)
+            assertEquals(it < 8, vm.uiState.value.answers.last())
             time += 15_000
             vm.onAction(ExerciseAction.Next)
         }
@@ -84,6 +86,11 @@ class TrainingViewModelsTest {
         val saved = repository.sessions.value.single()
         assertEquals(SkillType.SINGLE_NOTE, saved.skill)
         assertEquals(10, saved.total)
+
+        vm.onAction(ExerciseAction.Retry)
+        assertNull(vm.uiState.value.summary)
+        assertTrue(vm.uiState.value.answers.isEmpty())
+        assertEquals(0, vm.uiState.value.index)
     }
 
     @Test

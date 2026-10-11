@@ -18,11 +18,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.ui.components.TopLevelDestinations
 import edu.bluejack26_1.wakord.ui.components.WakButton
@@ -47,6 +49,8 @@ import edu.bluejack26_1.wakord.ui.feature.settings.SettingsRoute
 import edu.bluejack26_1.wakord.ui.feature.song.SongCommentsRoute
 import edu.bluejack26_1.wakord.ui.feature.song.SongDetailRoute
 import edu.bluejack26_1.wakord.ui.feature.song.SongDetailViewModel
+import edu.bluejack26_1.wakord.ui.feature.training.ExerciseRoute
+import edu.bluejack26_1.wakord.ui.feature.training.ExerciseViewModel
 import edu.bluejack26_1.wakord.ui.feature.training.TrainingRoute
 import edu.bluejack26_1.wakord.ui.feature.tuner.TunerRoute
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
@@ -179,12 +183,22 @@ private fun NavGraphBuilder.mainGraph(nav: NavController) {
         composable(Routes.TRAINING) {
             TrainingRoute(
                 onBack = { nav.popBackStack() },
-                onStartExercise = { nav.navigate(Routes.trainingExercise(it.toString())) },
+                onStartExercise = { nav.navigate(Routes.trainingExercise(it)) },
                 onOpenStats = { nav.navigate(Routes.TRAINING_STATS) },
                 onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) },
             )
         }
-        composable(Routes.TRAINING_EXERCISE) { PlaceholderScreen("Exercise") }
+        composable(
+            Routes.TRAINING_EXERCISE,
+            arguments = listOf(navArgument(ExerciseViewModel.LEVEL) { type = NavType.IntType }),
+        ) {
+            ExerciseRoute(
+                onBack = { nav.popBackStack() },
+                onOpenLevel = { level ->
+                    nav.navigate(Routes.trainingExercise(level)) { popUpTo(Routes.TRAINING_EXERCISE) { inclusive = true } }
+                },
+            )
+        }
         composable(Routes.TRAINING_STATS) { PlaceholderScreen("Training stats") }
         composable(Routes.SONG) { entry ->
             val songId = entry.arguments?.getString(SongDetailViewModel.SONG_ID).orEmpty()
