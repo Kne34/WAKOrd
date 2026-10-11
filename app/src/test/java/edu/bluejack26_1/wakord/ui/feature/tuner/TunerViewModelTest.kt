@@ -133,6 +133,34 @@ class TunerViewModelTest {
     }
 
     @Test
+    fun `play mode stops listening and listen mode starts it again`() = runTest(mainRule.dispatcher) {
+        val player = RecordingTonePlayer()
+        val vm = viewModel(110f, player)
+        vm.onAction(TunerAction.PermissionResult(granted = true))
+        advanceUntilIdle()
+        assertEquals(TuneStatus.IN_TUNE, vm.uiState.value.status)
+
+        vm.onAction(TunerAction.UsePitchPipe)
+        advanceUntilIdle()
+        assertTrue(vm.uiState.value.pitchPipeMode)
+        assertNull(vm.uiState.value.reading)
+        assertEquals(TuneStatus.IDLE, vm.uiState.value.status)
+
+        vm.onAction(TunerAction.PermissionResult(granted = true))
+        advanceUntilIdle()
+        assertTrue(vm.uiState.value.pitchPipeMode)
+        assertNull(vm.uiState.value.reading)
+
+        vm.onAction(TunerAction.PlayPitchPipe(2))
+        vm.onAction(TunerAction.UseListening)
+        advanceUntilIdle()
+        assertFalse(vm.uiState.value.pitchPipeMode)
+        assertNull(vm.uiState.value.pitchPipeString)
+        assertTrue(player.stopped > 0)
+        assertEquals(TuneStatus.IN_TUNE, vm.uiState.value.status)
+    }
+
+    @Test
     fun `pitch pipe plays the string note`() = runTest(mainRule.dispatcher) {
         val player = RecordingTonePlayer()
         val vm = viewModel(110f, player)

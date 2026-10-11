@@ -70,7 +70,8 @@ class TunerViewModel(
             TunerAction.ToggleAuto -> _uiState.update {
                 it.copy(autoDetect = !it.autoDetect, selectedString = it.activeString ?: it.selectedString)
             }
-            TunerAction.UsePitchPipe -> _uiState.update { it.copy(pitchPipeMode = true) }
+            TunerAction.UsePitchPipe -> usePitchPipe()
+            TunerAction.UseListening -> useListening()
             is TunerAction.PlayPitchPipe -> playPitchPipe(action.index)
             is TunerAction.SaveCustomTuning -> saveCustomTuning(action.name, action.notes)
             is TunerAction.OpenSheet -> _uiState.update { it.copy(sheet = action.sheet) }
@@ -82,10 +83,22 @@ class TunerViewModel(
         _uiState.update {
             it.copy(
                 micPermission = if (granted) MicPermission.GRANTED else MicPermission.DENIED,
-                pitchPipeMode = if (granted) false else it.pitchPipeMode,
+                pitchPipeMode = if (granted && it.micPermission == MicPermission.DENIED) false else it.pitchPipeMode,
             )
         }
-        if (granted) startListening()
+        if (granted && !_uiState.value.pitchPipeMode) startListening()
+    }
+
+    private fun usePitchPipe() {
+        stopListening()
+        _uiState.update { it.copy(pitchPipeMode = true, reading = null, activeString = null, centsOff = 0f, status = TuneStatus.IDLE) }
+    }
+
+    private fun useListening() {
+        pitchPipeJob?.cancel()
+        tonePlayer.stop()
+        _uiState.update { it.copy(pitchPipeMode = false, pitchPipeString = null) }
+        if (_uiState.value.micPermission == MicPermission.GRANTED) startListening()
     }
 
     private fun startListening() {
