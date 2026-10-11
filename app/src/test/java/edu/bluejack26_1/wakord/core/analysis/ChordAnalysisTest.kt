@@ -31,6 +31,30 @@ class ChordAnalysisTest {
     }
 
     @Test
+    fun `names a chord from piano keys and prefers the lowest key as root`() {
+        assertEquals("C", ChordRecognizer.fromNotes(listOf(60, 64, 67))?.symbol)
+        assertEquals("Am7", ChordRecognizer.fromNotes(listOf(57, 60, 64, 67))?.symbol)
+        assertEquals("C6", ChordRecognizer.fromNotes(listOf(60, 64, 67, 69))?.symbol)
+        assertEquals("Em", ChordRecognizer.fromNotes(listOf(52, 55, 59, 64))?.symbol)
+    }
+
+    @Test
+    fun `describes a chord from its symbol`() {
+        val reading = ChordRecognizer.readingOf("Am7")
+        assertEquals("Am7", reading?.symbol)
+        assertEquals("minor", reading?.quality)
+        assertEquals(listOf("A", "C", "E", "G"), reading?.notes)
+        assertEquals("Bbmaj7", ChordRecognizer.readingOf("Bbmaj7")?.symbol)
+        assertNull(ChordRecognizer.readingOf("nope"))
+    }
+
+    @Test
+    fun `needs at least three different notes to name a chord`() {
+        assertNull(ChordRecognizer.fromNotes(listOf(60, 64)))
+        assertNull(ChordRecognizer.fromNotes(listOf(60, 64, 72, 76)))
+    }
+
+    @Test
     fun `recognizes triads and seventh chords from sound`() {
         assertEquals("C", ChordRecognizer.recognize(tone(listOf(48, 60, 64, 67), 0.3), rate)?.symbol)
         assertEquals("Am", ChordRecognizer.recognize(tone(listOf(57, 60, 64, 69), 0.3), rate)?.symbol)

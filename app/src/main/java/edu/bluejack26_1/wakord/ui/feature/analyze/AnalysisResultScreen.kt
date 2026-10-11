@@ -515,7 +515,7 @@ private fun ProgressionsSection(progressions: List<ChordProgression>, onOpen: (S
 }
 
 @Composable
-private fun SaveDialog(isSaving: Boolean, onSave: (String) -> Unit, onDismiss: () -> Unit) {
+internal fun SaveDialog(isSaving: Boolean, onSave: (String) -> Unit, onDismiss: () -> Unit) {
     val c = WakTheme.colors
     var title by rememberSaveable { mutableStateOf("") }
     Dialog(onDismissRequest = { if (!isSaving) onDismiss() }) {

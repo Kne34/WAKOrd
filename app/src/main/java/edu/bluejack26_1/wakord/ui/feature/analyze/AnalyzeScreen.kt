@@ -79,12 +79,15 @@ fun chordLine(result: AnalysisResult): String = result.uniqueChords.joinToString
 fun AnalyzeScreen(
     state: AnalyzeUiState,
     onAction: (AnalyzeAction) -> Unit,
+    mode: AnalyzeMode,
+    onSelectMode: (AnalyzeMode) -> Unit,
     microphoneOff: Boolean,
     unreadNotifications: Int,
     onToggleRecording: () -> Unit,
     onOpenNotifications: () -> Unit,
     onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
+    liveContent: @Composable () -> Unit = {},
 ) {
     val c = WakTheme.colors
     Box(
@@ -110,26 +113,32 @@ fun AnalyzeScreen(
                 Text(stringResource(R.string.analyze_title), style = spaceGrotesk(26.sp), color = c.text, modifier = Modifier.weight(1f))
                 NotificationBell(unreadCount = unreadNotifications, onClick = onOpenNotifications)
             }
-            ModeSelector(Modifier.padding(horizontal = 20.dp))
-            Spacer(Modifier.height(12.dp))
-            Text(
-                stringResource(R.string.analyze_record_intro),
-                style = jakarta(14.sp),
-                color = c.text2,
-                modifier = Modifier.padding(horizontal = 20.dp),
-            )
-            if (microphoneOff) {
-                MicOffBlock(onOpenSettings)
+            ModeSelector(mode, onSelectMode, Modifier.padding(horizontal = 20.dp))
+            if (mode == AnalyzeMode.Record) {
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    stringResource(R.string.analyze_record_intro),
+                    style = jakarta(14.sp),
+                    color = c.text2,
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                )
             } else {
-                RecordBlock(state, onToggleRecording)
-                RecentAnalyses(state.history, onOpen = { onAction(AnalyzeAction.OpenHistory(it)) })
+                Spacer(Modifier.height(14.dp))
+            }
+            when {
+                microphoneOff -> MicOffBlock(onOpenSettings)
+                mode == AnalyzeMode.Record -> {
+                    RecordBlock(state, onToggleRecording)
+                    RecentAnalyses(state.history, onOpen = { onAction(AnalyzeAction.OpenHistory(it)) })
+                }
+                else -> liveContent()
             }
         }
     }
 }
 
 @Composable
-private fun ModeSelector(modifier: Modifier = Modifier) {
+private fun ModeSelector(mode: AnalyzeMode, onSelect: (AnalyzeMode) -> Unit, modifier: Modifier = Modifier) {
     val c = WakTheme.colors
     Row(
         modifier = modifier
@@ -141,21 +150,32 @@ private fun ModeSelector(modifier: Modifier = Modifier) {
             .selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        ModeOption(painterResource(R.drawable.ic_mic), stringResource(R.string.analyze_mode_record), selected = true, enabled = true, Modifier.weight(1f))
-        ModeOption(painterResource(R.drawable.ic_nav_analyze), stringResource(R.string.analyze_mode_live), selected = false, enabled = false, Modifier.weight(1f))
+        ModeOption(
+            painterResource(R.drawable.ic_mic),
+            stringResource(R.string.analyze_mode_record),
+            selected = mode == AnalyzeMode.Record,
+            onClick = { onSelect(AnalyzeMode.Record) },
+            Modifier.weight(1f),
+        )
+        ModeOption(
+            painterResource(R.drawable.ic_nav_analyze),
+            stringResource(R.string.analyze_mode_live),
+            selected = mode == AnalyzeMode.Live,
+            onClick = { onSelect(AnalyzeMode.Live) },
+            Modifier.weight(1f),
+        )
     }
 }
 
 @Composable
-private fun ModeOption(icon: Painter, label: String, selected: Boolean, enabled: Boolean, modifier: Modifier = Modifier) {
+private fun ModeOption(icon: Painter, label: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val c = WakTheme.colors
     val content = if (selected) c.text else c.text3
     Row(
         modifier = modifier
             .fillMaxSize()
-            .alpha(if (enabled) 1f else 0.5f)
             .background(if (selected) c.s1 else Color.Transparent, RoundedCornerShape(12.dp))
-            .selectable(selected = selected, enabled = enabled, onClick = {}, role = Role.Tab),
+            .selectable(selected = selected, onClick = onClick, role = Role.Tab),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -361,7 +381,7 @@ val previewAnalysis = AnalysisResult(
 @Composable
 private fun AnalyzeIdlePreview() {
     WAKordTheme(darkTheme = true) {
-        AnalyzeScreen(AnalyzeUiState(history = listOf(previewAnalysis)), {}, false, 3, {}, {}, {})
+        AnalyzeScreen(AnalyzeUiState(history = listOf(previewAnalysis)), {}, AnalyzeMode.Record, {}, false, 3, {}, {}, {})
     }
 }
 
@@ -369,7 +389,7 @@ private fun AnalyzeIdlePreview() {
 @Composable
 private fun AnalyzeRecordingPreview() {
     WAKordTheme(darkTheme = true) {
-        AnalyzeScreen(AnalyzeUiState(isRecording = true, elapsedMs = 12_000, inputLevel = 0.15f), {}, false, 0, {}, {}, {})
+        AnalyzeScreen(AnalyzeUiState(isRecording = true, elapsedMs = 12_000, inputLevel = 0.15f), {}, AnalyzeMode.Record, {}, false, 0, {}, {}, {})
     }
 }
 
@@ -377,6 +397,6 @@ private fun AnalyzeRecordingPreview() {
 @Composable
 private fun AnalyzeMicOffPreview() {
     WAKordTheme(darkTheme = false) {
-        AnalyzeScreen(AnalyzeUiState(), {}, true, 0, {}, {}, {})
+        AnalyzeScreen(AnalyzeUiState(), {}, AnalyzeMode.Live, {}, true, 0, {}, {}, {})
     }
 }

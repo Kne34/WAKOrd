@@ -44,13 +44,52 @@ sealed interface AnalyzeAction {
     data object DismissError : AnalyzeAction
 }
 
+enum class AnalyzeMode { Record, Live }
+
+const val MAX_TRACK_BARS = 8
+const val DEFAULT_TRACK_BPM = 92
+const val MIN_TRACK_BPM = 40
+const val MAX_TRACK_BPM = 200
+
 data class LiveChordUiState(
     val isListening: Boolean = false,
+    val inputLevel: Float = 0f,
     val reading: LiveChordReading? = null,
+    val lockedReading: LiveChordReading? = null,
+    val isBuilding: Boolean = false,
+    val builtNotes: Set<Int> = emptySet(),
+    val builtReading: LiveChordReading? = null,
     val microphoneOff: Boolean = false,
-)
+    val bars: List<ChordTrackBar> = emptyList(),
+    val trackKey: String? = null,
+    val bpm: Int = DEFAULT_TRACK_BPM,
+    val isPlayingTrack: Boolean = false,
+    val isLooping: Boolean = false,
+    val playingBar: Int? = null,
+    val isSaving: Boolean = false,
+    val savedProgressionId: String? = null,
+    @param:StringRes val errorMessage: Int? = null,
+) {
+    val canAddBar: Boolean get() = bars.size < MAX_TRACK_BARS
+    val isLocked: Boolean get() = lockedReading != null
+    val shownReading: LiveChordReading? get() = if (isBuilding) builtReading else lockedReading ?: reading
+}
 
 sealed interface LiveChordAction {
     data object ToggleListening : LiveChordAction
+    data object StartListening : LiveChordAction
+    data object StopListening : LiveChordAction
     data object MicrophoneDenied : LiveChordAction
+    data object ToggleLock : LiveChordAction
+    data object StartBuilding : LiveChordAction
+    data class ToggleKey(val midi: Int) : LiveChordAction
+    data object ClearKeys : LiveChordAction
+    data object FinishBuilding : LiveChordAction
+    data class AddBar(val symbol: String) : LiveChordAction
+    data class RemoveBar(val index: Int) : LiveChordAction
+    data class SetBpm(val bpm: Int) : LiveChordAction
+    data object PlayTrack : LiveChordAction
+    data object ToggleLoop : LiveChordAction
+    data class SaveAsProgression(val title: String) : LiveChordAction
+    data object DismissError : LiveChordAction
 }

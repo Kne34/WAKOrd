@@ -2,6 +2,7 @@ package edu.bluejack26_1.wakord.ui.feature.progression
 
 import edu.bluejack26_1.wakord.core.audio.PlaybackController
 import edu.bluejack26_1.wakord.core.audio.TonePlaybackController
+import edu.bluejack26_1.wakord.core.music.VoicingGenerator
 import edu.bluejack26_1.wakord.data.fake.FakeCommentRepository
 import edu.bluejack26_1.wakord.data.fake.FakePlaybackController
 import edu.bluejack26_1.wakord.data.fake.FakeProgressionRepository
@@ -88,6 +89,27 @@ class ProgressionDetailViewModelTest {
 
         vm.onAction(ProgressionDetailAction.CloseChord)
         assertNull(vm.uiState.value.selectedChord)
+    }
+
+    @Test
+    fun `ukulele diagrams and the ukulele chord sheet use the ukulele tuning`() = runTest(main.dispatcher) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        assertEquals(3, vm.uiState.value.ukuleleDiagrams.size)
+        assertTrue(vm.uiState.value.ukuleleDiagrams.all { it != null && it.frets.size == 4 })
+
+        vm.onAction(ProgressionDetailAction.OpenChord("Cmaj9", VoicingGenerator.UKULELE_STANDARD))
+        advanceUntilIdle()
+        val voicings = vm.uiState.value.voicings
+        assertTrue(voicings.isNotEmpty())
+        assertTrue(voicings.all { it.frets.size == 4 })
+
+        vm.onAction(ProgressionDetailAction.PreviewChord)
+        advanceUntilIdle()
+        assertEquals(VoicingGenerator.midiNotes(voicings.first(), VoicingGenerator.UKULELE_STANDARD), player.chords.last())
+
+        vm.onAction(ProgressionDetailAction.CloseChord)
+        assertEquals(VoicingGenerator.GUITAR_STANDARD, vm.uiState.value.chordTuning)
     }
 
     @Test

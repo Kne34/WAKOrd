@@ -91,4 +91,20 @@ class ChordSheetViewModelTest {
         assertTrue(vm.uiState.value.voicings.isEmpty())
         assertEquals(1, player.stopped)
     }
+
+    @Test
+    fun `tapping a piano key plays that note`() = runTest(main.dispatcher) {
+        val vm = viewModel()
+        vm.onAction(ChordSheetAction.PlayNote(61))
+        advanceUntilIdle()
+        assertEquals(listOf(listOf(61)), player.chords)
+    }
+
+    @Test
+    fun `hear chord plays the given notes together`() = runTest(main.dispatcher) {
+        val vm = viewModel()
+        vm.onAction(ChordSheetAction.PlayChord(listOf(54, 57, 61)))
+        advanceUntilIdle()
+        assertEquals(listOf(listOf(54, 57, 61)), player.chords)
+    }
 }

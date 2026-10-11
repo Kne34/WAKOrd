@@ -36,6 +36,8 @@ sealed interface ChordSheetAction {
     data object Close : ChordSheetAction
     data class SelectVoicing(val index: Int) : ChordSheetAction
     data object Preview : ChordSheetAction
+    data class PlayNote(val midi: Int) : ChordSheetAction
+    data class PlayChord(val midis: List<Int>) : ChordSheetAction
     data object ToggleSaved : ChordSheetAction
     data object DismissError : ChordSheetAction
 }
@@ -59,6 +61,8 @@ class ChordSheetViewModel(
                 it.copy(selectedVoicing = action.index.coerceIn(0, (it.voicings.size - 1).coerceAtLeast(0)))
             }
             ChordSheetAction.Preview -> preview()
+            is ChordSheetAction.PlayNote -> viewModelScope.launch { tonePlayer.playNote(action.midi, NOTE_MS) }
+            is ChordSheetAction.PlayChord -> viewModelScope.launch { tonePlayer.playChord(action.midis, PREVIEW_MS) }
             ChordSheetAction.ToggleSaved -> toggleSaved()
             ChordSheetAction.DismissError -> _uiState.update { it.copy(errorMessage = null) }
         }
@@ -109,6 +113,7 @@ class ChordSheetViewModel(
 
     companion object {
         private const val PREVIEW_MS = 1500L
+        private const val NOTE_MS = 900L
 
         val Factory = viewModelFactory {
             initializer {

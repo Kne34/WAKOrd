@@ -13,6 +13,7 @@ import edu.bluejack26_1.wakord.core.error.AppError
 import edu.bluejack26_1.wakord.core.error.messageRes
 import edu.bluejack26_1.wakord.core.music.VoicingGenerator
 import edu.bluejack26_1.wakord.domain.model.ChordProgression
+import edu.bluejack26_1.wakord.domain.model.ChordVoicing
 import edu.bluejack26_1.wakord.domain.model.Comment
 import edu.bluejack26_1.wakord.domain.model.SavedType
 import edu.bluejack26_1.wakord.domain.repository.CommentRepository
@@ -45,14 +46,16 @@ class ProgressionDetailViewModel(
     init {
         viewModelScope.launch {
             progressionRepository.progression(progressionId).collect { progression ->
-                val diagrams = progression?.chords?.let { chords ->
-                    withContext(computeDispatcher) { chords.map { VoicingGenerator.voicings(it, limit = 1).firstOrNull() } }
-                }.orEmpty()
+                val chords = progression?.chords.orEmpty()
+                val (guitar, ukulele) = withContext(computeDispatcher) {
+                    diagrams(chords, VoicingGenerator.GUITAR_STANDARD) to diagrams(chords, VoicingGenerator.UKULELE_STANDARD)
+                }
                 _uiState.update {
                     it.copy(
                         isLoading = false,
                         progression = progression,
-                        chordDiagrams = diagrams,
+                        chordDiagrams = guitar,
+                        ukuleleDiagrams = ukulele,
                         errorMessage = if (progression == null) AppError.NotFound.messageRes() else it.errorMessage,
                     )
                 }
@@ -74,10 +77,12 @@ class ProgressionDetailViewModel(
     fun onAction(action: ProgressionDetailAction) {
         when (action) {
             ProgressionDetailAction.TogglePlay -> if (_uiState.value.isPlaying) stopPlayback() else startPlayback()
-            is ProgressionDetailAction.OpenChord -> openChord(action.symbol)
+            is ProgressionDetailAction.OpenChord -> openChord(action.symbol, action.tuning)
             ProgressionDetailAction.CloseChord -> {
                 chordSavedJob?.cancel()
-                _uiState.update { it.copy(selectedChord = null, voicings = emptyList(), selectedVoicing = 0) }
+                _uiState.update {
+                    it.copy(selectedChord = null, voicings = emptyList(), selectedVoicing = 0, chordTuning = VoicingGenerator.GUITAR_STANDARD)
+                }
             }
             is ProgressionDetailAction.SelectVoicing -> _uiState.update { it.copy(selectedVoicing = action.index) }
             ProgressionDetailAction.PreviewChord -> previewChord()
@@ -102,10 +107,13 @@ class ProgressionDetailViewModel(
         playbackController.pause()
     }
 
-    private fun openChord(symbol: String) {
+    private fun diagrams(chords: List<String>, tuning: List<Int>): List<ChordVoicing?> =
+        chords.map { VoicingGenerator.voicings(it, tuning, limit = 1).firstOrNull() }
+
+    private fun openChord(symbol: String, tuning: List<Int>) {
         viewModelScope.launch {
-            val voicings = withContext(computeDispatcher) { VoicingGenerator.voicings(symbol) }
-            _uiState.update { it.copy(selectedChord = symbol, voicings = voicings, selectedVoicing = 0) }
+            val voicings = withContext(computeDispatcher) { VoicingGenerator.voicings(symbol, tuning) }
+            _uiState.update { it.copy(selectedChord = symbol, voicings = voicings, selectedVoicing = 0, chordTuning = tuning) }
         }
         chordSavedJob?.cancel()
         chordSavedJob = viewModelScope.launch {
@@ -116,7 +124,7 @@ class ProgressionDetailViewModel(
     private fun previewChord() {
         val s = _uiState.value
         val voicing = s.voicings.getOrNull(s.selectedVoicing) ?: return
-        viewModelScope.launch { tonePlayer.playChord(VoicingGenerator.midiNotes(voicing), 1500) }
+        viewModelScope.launch { tonePlayer.playChord(VoicingGenerator.midiNotes(voicing, s.chordTuning), 1500) }
     }
 
     private fun toggleChordSaved() {

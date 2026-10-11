@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -39,11 +40,17 @@ fun AnalyzeRoute(
     onOpenAnalyzing: () -> Unit,
     onOpenResult: (String) -> Unit,
     onOpenNotifications: () -> Unit,
+    onOpenProgression: (String) -> Unit,
     viewModel: AnalyzeViewModel = viewModel(factory = AnalyzeViewModel.Factory),
     badgeViewModel: NotificationBadgeViewModel = viewModel(factory = NotificationBadgeViewModel.Factory),
+    liveViewModel: LiveChordViewModel = viewModel(factory = LiveChordViewModel.Factory),
+    chordSheetViewModel: ChordSheetViewModel = viewModel(factory = ChordSheetViewModel.Factory),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val live by liveViewModel.uiState.collectAsStateWithLifecycle()
+    val chordSheet by chordSheetViewModel.uiState.collectAsStateWithLifecycle()
     val unread by badgeViewModel.unreadCount.collectAsStateWithLifecycle()
+    var mode by rememberSaveable { mutableStateOf(AnalyzeMode.Record) }
     val context = LocalContext.current
     var hasPermission by remember { mutableStateOf(context.hasMicPermission()) }
     LifecycleResumeEffect(Unit) {
@@ -61,6 +68,24 @@ fun AnalyzeRoute(
         hasPermission = granted
         viewModel.onAction(if (granted) AnalyzeAction.ToggleRecording else AnalyzeAction.MicrophoneDenied)
     }
+    val livePermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        hasPermission = granted
+        if (!granted) liveViewModel.onAction(LiveChordAction.MicrophoneDenied)
+    }
+    val liveActive = mode == AnalyzeMode.Live && hasPermission
+    LifecycleStartEffect(liveActive, liveViewModel) {
+        if (liveActive) liveViewModel.onAction(LiveChordAction.StartListening)
+        onStopOrDispose {
+            val rotating = activity?.isChangingConfigurations == true
+            if (liveActive && !rotating) liveViewModel.onAction(LiveChordAction.StopListening)
+        }
+    }
+    val shownSymbol = live.shownReading?.symbol
+    LaunchedEffect(shownSymbol) {
+        if (shownSymbol != null && shownSymbol != chordSheetViewModel.uiState.value.symbol) {
+            chordSheetViewModel.onAction(ChordSheetAction.Open(shownSymbol))
+        }
+    }
     val resultId = state.result?.id
     LaunchedEffect(state.isAnalyzing, resultId) {
         when {
@@ -69,11 +94,21 @@ fun AnalyzeRoute(
         }
     }
     ErrorToast(state.errorMessage) { viewModel.onAction(AnalyzeAction.DismissError) }
+    ErrorToast(live.errorMessage) { liveViewModel.onAction(LiveChordAction.DismissError) }
+    ErrorToast(chordSheet.errorMessage) { chordSheetViewModel.onAction(ChordSheetAction.DismissError) }
 
     AnalyzeScreen(
         state = state,
         onAction = viewModel::onAction,
-        microphoneOff = state.microphoneOff && !hasPermission,
+        mode = mode,
+        onSelectMode = { selected ->
+            if (selected != mode) {
+                if (state.isRecording) viewModel.onAction(AnalyzeAction.CancelAnalysis)
+                mode = selected
+                if (selected == AnalyzeMode.Live && !hasPermission) livePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            }
+        },
+        microphoneOff = !hasPermission && if (mode == AnalyzeMode.Record) state.microphoneOff else live.microphoneOff,
         unreadNotifications = unread,
         onToggleRecording = {
             if (!state.isRecording && !hasPermission) {
@@ -85,6 +120,17 @@ fun AnalyzeRoute(
         onOpenNotifications = onOpenNotifications,
         onOpenSettings = {
             context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null)))
+        },
+        liveContent = {
+            LiveChordContent(
+                state = live,
+                onAction = liveViewModel::onAction,
+                isChordSaved = chordSheet.isSaved && chordSheet.symbol == shownSymbol,
+                onPlayNote = { chordSheetViewModel.onAction(ChordSheetAction.PlayNote(it)) },
+                onPlayChord = { chordSheetViewModel.onAction(ChordSheetAction.PlayChord(it)) },
+                onToggleChordSaved = { chordSheetViewModel.onAction(ChordSheetAction.ToggleSaved) },
+                onOpenProgression = onOpenProgression,
+            )
         },
     )
 }
