@@ -29,7 +29,7 @@ import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 
-enum class DialogTone { Default, Error, Destructive }
+enum class DialogTone { Default, Info, Error, Destructive }
 
 @Composable
 fun WakDialog(
@@ -62,6 +62,7 @@ private fun WakDialogContent(
     val c = WakTheme.colors
     val accent = when (tone) {
         DialogTone.Default -> c.primary
+        DialogTone.Info -> c.lavender
         DialogTone.Error -> c.error
         DialogTone.Destructive -> c.peach
     }

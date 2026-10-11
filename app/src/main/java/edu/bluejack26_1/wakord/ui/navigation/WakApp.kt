@@ -47,6 +47,7 @@ import edu.bluejack26_1.wakord.ui.feature.settings.SettingsRoute
 import edu.bluejack26_1.wakord.ui.feature.song.SongCommentsRoute
 import edu.bluejack26_1.wakord.ui.feature.song.SongDetailRoute
 import edu.bluejack26_1.wakord.ui.feature.song.SongDetailViewModel
+import edu.bluejack26_1.wakord.ui.feature.training.TrainingRoute
 import edu.bluejack26_1.wakord.ui.feature.tuner.TunerRoute
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 
@@ -55,7 +56,8 @@ fun WakApp() {
     val navController = rememberNavController()
     val backStack by navController.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route
-    val showBottomBar = TopLevelDestinations.any { it.route == currentRoute }
+    val barRoute = if (currentRoute == Routes.TRAINING) Routes.HOME else currentRoute
+    val showBottomBar = TopLevelDestinations.any { it.route == barRoute }
 
     Scaffold(
         containerColor = WakTheme.colors.bg,
@@ -67,7 +69,7 @@ fun WakApp() {
                         visible = currentRoute == Routes.HOME || currentRoute == Routes.PROFILE,
                         onOpenProgression = { navController.navigate(Routes.progression(it)) },
                     )
-                    WakBottomBar(currentRoute = currentRoute, onNavigate = navController::navigateTopLevel)
+                    WakBottomBar(currentRoute = barRoute, onNavigate = navController::navigateTopLevel)
                 }
             }
         },
@@ -174,7 +176,16 @@ private fun NavGraphBuilder.mainGraph(nav: NavController) {
             )
         }
         composable(Routes.NOTIFICATIONS) { PlaceholderScreen("Notifications") }
-        composable(Routes.TRAINING) { PlaceholderScreen("Training") }
+        composable(Routes.TRAINING) {
+            TrainingRoute(
+                onBack = { nav.popBackStack() },
+                onStartExercise = { nav.navigate(Routes.trainingExercise(it.toString())) },
+                onOpenStats = { nav.navigate(Routes.TRAINING_STATS) },
+                onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) },
+            )
+        }
+        composable(Routes.TRAINING_EXERCISE) { PlaceholderScreen("Exercise") }
+        composable(Routes.TRAINING_STATS) { PlaceholderScreen("Training stats") }
         composable(Routes.SONG) { entry ->
             val songId = entry.arguments?.getString(SongDetailViewModel.SONG_ID).orEmpty()
             SongDetailRoute(

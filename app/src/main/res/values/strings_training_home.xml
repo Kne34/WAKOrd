@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="training_title">Ear &amp; Pitch Training</string>
+    <string name="training_subtitle">Eight minutes a day. Train your ear on notes, intervals and chords.</string>
+    <string name="training_stats">Training stats</string>
+    <string name="training_minutes_value">%1$d/%2$d</string>
+    <string name="training_min">min</string>
+    <string name="training_daily_workout">Daily workout</string>
+    <plurals name="training_minutes_to_go">
+        <item quantity="one">%1$d minute to go</item>
+        <item quantity="other">%1$d minutes to go</item>
+    </plurals>
+    <string name="training_goal_done">Goal reached today</string>
+    <string name="training_percent">%1$d%%</string>
+    <string name="training_accuracy">Accuracy</string>
+    <string name="training_trials">Trials</string>
+    <string name="training_resume">Resume daily routine</string>
+
+    <string name="pitch_monitor_title">Pitch monitor</string>
+    <string name="pitch_live">Live</string>
+    <string name="pitch_start">Start</string>
+    <string name="pitch_start_cd">Start listening</string>
+    <string name="pitch_stop_cd">Stop listening</string>
+    <string name="pitch_target">Target %1$s · %2$s Hz</string>
+    <string name="pitch_you_are_singing">You are singing</string>
+    <string name="pitch_cents">%1$s cents</string>
+    <string name="pitch_tap_start">Tap Start and sing the reference note</string>
+    <string name="pitch_no_signal">Sing or hum a steady note</string>
+    <string name="pitch_on">On pitch</string>
+    <string name="pitch_flat">Flat</string>
+    <string name="pitch_sharp">Sharp</string>
+    <string name="pitch_reference_note">Reference note</string>
+    <string name="pitch_play_reference">Play reference note</string>
+    <string name="pitch_more">More</string>
+    <string name="pitch_note_range">Pick any note from C2 to B5</string>
+    <string name="pitch_octave">Octave</string>
+    <string name="pitch_mic_off_message">Turn on microphone access so WAKord can hear you sing.</string>
+
+    <string name="curriculum_title">Curriculum</string>
+    <plurals name="curriculum_mastered">
+        <item quantity="one">%1$d of %2$d mastered</item>
+        <item quantity="other">%1$d of %2$d mastered</item>
+    </plurals>
+    <string name="level_number">Level %1$d</string>
+    <string name="level_in_progress">Level %1$d · In progress</string>
+    <string name="level_unlocked">Level %1$d · Unlocked</string>
+    <string name="level_locked">Level %1$d · Locked</string>
+    <string name="level_mastered">Mastered</string>
+    <string name="level_continue">Continue</string>
+    <string name="level_start">Start</string>
+    <string name="level_unlock_hint">Complete Level %1$d to unlock</string>
+    <string name="level_progress">%1$d/10</string>
+    <string name="level_locked_title">Level %1$d is locked</string>
+    <string name="level_locked_message">Complete Level %1$d · %2$s to unlock %3$s.</string>
+    <string name="level_go_to">Go to Level %1$d</string>
+</resources>
