@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -49,9 +50,11 @@ fun AnalyzeRoute(
         hasPermission = context.hasMicPermission()
         onPauseOrDispose {}
     }
+    val activity = LocalActivity.current
     LifecycleStartEffect(viewModel) {
         onStopOrDispose {
-            if (viewModel.uiState.value.isRecording) viewModel.onAction(AnalyzeAction.CancelAnalysis)
+            val rotating = activity?.isChangingConfigurations == true
+            if (!rotating && viewModel.uiState.value.isRecording) viewModel.onAction(AnalyzeAction.CancelAnalysis)
         }
     }
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
