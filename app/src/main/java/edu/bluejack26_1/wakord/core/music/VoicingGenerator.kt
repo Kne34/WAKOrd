@@ -11,6 +11,7 @@ object VoicingGenerator {
 
     private const val WINDOW = 3
     private const val MAX_POSITION = 10
+    private const val BASS_STRINGS = 6
 
     fun voicings(symbol: String, tuning: List<Int> = GUITAR_STANDARD, limit: Int = 3): List<ChordVoicing> {
         val chord = Chord.parse(symbol) ?: return emptyList()
@@ -39,7 +40,9 @@ object VoicingGenerator {
     fun pianoNotes(symbol: String, lowest: Int = PIANO_LOWEST, highest: Int = PIANO_HIGHEST): List<Int> {
         val chord = Chord.parse(symbol) ?: return emptyList()
         val root = lowest + NoteNames.pitchClass(chord.root)
-        val tones = ChordTheory.intervals(chord.suffix).map { root + it }
+        val tones = ChordTheory.intervals(chord.suffix)
+            .runningReduce { previous, interval -> previous + 1 + Math.floorMod(interval - previous - 1, 12) }
+            .map { root + it }
         val bass = chord.bass?.let { lowest + NoteNames.pitchClass(it) }
         val notes = if (bass == null) {
             tones
@@ -90,7 +93,7 @@ object VoicingGenerator {
     ): Pair<Int, ChordVoicing>? {
         val notes = frets.mapIndexedNotNull { s, f -> if (f < 0) null else tuning[s] + f }
         if (notes.size < minSounding) return null
-        if (notes.min() % 12 != bassPc) return null
+        if (tuning.size >= BASS_STRINGS && notes.min() % 12 != bassPc) return null
         if (!notes.map { it % 12 }.toSet().containsAll(required)) return null
         val fingers = fingersFor(frets) ?: return null
 
