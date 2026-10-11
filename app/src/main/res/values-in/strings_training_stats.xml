@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stats_month_cd">Pilih bulan, %1$s</string>
+    <string name="stats_today_date">Hari ini, %1$s</string>
+    <string name="stats_minutes">%1$d menit</string>
+    <plurals name="stats_sets">
+        <item quantity="other">%1$d set</item>
+    </plurals>
+    <string name="stats_day_detail">%1$s · %2$s · akurasi %3$d%%</string>
+    <string name="stats_no_training">Tidak ada latihan di hari ini</string>
+    <string name="stats_current_streak">Streak sekarang</string>
+    <string name="stats_best_streak">Streak terbaik</string>
+    <string name="stats_streak_history">Riwayat streak</string>
+    <string name="stats_minutes_per_day">Menit per hari</string>
+    <plurals name="stats_day_minutes_cd">
+        <item quantity="other">%1$s, %2$d menit</item>
+    </plurals>
+    <string name="stats_less">Sedikit</string>
+    <string name="stats_more">Banyak</string>
+    <string name="stats_accuracy_over_time">Akurasi dari waktu ke waktu</string>
+    <string name="stats_period_day">Hari</string>
+    <string name="stats_period_month">Bulan</string>
+    <string name="stats_period_year">Tahun</string>
+    <string name="stats_vs_yesterday">%1$s dibanding kemarin</string>
+    <string name="stats_vs_last_month">%1$s dibanding bulan lalu</string>
+    <string name="stats_vs_last_year">%1$s dibanding tahun lalu</string>
+    <string name="stats_signed_percent">%1$s%2$d%%</string>
+    <string name="stats_first_day">6 hari lalu</string>
+    <string name="stats_today">Hari ini</string>
+    <string name="stats_first_week">7 minggu lalu</string>
+    <string name="stats_this_week">Minggu ini</string>
+    <string name="stats_bar_cd">%1$s, akurasi %2$d%%</string>
+    <string name="stats_bar_empty_cd">%1$s, tidak ada sesi</string>
+    <string name="stats_by_skill">Per skill</string>
+    <string name="stats_empty">Selesaikan satu set latihan untuk melihat statistikmu di sini.</string>
+</resources>
