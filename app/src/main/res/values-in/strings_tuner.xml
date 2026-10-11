@@ -31,6 +31,8 @@
     <string name="tuner_pitch_pipe">Pitch pipe</string>
     <string name="tuner_pitch_pipe_hint">Ketuk senar untuk mendengar nadanya</string>
     <string name="tuner_turn_on_mic">Nyalakan mik</string>
+    <string name="tuner_mode_listen">Dengar</string>
+    <string name="tuner_mode_play">Bunyikan</string>
 
     <string name="tuner_instrument_title">Instrumen</string>
     <string name="tuner_instrument_subtitle">Tuner akan mendengarkan senar-senar ini</string>

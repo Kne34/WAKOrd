@@ -31,6 +31,8 @@
     <string name="tuner_pitch_pipe">Pitch pipe</string>
     <string name="tuner_pitch_pipe_hint">Tap a string to hear its note</string>
     <string name="tuner_turn_on_mic">Turn on mic</string>
+    <string name="tuner_mode_listen">Listen</string>
+    <string name="tuner_mode_play">Play</string>
 
     <string name="tuner_instrument_title">Instrument</string>
     <string name="tuner_instrument_subtitle">The tuner will listen for these strings</string>
