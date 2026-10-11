@@ -2,12 +2,12 @@ package edu.bluejack26_1.wakord.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -44,28 +44,36 @@ fun WakSheet(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit)
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        modifier = Modifier.border(1.dp, c.text2.copy(alpha = 0.10f), shape),
         shape = shape,
-        containerColor = c.s2,
+        containerColor = Color.Transparent,
         scrimColor = Color(0xFF03060F).copy(alpha = 0.66f),
-        dragHandle = {
-            Box(
-                Modifier
-                    .padding(top = 11.dp, bottom = 18.dp)
-                    .size(width = 40.dp, height = 5.dp)
-                    .background(c.s5, CircleShape),
-            )
-        },
+        dragHandle = null,
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 24.dp)
-                .navigationBarsPadding(),
-            content = content,
-        )
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = shape,
+            color = c.s2,
+            border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(
+                    Modifier
+                        .padding(top = 11.dp, bottom = 18.dp)
+                        .size(width = 40.dp, height = 5.dp)
+                        .background(c.s5, CircleShape),
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 20.dp)
+                        .padding(bottom = 24.dp)
+                        .navigationBarsPadding(),
+                    content = content,
+                )
+            }
+        }
     }
 }
 
