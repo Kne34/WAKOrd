@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="analyze_title">Analyze</string>
+    <string name="analyze_mode_record">Record audio</string>
+    <string name="analyze_mode_live">Live chords</string>
+    <string name="analyze_record_intro">Play or hum up to 30 seconds. We will detect the chords and suggest songs.</string>
+    <string name="analyze_start_cd">Start recording</string>
+    <string name="analyze_stop_cd">Stop recording</string>
+    <string name="analyze_tap_to_start">Tap to start recording</string>
+    <string name="analyze_listening">Listening… tap to stop and analyze</string>
+    <string name="analyze_recent">Recent analyses</string>
+    <string name="analyze_recent_empty">Your analyses will show up here.</string>
+    <string name="analyze_voice_memo">Voice memo · %1$s</string>
+    <string name="analyze_yesterday">Yesterday</string>
+    <string name="analyze_mic_off_message">Turn on microphone access so WAKord can listen and detect the chords you play.</string>
+    <string name="see_less">Show less</string>
+
+    <string name="analyzing_title">Analyzing</string>
+    <string name="analyzing_cancel_cd">Cancel analysis</string>
+    <string name="analyzing_step">Step %1$d of %2$d</string>
+    <string name="analyzing_recording">%1$s recording</string>
+    <string name="analyzing_headline">Finding your chords</string>
+    <string name="analyzing_body">Separating the harmony from the melody. This usually takes a few seconds.</string>
+    <string name="analyzing_stage_noise">Cleaning up background noise</string>
+    <string name="analyzing_stage_chords">Detecting chords</string>
+    <string name="analyzing_stage_songs">Matching songs &amp; artists</string>
+
+    <string name="result_title">Result</string>
+    <string name="result_share_cd">Share result</string>
+    <string name="result_detected">Detected in %1$s · %2$d%% confidence</string>
+    <plurals name="result_chords_found">
+        <item quantity="one">%1$d chord found</item>
+        <item quantity="other">%1$d chords found</item>
+    </plurals>
+    <string name="result_fallback">AI analysis was unavailable, so WAKord used basic detection.</string>
+    <string name="result_play">Play back</string>
+    <string name="result_stop">Stop</string>
+    <string name="result_save">Save as progression</string>
+    <string name="result_saved">Saved</string>
+    <string name="result_songs">Songs with these chords</string>
+    <string name="result_songs_empty">No songs in the catalog use these chords yet.</string>
+    <string name="result_full_match">%1$s · 100%% match</string>
+    <plurals name="result_partial_match">
+        <item quantity="one">%1$s · %2$d of %3$d chord</item>
+        <item quantity="other">%1$s · %2$d of %3$d chords</item>
+    </plurals>
+    <string name="result_artists">Related artists</string>
+    <string name="result_search_artist_cd">Search songs by %1$s</string>
+    <string name="result_progressions">Progressions to try next</string>
+    <string name="result_open_progression_cd">Open %1$s</string>
+    <string name="result_share_text">%1$s · %2$s · detected with WAKord</string>
+    <string name="result_save_title">Save as progression</string>
+    <string name="result_save_message">Give your progression a name. It will be posted to your profile.</string>
+    <string name="result_save_label">Title</string>
+    <string name="result_save_placeholder">My new progression</string>
+    <string name="result_saved_title">Progression saved</string>
+    <string name="result_saved_message">You can find it in My progressions on your profile.</string>
+    <string name="result_open">Open progression</string>
+    <string name="result_timeline_cd">Chord timeline</string>
+</resources>

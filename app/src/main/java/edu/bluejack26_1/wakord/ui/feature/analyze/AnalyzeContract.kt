@@ -33,6 +33,7 @@ data class AnalyzeUiState(
 
 sealed interface AnalyzeAction {
     data object ToggleRecording : AnalyzeAction
+    data object CancelAnalysis : AnalyzeAction
     data class OpenHistory(val result: AnalysisResult) : AnalyzeAction
     data object PlayResult : AnalyzeAction
     data class AddBar(val symbol: String) : AnalyzeAction
