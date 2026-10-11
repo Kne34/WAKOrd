@@ -10,6 +10,8 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.ZoneOffset
 import kotlin.random.Random
 
@@ -105,11 +107,51 @@ class TrainingLogicTest {
         assertEquals(5, stats.workout.minutesToday)
         assertEquals(20, stats.workout.trialsToday)
         assertEquals(0.7f, stats.workout.accuracyToday)
-        assertEquals(14, stats.history.size)
+        assertEquals(56, stats.history.size)
         assertEquals(2, stats.history.last().sessions)
         assertEquals(0.9f, stats.accuracyBySkill[SkillType.SINGLE_NOTE])
         assertEquals(0.6f, stats.accuracyBySkill[SkillType.INTERVAL])
         assertEquals(0.8f, stats.overallAccuracy)
+    }
+
+    @Test
+    fun `accuracy by day, week and month with changes`() {
+        val sessions = listOf(
+            session(1, 9),
+            session(1, 7, daysAgo = 1),
+            session(1, 5, daysAgo = 40),
+            session(1, 6, daysAgo = 400),
+        )
+        val stats = TrainingStatsCalculator.calculate(sessions, now, ZoneOffset.UTC)
+
+        assertEquals(7, stats.daily.buckets.size)
+        assertEquals(0.9f, stats.daily.buckets.last().accuracy)
+        assertEquals(0.7f, stats.daily.buckets[5].accuracy)
+        assertNull(stats.daily.buckets.first().accuracy)
+        assertEquals(0.2f, stats.daily.change!!, 0.0001f)
+
+        assertEquals(8, stats.weekly.buckets.size)
+        assertEquals(DayOfWeek.MONDAY, LocalDate.ofEpochDay(stats.weekly.buckets.last().startDay).dayOfWeek)
+        assertEquals(12, stats.monthly.buckets.size)
+        assertEquals(1, LocalDate.ofEpochDay(stats.monthly.buckets.last().startDay).dayOfMonth)
+        assertEquals(0.8f, stats.monthly.buckets.last().accuracy!!, 0.0001f)
+        assertEquals(0.1f, stats.monthly.change!!, 0.0001f)
+    }
+
+    @Test
+    fun `history reaches back to the first session`() {
+        val stats = TrainingStatsCalculator.calculate(listOf(session(1, 8, daysAgo = 100), session(1, 9)), now, ZoneOffset.UTC)
+        assertEquals(101, stats.history.size)
+        assertEquals(1, stats.history.first().sessions)
+        assertEquals(1, stats.history.last().sessions)
+    }
+
+    @Test
+    fun `changes are empty without an earlier period`() {
+        val stats = TrainingStatsCalculator.calculate(listOf(session(1, 8)), now, ZoneOffset.UTC)
+        assertNull(stats.daily.change)
+        assertNull(stats.weekly.change)
+        assertNull(stats.monthly.change)
     }
 
     @Test

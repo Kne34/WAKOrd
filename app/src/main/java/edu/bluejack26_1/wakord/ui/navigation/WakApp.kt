@@ -52,6 +52,8 @@ import edu.bluejack26_1.wakord.ui.feature.song.SongDetailViewModel
 import edu.bluejack26_1.wakord.ui.feature.training.ExerciseRoute
 import edu.bluejack26_1.wakord.ui.feature.training.ExerciseViewModel
 import edu.bluejack26_1.wakord.ui.feature.training.TrainingRoute
+import edu.bluejack26_1.wakord.ui.feature.training.TrainingStatsRoute
+import edu.bluejack26_1.wakord.ui.feature.training.TrainingViewModel
 import edu.bluejack26_1.wakord.ui.feature.tuner.TunerRoute
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 
@@ -199,7 +201,13 @@ private fun NavGraphBuilder.mainGraph(nav: NavController) {
                 },
             )
         }
-        composable(Routes.TRAINING_STATS) { PlaceholderScreen("Training stats") }
+        composable(Routes.TRAINING_STATS) { entry ->
+            val owner = remember(entry) { runCatching { nav.getBackStackEntry(Routes.TRAINING) }.getOrDefault(entry) }
+            TrainingStatsRoute(
+                onBack = { nav.popBackStack() },
+                viewModel = viewModel(viewModelStoreOwner = owner, factory = TrainingViewModel.Factory),
+            )
+        }
         composable(Routes.SONG) { entry ->
             val songId = entry.arguments?.getString(SongDetailViewModel.SONG_ID).orEmpty()
             SongDetailRoute(
