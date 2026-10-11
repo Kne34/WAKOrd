@@ -130,6 +130,18 @@ class TrainingViewModelsTest {
     }
 
     @Test
+    fun `pitch monitor shows the reference pitch from settings`() = runTest(main.dispatcher) {
+        settings.referencePitch.value = 442f
+        val vm = PitchMonitorViewModel(PitchSource { MutableSharedFlow() }, player, settings)
+        advanceUntilIdle()
+        assertEquals(442f, vm.uiState.value.referencePitch)
+
+        settings.referencePitch.value = 432f
+        advanceUntilIdle()
+        assertEquals(432f, vm.uiState.value.referencePitch)
+    }
+
+    @Test
     fun `pitch monitor shows mic off when the microphone is blocked`() = runTest(main.dispatcher) {
         val vm = PitchMonitorViewModel(PitchSource { flow { throw AppError.MicrophoneOff } }, player, settings)
         vm.onAction(PitchMonitorAction.ToggleListening)

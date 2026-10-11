@@ -68,6 +68,7 @@ sealed interface ExerciseAction {
 
 data class PitchMonitorUiState(
     val referenceMidi: Int = 60,
+    val referencePitch: Float = 440f,
     val isListening: Boolean = false,
     val reading: PitchReading? = null,
     val microphoneOff: Boolean = false,

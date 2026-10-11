@@ -30,6 +30,12 @@ class PitchMonitorViewModel(
 
     private var listenJob: Job? = null
 
+    init {
+        viewModelScope.launch {
+            settingsRepository.referencePitch.collect { hz -> _uiState.update { it.copy(referencePitch = hz) } }
+        }
+    }
+
     fun onAction(action: PitchMonitorAction) {
         when (action) {
             is PitchMonitorAction.SelectReference -> _uiState.update { it.copy(referenceMidi = action.midi, reading = null) }
