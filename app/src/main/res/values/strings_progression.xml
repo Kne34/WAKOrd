@@ -40,4 +40,5 @@
     <string name="string_g">G</string>
     <string name="string_b">B</string>
     <string name="string_high_e">high E</string>
+    <string name="progression_view_cd">Show chords as</string>
 </resources>
