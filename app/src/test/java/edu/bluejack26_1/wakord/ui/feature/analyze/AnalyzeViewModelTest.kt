@@ -56,6 +56,23 @@ class AnalyzeViewModelTest {
     }
 
     @Test
+    fun `cancel stops recording without analyzing`() = runTest(main.dispatcher) {
+        val vm = viewModel(FakeAudioCapture())
+        vm.onAction(AnalyzeAction.ToggleRecording)
+        advanceTimeBy(2_000)
+        assertTrue(vm.uiState.value.isRecording)
+
+        vm.onAction(AnalyzeAction.CancelAnalysis)
+        advanceUntilIdle()
+        val s = vm.uiState.value
+        assertFalse(s.isRecording)
+        assertNull(s.stage)
+        assertNull(s.result)
+        assertEquals(0, analyzer.analyzedSamples)
+        assertTrue(s.history.isEmpty())
+    }
+
+    @Test
     fun `tapping again stops early`() = runTest(main.dispatcher) {
         val vm = viewModel(FakeAudioCapture())
         vm.onAction(AnalyzeAction.ToggleRecording)
