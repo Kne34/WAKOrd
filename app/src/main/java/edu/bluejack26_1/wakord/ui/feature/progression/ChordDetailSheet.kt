@@ -24,6 +24,7 @@ fun ChordDetailSheet(state: ProgressionDetailUiState, onAction: (ProgressionDeta
         onPreview = { onAction(ProgressionDetailAction.PreviewChord) },
         onToggleSaved = { onAction(ProgressionDetailAction.ToggleChordSaved) },
         onClose = { onAction(ProgressionDetailAction.CloseChord) },
+        tuning = state.chordTuning,
     )
 }
 

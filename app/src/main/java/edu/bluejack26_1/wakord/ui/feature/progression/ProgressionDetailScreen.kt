@@ -102,7 +102,7 @@ fun ProgressionDetailScreen(
 ) {
     val c = WakTheme.colors
     val progression = state.progression
-    var showPiano by rememberSaveable { mutableStateOf(false) }
+    var view by rememberSaveable { mutableStateOf(ChordView.Guitar) }
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -143,16 +143,24 @@ fun ProgressionDetailScreen(
                 ) {
                     ProgressionInfo(progression)
                     SegmentedControl(
-                        labels = listOf(stringResource(R.string.instrument_guitar), stringResource(R.string.instrument_piano)),
-                        selectedIndex = if (showPiano) 1 else 0,
-                        onSelect = { showPiano = it == 1 },
+                        labels = listOf(
+                            stringResource(R.string.instrument_guitar),
+                            stringResource(R.string.instrument_ukulele),
+                            stringResource(R.string.instrument_piano),
+                        ),
+                        selectedIndex = view.ordinal,
+                        onSelect = { view = ChordView.entries[it] },
                         modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 22.dp),
                         description = stringResource(R.string.progression_view_cd),
                     )
-                    if (showPiano) {
-                        PianoList(progression.chords, state.playingIndex, onOpen = { onAction(ProgressionDetailAction.OpenChord(it)) })
-                    } else {
-                        ChordGrid(progression.chords, state.chordDiagrams, state.playingIndex, onOpen = { onAction(ProgressionDetailAction.OpenChord(it)) })
+                    when (view) {
+                        ChordView.Guitar -> ChordGrid(progression.chords, state.chordDiagrams, state.playingIndex, onOpen = {
+                            onAction(ProgressionDetailAction.OpenChord(it))
+                        })
+                        ChordView.Ukulele -> ChordGrid(progression.chords, state.ukuleleDiagrams, state.playingIndex, onOpen = {
+                            onAction(ProgressionDetailAction.OpenChord(it, VoicingGenerator.UKULELE_STANDARD))
+                        })
+                        ChordView.Piano -> PianoList(progression.chords, state.playingIndex, onOpen = { onAction(ProgressionDetailAction.OpenChord(it)) })
                     }
                     ProgressionActions(state, progression, onAction)
                     CommentsSection(state.comments, onOpenComments)
@@ -171,6 +179,8 @@ fun ProgressionDetailScreen(
         ChordDetailSheet(state, onAction)
     }
 }
+
+private enum class ChordView { Guitar, Ukulele, Piano }
 
 @Composable
 private fun ProgressionInfo(progression: ChordProgression) {

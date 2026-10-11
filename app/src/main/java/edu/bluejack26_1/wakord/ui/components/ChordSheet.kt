@@ -36,6 +36,7 @@ import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.core.music.Chord
 import edu.bluejack26_1.wakord.core.music.ChordTheory
 import edu.bluejack26_1.wakord.core.music.NoteNames
+import edu.bluejack26_1.wakord.core.music.VoicingGenerator
 import edu.bluejack26_1.wakord.domain.model.ChordVoicing
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 import edu.bluejack26_1.wakord.ui.theme.jakarta
@@ -82,8 +83,15 @@ fun voicingLabel(voicing: ChordVoicing): String {
 }
 
 @Composable
-private fun muteText(voicing: ChordVoicing): String {
-    val muted = voicing.frets.withIndex().filter { it.value < 0 }.mapNotNull { StringNames.getOrNull(it.index) }.map { stringResource(it) }
+private fun muteText(voicing: ChordVoicing, tuning: List<Int>): String {
+    val guitar = tuning == VoicingGenerator.GUITAR_STANDARD
+    val muted = voicing.frets.withIndex().filter { it.value < 0 }.mapNotNull { (index, _) ->
+        if (guitar) {
+            StringNames.getOrNull(index)?.let { stringResource(it) }
+        } else {
+            tuning.getOrNull(index)?.let { NoteNames.name(it % 12, preferFlats = false) }
+        }
+    }
     return when (muted.size) {
         0 -> stringResource(R.string.chord_mute_none)
         1 -> muted.first()
@@ -101,9 +109,10 @@ fun ChordSheet(
     onPreview: () -> Unit,
     onToggleSaved: () -> Unit,
     onClose: () -> Unit,
+    tuning: List<Int> = VoicingGenerator.GUITAR_STANDARD,
 ) {
     WakSheetFrame(onDismiss = onClose) {
-        ChordSheetContent(symbol, voicings, selectedVoicing, isSaved, onSelectVoicing, onPreview, onToggleSaved, onClose)
+        ChordSheetContent(symbol, voicings, selectedVoicing, isSaved, onSelectVoicing, onPreview, onToggleSaved, onClose, tuning)
     }
 }
 
@@ -117,6 +126,7 @@ fun ChordSheetContent(
     onPreview: () -> Unit,
     onToggleSaved: () -> Unit,
     onClose: () -> Unit,
+    tuning: List<Int> = VoicingGenerator.GUITAR_STANDARD,
 ) {
     val c = WakTheme.colors
     val voicing = voicings.getOrNull(selectedVoicing)
@@ -182,7 +192,7 @@ fun ChordSheetContent(
                     emphasize = true,
                 )
                 DetailLine(stringResource(R.string.chord_fingers), fingerText(voicing))
-                DetailLine(stringResource(R.string.chord_mute), muteText(voicing))
+                DetailLine(stringResource(R.string.chord_mute), muteText(voicing, tuning))
             }
         }
         Spacer(Modifier.height(18.dp))
