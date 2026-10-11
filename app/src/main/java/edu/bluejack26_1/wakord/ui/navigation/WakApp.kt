@@ -176,6 +176,7 @@ private fun NavGraphBuilder.mainGraph(nav: NavController) {
                 onOpenAnalyzing = { nav.navigate(Routes.ANALYZING) { launchSingleTop = true } },
                 onOpenResult = { id -> nav.navigate(Routes.analysisResult(id)) { launchSingleTop = true } },
                 onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) },
+                onOpenProgression = { nav.navigate(Routes.progression(it)) },
             )
         }
         composable(Routes.ANALYZING) { entry ->
