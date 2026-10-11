@@ -22,7 +22,7 @@ object Routes {
     const val EDIT_PROFILE = "edit_profile"
     const val NEW_PROGRESSION = "new_progression"
     const val TRAINING = "training"
-    const val TRAINING_EXERCISE = "training/exercise/{levelId}"
+    const val TRAINING_EXERCISE = "training/exercise/{level}"
     const val TRAINING_COMPLETE = "training/complete/{sessionId}"
     const val TRAINING_STATS = "training/stats"
     const val SONG = "song/{songId}"
@@ -38,7 +38,7 @@ object Routes {
     fun exploreSection(section: String) = "explore/section/$section"
     fun progressionComments(id: String) = "progression/$id/comments"
     fun user(id: String) = "user/$id"
-    fun trainingExercise(levelId: String) = "training/exercise/$levelId"
+    fun trainingExercise(level: Int) = "training/exercise/$level"
     fun trainingComplete(sessionId: String) = "training/complete/$sessionId"
     fun analysisResult(id: String) = "analyze/result/$id"
 }
