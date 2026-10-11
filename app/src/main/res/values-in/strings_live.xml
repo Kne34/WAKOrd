@@ -51,6 +51,8 @@
     <string name="track_slower_cd">Lebih lambat</string>
     <string name="track_faster_cd">Lebih cepat</string>
     <string name="track_bar">Bar %1$d</string>
+    <string name="track_tap_bar">Ketuk bar untuk melihat bentuk chordnya.</string>
+    <string name="track_show_shape">Lihat bentuk chord</string>
     <string name="track_now">Sekarang</string>
     <string name="track_add">Tambah bar</string>
     <string name="track_add_hint">chord berikutnya</string>
@@ -58,5 +60,5 @@
     <string name="track_play_cd">Putar jalur chord</string>
     <string name="track_stop_cd">Hentikan jalur chord</string>
     <string name="track_loop_cd">Ulang</string>
-    <string name="track_empty">Tahan sebuah chord lalu ketuk Tambah bar untuk menyusun progresi.</string>
+    <string name="track_empty">Tahan chord, lalu ketuk Tambah bar.</string>
 </resources>

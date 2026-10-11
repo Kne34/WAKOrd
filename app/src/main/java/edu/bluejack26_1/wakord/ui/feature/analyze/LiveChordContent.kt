@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -51,6 +54,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import edu.bluejack26_1.wakord.R
+import edu.bluejack26_1.wakord.core.analysis.ChordRecognizer
 import edu.bluejack26_1.wakord.core.analysis.RomanNumerals
 import edu.bluejack26_1.wakord.core.music.Chord
 import edu.bluejack26_1.wakord.core.music.ChordTheory
@@ -63,6 +67,7 @@ import edu.bluejack26_1.wakord.ui.components.ChordDiagram
 import edu.bluejack26_1.wakord.ui.components.PianoKeyboard
 import edu.bluejack26_1.wakord.ui.components.SegmentedControl
 import edu.bluejack26_1.wakord.ui.components.WakDialog
+import edu.bluejack26_1.wakord.ui.components.WakSheetFrame
 import edu.bluejack26_1.wakord.ui.components.fingerText
 import edu.bluejack26_1.wakord.ui.components.glassBorder
 import edu.bluejack26_1.wakord.ui.components.glassColor
@@ -149,6 +154,10 @@ private fun homeKey(reading: LiveChordReading): String =
 private fun roleName(tone: Tone): String = if (tone.code == "R") stringResource(R.string.live_root) else tone.role
 
 @Composable
+private fun chordName(reading: LiveChordReading): String =
+    listOf(prettyChord(reading.root), qualityName(reading), extensionText(reading)).filter { it.isNotBlank() }.joinToString(" ")
+
+@Composable
 private fun qualityName(reading: LiveChordReading): String = stringResource(
     when {
         reading.quality == "major" && reading.extensions == listOf("7") -> R.string.live_quality_dominant
@@ -174,6 +183,7 @@ fun LiveChordContent(
     var showSaveDialog by rememberSaveable { mutableStateOf(false) }
     var dismissedSaved by rememberSaveable(state.savedProgressionId) { mutableStateOf(false) }
     var instrument by rememberSaveable { mutableStateOf(LiveInstrument.Piano) }
+    var openBar by rememberSaveable { mutableStateOf<Int?>(null) }
     var lastReading by remember { mutableStateOf(state.shownReading) }
     val reading = state.shownReading
     LaunchedEffect(reading, state.isBuilding) {
@@ -196,7 +206,20 @@ fun LiveChordContent(
             onToggleSaved = onToggleChordSaved,
         )
         Spacer(Modifier.height(12.dp))
-        TrackCard(state, onAction, onSave = { showSaveDialog = true })
+        TrackCard(state, onAction, onSave = { showSaveDialog = true }, onOpenBar = { openBar = it })
+    }
+
+    val barIndex = openBar
+    val sheetBar = barIndex?.let { state.bars.getOrNull(it) }
+    if (barIndex != null && sheetBar != null) {
+        BarSheet(
+            index = barIndex,
+            bar = sheetBar,
+            initialInstrument = instrument,
+            onPlayNote = onPlayNote,
+            onPlayChord = onPlayChord,
+            onClose = { openBar = null },
+        )
     }
 
     if (showSaveDialog) {
@@ -402,7 +425,7 @@ private fun DetectedCard(reading: LiveChordReading?, trackKey: String?, building
                 modifier = Modifier.height(SYMBOL_HEIGHT),
             )
             Spacer(Modifier.height(4.dp))
-            val name = listOf(prettyChord(reading.root), qualityName(reading), extensionText(reading)).filter { it.isNotBlank() }.joinToString(" ")
+            val name = chordName(reading)
             Text(
                 if (trackKey == null) name else stringResource(R.string.live_description_in, name, prettyRoman(RomanNumerals.of(reading.symbol, trackKey)), keyLabel(trackKey)),
                 style = jakarta(14.sp),
@@ -475,7 +498,54 @@ private fun InstrumentCard(
 ) {
     val c = WakTheme.colors
     val building = state.isBuilding
-    val tones = remember(reading, building, state.builtNotes) { keyTones(reading, if (building) state.builtNotes else null) }
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(26.dp),
+        color = c.s2,
+        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+    ) {
+        Column(Modifier.padding(start = 15.dp, end = 15.dp, top = 13.dp, bottom = 15.dp)) {
+            InstrumentPanel(
+                reading = reading,
+                keys = if (building) state.builtNotes else null,
+                instrument = instrument,
+                onSelectInstrument = onSelectInstrument,
+                onPlayChord = onPlayChord,
+                piano = { tones ->
+                    PianoView(
+                        tones = tones,
+                        building = building,
+                        onKeyTap = { midi -> if (building) onAction(LiveChordAction.ToggleKey(midi)) else onPlayNote(midi) },
+                        onStartBuilding = { onAction(LiveChordAction.StartBuilding) },
+                        onClear = { onAction(LiveChordAction.ClearKeys) },
+                        onDone = { onAction(LiveChordAction.FinishBuilding) },
+                    )
+                },
+            ) {
+                CardButton(
+                    text = stringResource(if (isSaved) R.string.live_saved_chord else R.string.live_save_chord),
+                    icon = if (isSaved) R.drawable.ic_bookmark_filled else R.drawable.ic_bookmark,
+                    active = isSaved,
+                    enabled = reading != null,
+                    onClick = onToggleSaved,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun InstrumentPanel(
+    reading: LiveChordReading?,
+    keys: Set<Int>?,
+    instrument: LiveInstrument,
+    onSelectInstrument: (LiveInstrument) -> Unit,
+    onPlayChord: (List<Int>) -> Unit,
+    piano: @Composable (List<Tone>) -> Unit,
+    extraButton: @Composable RowScope.() -> Unit = {},
+) {
+    val tones = remember(reading, keys) { keyTones(reading, keys) }
     val tuning = if (instrument == LiveInstrument.Ukulele) VoicingGenerator.UKULELE_STANDARD else VoicingGenerator.GUITAR_STANDARD
     val symbol = reading?.symbol
     val request = symbol to instrument
@@ -491,58 +561,96 @@ private fun InstrumentCard(
     val voicings = if (ready) computed?.second.orEmpty() else emptyList()
     var voicingIndex by rememberSaveable(symbol, instrument) { mutableIntStateOf(0) }
     val voicing = voicings.getOrNull(voicingIndex % voicings.size.coerceAtLeast(1))
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(26.dp),
-        color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
-    ) {
-        Column(Modifier.padding(start = 15.dp, end = 15.dp, top = 13.dp, bottom = 15.dp)) {
-            SegmentedControl(
-                labels = listOf(stringResource(R.string.live_piano), stringResource(R.string.live_guitar), stringResource(R.string.live_ukulele)),
-                selectedIndex = instrument.ordinal,
-                onSelect = { onSelectInstrument(LiveInstrument.entries[it]) },
-                description = stringResource(R.string.live_show_on),
+    SegmentedControl(
+        labels = listOf(stringResource(R.string.live_piano), stringResource(R.string.live_guitar), stringResource(R.string.live_ukulele)),
+        selectedIndex = instrument.ordinal,
+        onSelect = { onSelectInstrument(LiveInstrument.entries[it]) },
+        description = stringResource(R.string.live_show_on),
+    )
+    Spacer(Modifier.height(14.dp))
+    if (instrument == LiveInstrument.Piano) {
+        piano(tones)
+    } else {
+        FretView(reading, voicing, ready, instrument, tuning, canCycle = voicings.size > 1, onMore = { voicingIndex = (voicingIndex + 1) % voicings.size })
+    }
+    Spacer(Modifier.height(14.dp))
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        CardButton(
+            text = stringResource(R.string.live_hear),
+            icon = R.drawable.ic_play,
+            active = false,
+            enabled = tones.isNotEmpty(),
+            onClick = {
+                val midis = if (voicing != null && instrument != LiveInstrument.Piano) {
+                    VoicingGenerator.midiNotes(voicing, tuning)
+                } else {
+                    tones.map { it.midi }
+                }
+                onPlayChord(midis)
+            },
+            modifier = Modifier.weight(1f),
+        )
+        extraButton()
+    }
+}
+
+@Composable
+private fun BarSheet(
+    index: Int,
+    bar: ChordTrackBar,
+    initialInstrument: LiveInstrument,
+    onPlayNote: (Int) -> Unit,
+    onPlayChord: (List<Int>) -> Unit,
+    onClose: () -> Unit,
+) {
+    val c = WakTheme.colors
+    val reading = remember(bar.symbol) { ChordRecognizer.readingOf(bar.symbol) }
+    var instrument by rememberSaveable(index) { mutableStateOf(initialInstrument) }
+    WakSheetFrame(onDismiss = onClose) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 24.dp)
+                .navigationBarsPadding(),
+        ) {
+            Row(verticalAlignment = Alignment.Top) {
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        listOf(stringResource(R.string.track_bar, index + 1), prettyRoman(bar.roman)).filter { it.isNotBlank() }.joinToString(" · "),
+                        style = jakarta(12.sp),
+                        color = c.text3,
+                        maxLines = 1,
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(prettyChord(bar.symbol), style = spaceGrotesk(40.sp).copy(lineHeight = 44.sp), color = c.text, maxLines = 1)
+                    if (reading != null) {
+                        Spacer(Modifier.height(4.dp))
+                        Text(chordName(reading), style = jakarta(14.sp), color = c.text2, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    }
+                }
+                Surface(
+                    onClick = onClose,
+                    modifier = Modifier.size(44.dp),
+                    shape = CircleShape,
+                    color = c.s3,
+                    border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(painterResource(R.drawable.ic_close), contentDescription = stringResource(R.string.close), tint = c.text, modifier = Modifier.size(20.dp))
+                    }
+                }
+            }
+            Spacer(Modifier.height(18.dp))
+            InstrumentPanel(
+                reading = reading,
+                keys = null,
+                instrument = instrument,
+                onSelectInstrument = { instrument = it },
+                onPlayChord = onPlayChord,
+                piano = { tones -> PianoView(tones = tones, building = false, onKeyTap = onPlayNote, onStartBuilding = null) },
             )
-            Spacer(Modifier.height(14.dp))
-            if (instrument == LiveInstrument.Piano) {
-                PianoView(
-                    tones = tones,
-                    building = building,
-                    onKeyTap = { midi -> if (building) onAction(LiveChordAction.ToggleKey(midi)) else onPlayNote(midi) },
-                    onStartBuilding = { onAction(LiveChordAction.StartBuilding) },
-                    onClear = { onAction(LiveChordAction.ClearKeys) },
-                    onDone = { onAction(LiveChordAction.FinishBuilding) },
-                )
-            } else {
-                FretView(reading, voicing, ready, instrument, tuning, canCycle = voicings.size > 1, onMore = { voicingIndex = (voicingIndex + 1) % voicings.size })
-            }
-            Spacer(Modifier.height(14.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                CardButton(
-                    text = stringResource(R.string.live_hear),
-                    icon = R.drawable.ic_play,
-                    active = false,
-                    enabled = tones.isNotEmpty(),
-                    onClick = {
-                        val midis = if (voicing != null && instrument != LiveInstrument.Piano) {
-                            VoicingGenerator.midiNotes(voicing, tuning)
-                        } else {
-                            tones.map { it.midi }
-                        }
-                        onPlayChord(midis)
-                    },
-                    modifier = Modifier.weight(1f),
-                )
-                CardButton(
-                    text = stringResource(if (isSaved) R.string.live_saved_chord else R.string.live_save_chord),
-                    icon = if (isSaved) R.drawable.ic_bookmark_filled else R.drawable.ic_bookmark,
-                    active = isSaved,
-                    enabled = reading != null,
-                    onClick = onToggleSaved,
-                    modifier = Modifier.weight(1f),
-                )
-            }
         }
     }
 }
@@ -552,9 +660,9 @@ private fun PianoView(
     tones: List<Tone>,
     building: Boolean,
     onKeyTap: (Int) -> Unit,
-    onStartBuilding: () -> Unit,
-    onClear: () -> Unit,
-    onDone: () -> Unit,
+    onStartBuilding: (() -> Unit)?,
+    onClear: () -> Unit = {},
+    onDone: () -> Unit = {},
 ) {
     val c = WakTheme.colors
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -599,8 +707,10 @@ private fun PianoView(
                 if (core.isNotEmpty()) Legend(c.primary, core.map { roleName(it) }.distinct().joinToString(" · "))
                 if (color.isNotEmpty()) Legend(c.peach, color.map { roleName(it) }.distinct().joinToString(" · "))
             }
-            Spacer(Modifier.width(8.dp))
-            ChipButton(stringResource(R.string.live_build), primary = false, icon = R.drawable.ic_plus, onClick = onStartBuilding)
+            if (onStartBuilding != null) {
+                Spacer(Modifier.width(8.dp))
+                ChipButton(stringResource(R.string.live_build), primary = false, icon = R.drawable.ic_plus, onClick = onStartBuilding)
+            }
         }
     }
 }
@@ -760,7 +870,7 @@ private fun CardButton(text: String, icon: Int, active: Boolean, enabled: Boolea
 }
 
 @Composable
-private fun TrackCard(state: LiveChordUiState, onAction: (LiveChordAction) -> Unit, onSave: () -> Unit) {
+private fun TrackCard(state: LiveChordUiState, onAction: (LiveChordAction) -> Unit, onSave: () -> Unit, onOpenBar: (Int) -> Unit) {
     val c = WakTheme.colors
     val reading = state.shownReading
     val hasBars = state.bars.isNotEmpty()
@@ -799,7 +909,13 @@ private fun TrackCard(state: LiveChordUiState, onAction: (LiveChordAction) -> Un
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 state.bars.forEachIndexed { index, bar ->
-                    BarCard(index, bar, playing = state.playingBar == index, onRemove = { onAction(LiveChordAction.RemoveBar(index)) })
+                    BarCard(
+                        index = index,
+                        bar = bar,
+                        playing = state.playingBar == index,
+                        onOpen = { onOpenBar(index) },
+                        onRemove = { onAction(LiveChordAction.RemoveBar(index)) },
+                    )
                 }
                 if (reading != null) {
                     val key = state.trackKey ?: homeKey(reading)
@@ -826,10 +942,14 @@ private fun TrackCard(state: LiveChordUiState, onAction: (LiveChordAction) -> Un
                         .clickable(enabled = canAdd) { reading?.let { onAction(LiveChordAction.AddBar(it.symbol)) } },
                 )
             }
-            if (!hasBars) {
-                Spacer(Modifier.height(10.dp))
-                Text(stringResource(R.string.track_empty), style = jakarta(12.sp), color = c.text3)
-            }
+            Spacer(Modifier.height(10.dp))
+            Text(
+                stringResource(if (hasBars) R.string.track_tap_bar else R.string.track_empty),
+                style = jakarta(12.sp),
+                color = c.text3,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
             Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Surface(
@@ -904,7 +1024,7 @@ private fun StepButton(icon: Int, description: String, enabled: Boolean, onClick
 }
 
 @Composable
-private fun BarCard(index: Int, bar: ChordTrackBar, playing: Boolean, onRemove: () -> Unit) {
+private fun BarCard(index: Int, bar: ChordTrackBar, playing: Boolean, onOpen: () -> Unit, onRemove: () -> Unit) {
     val c = WakTheme.colors
     Box {
         TrackTile(
@@ -914,6 +1034,9 @@ private fun BarCard(index: Int, bar: ChordTrackBar, playing: Boolean, onRemove: 
             container = if (playing) c.primary.copy(alpha = 0.12f) else c.s3,
             border = if (playing) c.primary else c.text2.copy(alpha = 0.10f),
             valueColor = if (playing) c.primaryText else c.text,
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .clickable(onClickLabel = stringResource(R.string.track_show_shape), onClick = onOpen),
         )
         Box(
             modifier = Modifier

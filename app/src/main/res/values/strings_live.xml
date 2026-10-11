@@ -52,6 +52,8 @@
     <string name="track_slower_cd">Slower</string>
     <string name="track_faster_cd">Faster</string>
     <string name="track_bar">Bar %1$d</string>
+    <string name="track_tap_bar">Tap a bar to see its chord shape.</string>
+    <string name="track_show_shape">Show chord shape</string>
     <string name="track_now">Now</string>
     <string name="track_add">Add bar</string>
     <string name="track_add_hint">next chord</string>
