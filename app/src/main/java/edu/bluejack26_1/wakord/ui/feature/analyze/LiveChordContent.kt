@@ -83,6 +83,9 @@ enum class LiveInstrument { Piano, Guitar, Ukulele }
 private val LevelHeights = listOf(8, 14, 20, 24, 18, 12, 16, 10)
 private const val VOICING_LIMIT = 6
 private const val LEVEL_GAIN = 8f
+private val SYMBOL_HEIGHT = 68.dp
+private val NAME_HEIGHT = 22.dp
+private val ALTERNATIVE_HEIGHT = 18.dp
 
 private data class Tone(val midi: Int, val note: String, val code: String) {
     val isColor: Boolean get() = code in setOf("m3", "M3", "M6", "m7", "M7")
@@ -173,8 +176,8 @@ fun LiveChordContent(
     var instrument by rememberSaveable { mutableStateOf(LiveInstrument.Piano) }
     var lastReading by remember { mutableStateOf(state.shownReading) }
     val reading = state.shownReading
-    LaunchedEffect(reading) {
-        if (reading != null) lastReading = reading
+    LaunchedEffect(reading, state.isBuilding) {
+        if (reading != null && !state.isBuilding) lastReading = reading
     }
     Column(modifier.padding(horizontal = 20.dp)) {
         StatusCard(state, onAction)
@@ -374,7 +377,7 @@ private fun DetectedCard(reading: LiveChordReading?, trackKey: String?, building
             }
             Spacer(Modifier.height(16.dp))
             if (reading == null) {
-                Text("—", style = spaceGrotesk(56.sp).copy(lineHeight = 60.sp), color = c.text3, maxLines = 1)
+                Text("—", style = spaceGrotesk(56.sp).copy(lineHeight = 60.sp), color = c.text3, maxLines = 1, modifier = Modifier.height(SYMBOL_HEIGHT))
                 Spacer(Modifier.height(4.dp))
                 Text(
                     stringResource(if (building) R.string.live_pick_keys else R.string.live_waiting),
@@ -382,9 +385,10 @@ private fun DetectedCard(reading: LiveChordReading?, trackKey: String?, building
                     color = c.text2,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.height(NAME_HEIGHT),
                 )
                 Spacer(Modifier.height(4.dp))
-                Text("", style = jakarta(12.sp), color = c.text3)
+                Spacer(Modifier.height(ALTERNATIVE_HEIGHT))
                 Spacer(Modifier.height(16.dp))
                 Spacer(Modifier.height(58.dp))
                 return@Column
@@ -395,6 +399,7 @@ private fun DetectedCard(reading: LiveChordReading?, trackKey: String?, building
                 color = c.primaryText,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.height(SYMBOL_HEIGHT),
             )
             Spacer(Modifier.height(4.dp))
             val name = listOf(prettyChord(reading.root), qualityName(reading), extensionText(reading)).filter { it.isNotBlank() }.joinToString(" ")
@@ -404,6 +409,7 @@ private fun DetectedCard(reading: LiveChordReading?, trackKey: String?, building
                 color = c.text,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.height(NAME_HEIGHT),
             )
             Spacer(Modifier.height(4.dp))
             Text(
@@ -411,6 +417,7 @@ private fun DetectedCard(reading: LiveChordReading?, trackKey: String?, building
                 style = jakarta(12.sp),
                 color = c.text3,
                 maxLines = 1,
+                modifier = Modifier.height(ALTERNATIVE_HEIGHT),
             )
             Spacer(Modifier.height(16.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
