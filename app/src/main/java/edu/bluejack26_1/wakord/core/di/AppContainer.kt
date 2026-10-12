@@ -23,6 +23,7 @@ import edu.bluejack26_1.wakord.core.training.PitchSource
 import edu.bluejack26_1.wakord.data.local.AppDatabase
 import edu.bluejack26_1.wakord.data.remote.GeminiChordAnalyzer
 import edu.bluejack26_1.wakord.data.remote.GeminiCommentModerator
+import edu.bluejack26_1.wakord.data.repository.CachedUserPhotoRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseAuthRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseCommentRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseExploreRepository
@@ -61,6 +62,7 @@ import edu.bluejack26_1.wakord.domain.repository.SongRepository
 import edu.bluejack26_1.wakord.domain.repository.SyncRepository
 import edu.bluejack26_1.wakord.domain.repository.TrainingRepository
 import edu.bluejack26_1.wakord.domain.repository.TuningRepository
+import edu.bluejack26_1.wakord.domain.repository.UserPhotoRepository
 import edu.bluejack26_1.wakord.domain.repository.UserRepository
 import edu.bluejack26_1.wakord.domain.validation.AuthValidator
 import edu.bluejack26_1.wakord.domain.validation.DefaultAuthValidator
@@ -100,6 +102,7 @@ class AppContainer(context: Context) {
     val audioCapture: AudioCapture by lazy { AndroidAudioCapture(appContext) }
     val chordAnalyzer: ChordAnalyzer by lazy { FallbackChordAnalyzer(GeminiChordAnalyzer(), AlgorithmChordAnalyzer()) }
     val profileRepository: ProfileRepository by lazy { FirebaseProfileRepository(firebaseAuth, firebaseDatabase, appContext.contentResolver) }
+    val userPhotoRepository: UserPhotoRepository by lazy { CachedUserPhotoRepository(profileRepository, appScope) }
     val draftRepository: DraftRepository by lazy { RoomDraftRepository(database.draftDao(), firebaseAuth) }
     val followRepository: FollowRepository by lazy { FirebaseFollowRepository(firebaseAuth, firebaseDatabase) }
     val notificationRepository: NotificationRepository by lazy { FirebaseNotificationRepository(firebaseAuth, firebaseDatabase) }
