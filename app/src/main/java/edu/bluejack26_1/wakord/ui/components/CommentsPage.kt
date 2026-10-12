@@ -222,7 +222,7 @@ private fun CommentRow(comment: Comment, isReply: Boolean, onReply: (() -> Unit)
     val likeCd = pluralStringResource(R.plurals.comment_like_cd, comment.likeCount, comment.likeCount)
     Column(Modifier.padding(start = if (isReply) 70.dp else 20.dp, end = 20.dp)) {
         Row(Modifier.padding(top = 12.dp)) {
-            InitialsAvatar(comment.authorName, comment.authorId, if (isReply) AvatarSmall else AvatarLarge)
+            UserAvatar(comment.authorName, comment.authorId, if (isReply) AvatarSmall else AvatarLarge)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -338,7 +338,7 @@ private fun Composer(
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            InitialsAvatar(myName, myId, AvatarLarge)
+            UserAvatar(myName, myId, AvatarLarge)
             Spacer(Modifier.width(10.dp))
             val shape = RoundedCornerShape(16.dp)
             Box(

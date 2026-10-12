@@ -69,7 +69,7 @@ import edu.bluejack26_1.wakord.domain.model.SongSection
 import edu.bluejack26_1.wakord.ui.components.AvatarSmall
 import edu.bluejack26_1.wakord.ui.components.BackgroundArt
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
-import edu.bluejack26_1.wakord.ui.components.InitialsAvatar
+import edu.bluejack26_1.wakord.ui.components.UserAvatar
 import edu.bluejack26_1.wakord.ui.components.compactCount
 import edu.bluejack26_1.wakord.ui.components.glassBorder
 import edu.bluejack26_1.wakord.ui.components.glassColor
@@ -532,7 +532,7 @@ private fun CommentsPreview(state: SongDetailUiState, onOpenComments: () -> Unit
                     .padding(17.dp),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    InitialsAvatar(top.authorName, top.authorId, AvatarSmall, fontSize = 11.sp)
+                    UserAvatar(top.authorName, top.authorId, AvatarSmall, fontSize = 11.sp)
                     Spacer(Modifier.width(10.dp))
                     Column(Modifier.weight(1f)) {
                         Text(top.authorName, style = jakarta(13.sp, FontWeight.SemiBold), color = c.text, maxLines = 1)

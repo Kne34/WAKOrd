@@ -69,8 +69,9 @@ import edu.bluejack26_1.wakord.domain.model.SongLine
 import edu.bluejack26_1.wakord.domain.model.SongSection
 import edu.bluejack26_1.wakord.ui.components.ChordCard
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
-import edu.bluejack26_1.wakord.ui.components.InitialsAvatar
 import edu.bluejack26_1.wakord.ui.components.NotificationBell
+import edu.bluejack26_1.wakord.ui.components.ProfileAvatar
+import edu.bluejack26_1.wakord.ui.components.UserAvatar
 import edu.bluejack26_1.wakord.ui.components.alertContainer
 import edu.bluejack26_1.wakord.ui.components.compactCount
 import edu.bluejack26_1.wakord.ui.components.levelColor
@@ -147,7 +148,7 @@ fun HomeScreen(
             contentPadding = PaddingValues(bottom = 24.dp),
         ) {
             item(key = "header") {
-                HomeHeader(state.userName, unreadNotifications, onOpenProfile, onOpenSearch, onOpenNotifications)
+                HomeHeader(state.userName, state.userId, state.photoUrl, unreadNotifications, onOpenProfile, onOpenSearch, onOpenNotifications)
             }
             item(key = "workout") {
                 WorkoutCard(state.workout, onOpenTraining)
@@ -189,6 +190,8 @@ fun HomeScreen(
 @Composable
 private fun HomeHeader(
     userName: String,
+    userId: String,
+    photoUrl: String?,
     unreadNotifications: Int,
     onOpenProfile: () -> Unit,
     onOpenSearch: () -> Unit,
@@ -202,9 +205,10 @@ private fun HomeHeader(
             .padding(start = 20.dp, end = 20.dp, top = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        InitialsAvatar(
+        ProfileAvatar(
             name = userName,
-            seed = userName,
+            seed = userId.ifEmpty { userName },
+            photoUrl = photoUrl,
             size = 40.dp,
             fontSize = 14.sp,
             modifier = Modifier
@@ -517,7 +521,7 @@ private fun ProgressionCard(
     ) {
         Column(Modifier.padding(17.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                InitialsAvatar(progression.authorName, progression.authorId, 34.dp)
+                UserAvatar(progression.authorName, progression.authorId, 34.dp)
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {
                     Text(progression.authorName, style = jakarta(13.sp, FontWeight.SemiBold), color = c.text, maxLines = 1)

@@ -19,6 +19,7 @@ data class DailyWorkout(
 
 data class HomeUiState(
     val userName: String = "",
+    val userId: String = "",
     val photoUrl: String? = null,
     val recommended: List<Song> = emptyList(),
     val savedChords: List<SavedChord> = emptyList(),

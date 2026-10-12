@@ -47,7 +47,7 @@ import edu.bluejack26_1.wakord.domain.model.AppNotification
 import edu.bluejack26_1.wakord.domain.model.NotificationType
 import edu.bluejack26_1.wakord.domain.model.TargetType
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
-import edu.bluejack26_1.wakord.ui.components.InitialsAvatar
+import edu.bluejack26_1.wakord.ui.components.UserAvatar
 import edu.bluejack26_1.wakord.ui.components.relativeTime
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
@@ -189,7 +189,7 @@ private fun NotificationRow(notification: AppNotification, onClick: () -> Unit) 
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(Modifier.size(46.dp)) {
-            InitialsAvatar(notification.actorName, notification.actorId, 46.dp, fontSize = 14.sp)
+            UserAvatar(notification.actorName, notification.actorId, 46.dp, fontSize = 14.sp)
             TypeBadge(notification.type, unread, Modifier.align(Alignment.BottomEnd).offset(x = 3.dp, y = 3.dp))
         }
         Spacer(Modifier.width(12.dp))

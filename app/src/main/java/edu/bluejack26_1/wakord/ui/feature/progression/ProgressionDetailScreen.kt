@@ -55,9 +55,9 @@ import edu.bluejack26_1.wakord.domain.model.Difficulty
 import edu.bluejack26_1.wakord.ui.components.BackgroundArt
 import edu.bluejack26_1.wakord.ui.components.ChordDiagram
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
-import edu.bluejack26_1.wakord.ui.components.InitialsAvatar
 import edu.bluejack26_1.wakord.ui.components.PianoKeyboard
 import edu.bluejack26_1.wakord.ui.components.SegmentedControl
+import edu.bluejack26_1.wakord.ui.components.UserAvatar
 import edu.bluejack26_1.wakord.ui.components.chordNotes
 import edu.bluejack26_1.wakord.ui.components.levelContainer
 import edu.bluejack26_1.wakord.ui.components.compactCount
@@ -195,7 +195,7 @@ private fun ProgressionInfo(progression: ChordProgression) {
         Text(progression.title, style = spaceGrotesk(30.sp).copy(lineHeight = 38.sp), color = c.text)
         Spacer(Modifier.height(14.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            InitialsAvatar(progression.authorName, progression.authorId, 36.dp)
+            UserAvatar(progression.authorName, progression.authorId, 36.dp)
             Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f)) {
                 Text(progression.authorName, style = jakarta(13.sp, FontWeight.SemiBold), color = c.text, maxLines = 1)
@@ -422,7 +422,7 @@ private fun CommentsSection(comments: List<Comment>, onOpenComments: () -> Unit)
         Spacer(Modifier.height(12.dp))
         preview.forEach { comment ->
             Row(Modifier.padding(bottom = 12.dp)) {
-                InitialsAvatar(comment.authorName, comment.authorId, 34.dp, fontSize = 11.sp)
+                UserAvatar(comment.authorName, comment.authorId, 34.dp, fontSize = 11.sp)
                 Spacer(Modifier.width(12.dp))
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
