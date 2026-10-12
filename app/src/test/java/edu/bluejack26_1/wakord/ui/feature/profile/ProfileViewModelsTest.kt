@@ -19,6 +19,7 @@ import edu.bluejack26_1.wakord.testutil.RecordingTonePlayer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -130,6 +131,20 @@ class ProfileViewModelsTest {
         assertEquals(listOf("G", "C"), progressions.progressions.value.getValue(id).chords)
         assertNull(drafts.draft.value)
         assertEquals("", vm.uiState.value.title)
+    }
+
+    @Test
+    fun `saving the draft keeps the latest edit right away`() = runTest(main.dispatcher) {
+        val drafts = FakeDraftRepository()
+        val vm = NewProgressionViewModel(FakeProgressionRepository(null), drafts, RecordingTonePlayer(), main.dispatcher)
+        advanceUntilIdle()
+        vm.onAction(NewProgressionAction.TitleChanged("Late idea"))
+        vm.onAction(NewProgressionAction.AddChord("Am"))
+        vm.onAction(NewProgressionAction.SaveDraft)
+        runCurrent()
+        assertEquals("Late idea", drafts.draft.value?.title)
+        assertEquals(listOf("Am"), drafts.draft.value?.chords)
+        assertTrue(vm.uiState.value.isDraftSaved)
     }
 
     @Test

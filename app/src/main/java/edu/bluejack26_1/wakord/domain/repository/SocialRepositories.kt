@@ -42,3 +42,7 @@ interface DraftRepository {
     suspend fun saveDraft(draft: ProgressionDraft)
     suspend fun clearDraft()
 }
+
+interface UserPhotoRepository {
+    fun photo(uid: String): Flow<String?>
+}

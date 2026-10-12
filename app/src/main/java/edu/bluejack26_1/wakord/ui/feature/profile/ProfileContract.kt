@@ -39,6 +39,7 @@ enum class ProfileFieldError { REQUIRED, USERNAME_INVALID, TOO_FEW_GENRES }
 
 data class EditProfileUiState(
     val isLoading: Boolean = true,
+    val uid: String = "",
     val fullName: String = "",
     val username: String = "",
     val bio: String = "",
@@ -82,6 +83,7 @@ data class NewProgressionUiState(
     val previewIndex: Int? = null,
     val isUploading: Boolean = false,
     val uploadedId: String? = null,
+    val isDraftSaved: Boolean = false,
     @param:StringRes val errorMessage: Int? = null,
 )
 
@@ -96,6 +98,7 @@ sealed interface NewProgressionAction {
     data class DescriptionChanged(val value: String) : NewProgressionAction
     data object TogglePreview : NewProgressionAction
     data object Upload : NewProgressionAction
+    data object SaveDraft : NewProgressionAction
     data object DismissUploaded : NewProgressionAction
     data object DismissError : NewProgressionAction
 }

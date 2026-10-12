@@ -65,7 +65,7 @@ class HomeViewModel(
         viewModelScope.launch {
             userRepository.currentUser().collect { u ->
                 user = u
-                _uiState.update { it.copy(userName = u?.fullName.orEmpty(), photoUrl = u?.photoUrl) }
+                _uiState.update { it.copy(userName = u?.fullName.orEmpty(), userId = u?.uid.orEmpty(), photoUrl = u?.photoUrl) }
             }
         }
         viewModelScope.launch {
