@@ -1,5 +1,6 @@
 package edu.bluejack26_1.wakord.ui.feature.profile
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -124,5 +125,31 @@ fun NewProgressionRoute(
             viewModel.onAction(NewProgressionAction.DismissUploaded)
             onClose()
         },
+    )
+}
+
+@Composable
+fun OtherProfileRoute(
+    onBack: () -> Unit,
+    onEditProfile: () -> Unit,
+    onOpenProgression: (String) -> Unit,
+    viewModel: OtherProfileViewModel = viewModel(factory = OtherProfileViewModel.Factory),
+) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val user = state.user
+    val shareText = stringResource(R.string.other_share_text, user?.fullName.orEmpty(), user?.username.orEmpty())
+    val shareTitle = stringResource(R.string.other_share_cd)
+    ErrorToast(state.errorMessage) { viewModel.onAction(OtherProfileAction.DismissError) }
+    OtherProfileScreen(
+        state = state,
+        onAction = viewModel::onAction,
+        onBack = onBack,
+        onShare = {
+            val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, shareText)
+            context.startActivity(Intent.createChooser(send, shareTitle))
+        },
+        onEditProfile = onEditProfile,
+        onOpenProgression = onOpenProgression,
     )
 }

@@ -99,6 +99,7 @@ fun ProgressionDetailScreen(
     onShare: () -> Unit,
     onOpenComments: () -> Unit,
     modifier: Modifier = Modifier,
+    onOpenAuthor: (String) -> Unit = {},
 ) {
     val c = WakTheme.colors
     val progression = state.progression
@@ -141,7 +142,7 @@ fun ProgressionDetailScreen(
                         .navigationBarsPadding()
                         .padding(bottom = 24.dp),
                 ) {
-                    ProgressionInfo(progression)
+                    ProgressionInfo(progression, onOpenAuthor = { onOpenAuthor(progression.authorId) })
                     SegmentedControl(
                         labels = listOf(
                             stringResource(R.string.instrument_guitar),
@@ -183,7 +184,7 @@ fun ProgressionDetailScreen(
 private enum class ChordView { Guitar, Ukulele, Piano }
 
 @Composable
-private fun ProgressionInfo(progression: ChordProgression) {
+private fun ProgressionInfo(progression: ChordProgression, onOpenAuthor: () -> Unit) {
     val c = WakTheme.colors
     Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -194,7 +195,12 @@ private fun ProgressionInfo(progression: ChordProgression) {
         Spacer(Modifier.height(14.dp))
         Text(progression.title, style = spaceGrotesk(30.sp).copy(lineHeight = 38.sp), color = c.text)
         Spacer(Modifier.height(14.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(onClickLabel = stringResource(R.string.other_open_cd), onClick = onOpenAuthor),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             UserAvatar(progression.authorName, progression.authorId, 36.dp)
             Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f)) {

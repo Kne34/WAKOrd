@@ -1,19 +1,13 @@
 package edu.bluejack26_1.wakord.ui.navigation
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -46,6 +40,7 @@ import edu.bluejack26_1.wakord.ui.feature.notifications.NotificationsRoute
 import edu.bluejack26_1.wakord.ui.feature.player.MiniPlayerHost
 import edu.bluejack26_1.wakord.ui.feature.profile.EditProfileRoute
 import edu.bluejack26_1.wakord.ui.feature.profile.NewProgressionRoute
+import edu.bluejack26_1.wakord.ui.feature.profile.OtherProfileRoute
 import edu.bluejack26_1.wakord.ui.feature.profile.ProfileRoute
 import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionCommentsRoute
 import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionDetailRoute
@@ -240,7 +235,13 @@ private fun NavGraphBuilder.mainGraph(nav: NavController) {
                 onOpenProfile = { nav.navigate(Routes.user(it)) },
             )
         }
-        composable(Routes.USER) { PlaceholderScreen("Profile") }
+        composable(Routes.USER) {
+            OtherProfileRoute(
+                onBack = { nav.popBackStack() },
+                onEditProfile = { nav.navigate(Routes.EDIT_PROFILE) },
+                onOpenProgression = { nav.navigate(Routes.progression(it)) },
+            )
+        }
         composable(Routes.TRAINING) {
             TrainingRoute(
                 onBack = { nav.popBackStack() },
@@ -286,6 +287,7 @@ private fun NavGraphBuilder.mainGraph(nav: NavController) {
             ProgressionDetailRoute(
                 onBack = { nav.popBackStack() },
                 onOpenComments = { nav.navigate(Routes.progressionComments(progressionId)) },
+                onOpenAuthor = { nav.navigate(Routes.user(it)) },
             )
         }
         composable(Routes.PROGRESSION_COMMENTS) { entry ->
@@ -314,17 +316,5 @@ fun NavController.navigateTopLevel(route: String) {
         popUpTo(Routes.HOME) { saveState = true }
         launchSingleTop = true
         restoreState = true
-    }
-}
-
-@Composable
-fun PlaceholderScreen(name: String, action: @Composable () -> Unit = {}) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(name, style = MaterialTheme.typography.headlineMedium, color = WakTheme.colors.text)
-        action()
     }
 }

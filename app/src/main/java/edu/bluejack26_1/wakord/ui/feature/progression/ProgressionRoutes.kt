@@ -17,6 +17,7 @@ import edu.bluejack26_1.wakord.ui.components.ErrorToast
 fun ProgressionDetailRoute(
     onBack: () -> Unit,
     onOpenComments: () -> Unit,
+    onOpenAuthor: (String) -> Unit,
     viewModel: ProgressionDetailViewModel = viewModel(factory = ProgressionDetailViewModel.Factory),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -34,6 +35,7 @@ fun ProgressionDetailRoute(
             context.startActivity(Intent.createChooser(send, chooserTitle))
         },
         onOpenComments = onOpenComments,
+        onOpenAuthor = onOpenAuthor,
     )
 }
 
