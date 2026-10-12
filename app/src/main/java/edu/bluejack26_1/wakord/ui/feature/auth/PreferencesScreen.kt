@@ -36,7 +36,7 @@ import edu.bluejack26_1.wakord.ui.theme.SpaceGrotesk
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 
-private fun Instrument.nameRes() = when (this) {
+internal fun Instrument.nameRes() = when (this) {
     Instrument.GUITAR -> R.string.instrument_guitar
     Instrument.UKULELE -> R.string.instrument_ukulele
     Instrument.BASS -> R.string.instrument_bass
@@ -195,7 +195,7 @@ private fun InstrumentCard(
 }
 
 @Composable
-private fun GenreChip(label: String, selected: Boolean, onClick: () -> Unit) {
+internal fun GenreChip(label: String, selected: Boolean, onClick: () -> Unit) {
     val c = WakTheme.colors
     Surface(
         onClick = onClick,

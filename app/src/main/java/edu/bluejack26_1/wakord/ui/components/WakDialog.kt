@@ -29,7 +29,7 @@ import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 
-enum class DialogTone { Default, Info, Error, Destructive }
+enum class DialogTone { Default, Info, Error, Destructive, Danger }
 
 @Composable
 fun WakDialog(
@@ -63,7 +63,7 @@ private fun WakDialogContent(
     val accent = when (tone) {
         DialogTone.Default -> c.primary
         DialogTone.Info -> c.lavender
-        DialogTone.Error -> c.error
+        DialogTone.Error, DialogTone.Danger -> c.error
         DialogTone.Destructive -> c.peach
     }
     val iconContainer = if (tone == DialogTone.Destructive) alertContainer(c) else accent.copy(alpha = 0.12f)
@@ -106,7 +106,7 @@ private fun WakDialogContent(
                 text = primaryText,
                 onClick = onPrimary,
                 modifier = Modifier.fillMaxWidth(),
-                variant = if (tone == DialogTone.Destructive) WakButtonVariant.Destructive else WakButtonVariant.Primary,
+                variant = if (tone == DialogTone.Destructive || tone == DialogTone.Danger) WakButtonVariant.Destructive else WakButtonVariant.Primary,
             )
             if (secondaryText != null) {
                 Spacer(Modifier.height(8.dp))
