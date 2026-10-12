@@ -210,15 +210,14 @@ private fun Identity(user: User?, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ProfileTag(text: String) {
-    val c = WakTheme.colors
+internal fun ProfileTag(text: String, color: Color = WakTheme.colors.text2, container: Color = WakTheme.colors.s4) {
     Text(
         text,
         style = spaceGrotesk(11.sp, FontWeight.SemiBold),
-        color = c.text2,
+        color = color,
         maxLines = 1,
         modifier = Modifier
-            .background(c.s4, RoundedCornerShape(8.dp))
+            .background(container, RoundedCornerShape(8.dp))
             .padding(horizontal = 8.dp, vertical = 5.dp),
     )
 }
