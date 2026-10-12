@@ -58,6 +58,17 @@
     <string name="uploaded_message">“%1$s” sudah tampil di profilmu. Kami kabari kalau ada yang menyukainya.</string>
     <string name="uploaded_view">Lihat progresi</string>
     <string name="uploaded_back">Kembali ke Profil</string>
+    <string name="other_open_cd">Lihat profil</string>
+    <string name="other_follow">Ikuti</string>
+    <string name="other_following">Mengikuti</string>
+    <string name="other_share_cd">Bagikan profil</string>
+    <string name="other_share_text">Lihat %1$s di WAKord (@%2$s)</string>
+    <string name="other_stat_followers">pengikut</string>
+    <string name="other_stat_following">mengikuti</string>
+    <string name="other_stat_progressions">progresi</string>
+    <string name="other_most_liked">Paling disukai</string>
+    <string name="other_empty">Belum ada progresi yang dibagikan</string>
+    <string name="other_not_found">Profil ini tidak ditemukan</string>
     <plurals name="error_too_few_chords">
         <item quantity="other">Tambahkan minimal %1$d chord</item>
     </plurals>
