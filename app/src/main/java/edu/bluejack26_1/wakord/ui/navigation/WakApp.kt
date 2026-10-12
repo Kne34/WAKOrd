@@ -13,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -26,11 +25,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.ui.components.TopLevelDestinations
 import edu.bluejack26_1.wakord.ui.components.WakBottomBar
-import edu.bluejack26_1.wakord.ui.components.WakButton
-import edu.bluejack26_1.wakord.ui.components.WakButtonVariant
 import edu.bluejack26_1.wakord.ui.feature.analyze.AnalysisResultRoute
 import edu.bluejack26_1.wakord.ui.feature.analyze.AnalyzeRoute
 import edu.bluejack26_1.wakord.ui.feature.analyze.AnalyzeViewModel
@@ -48,6 +44,9 @@ import edu.bluejack26_1.wakord.ui.feature.explore.ExploreViewModel
 import edu.bluejack26_1.wakord.ui.feature.home.HomeRoute
 import edu.bluejack26_1.wakord.ui.feature.notifications.NotificationsRoute
 import edu.bluejack26_1.wakord.ui.feature.player.MiniPlayerHost
+import edu.bluejack26_1.wakord.ui.feature.profile.EditProfileRoute
+import edu.bluejack26_1.wakord.ui.feature.profile.NewProgressionRoute
+import edu.bluejack26_1.wakord.ui.feature.profile.ProfileRoute
 import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionCommentsRoute
 import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionDetailRoute
 import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionDetailViewModel
@@ -204,13 +203,26 @@ private fun NavGraphBuilder.mainGraph(nav: NavController) {
             )
         }
         composable(Routes.PROFILE) {
-            PlaceholderScreen("Profile") {
-                WakButton(
-                    text = stringResource(R.string.settings_title),
-                    onClick = { nav.navigate(Routes.SETTINGS) },
-                    variant = WakButtonVariant.Secondary,
-                )
-            }
+            ProfileRoute(
+                onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) },
+                onOpenSettings = { nav.navigate(Routes.SETTINGS) },
+                onEditProfile = { nav.navigate(Routes.EDIT_PROFILE) },
+                onNewProgression = { nav.navigate(Routes.NEW_PROGRESSION) },
+                onOpenSong = { nav.navigate(Routes.song(it)) },
+                onOpenProgression = { nav.navigate(Routes.progression(it)) },
+                onExplore = { nav.navigateTopLevel(Routes.EXPLORE) },
+            )
+        }
+        composable(Routes.EDIT_PROFILE) {
+            EditProfileRoute(onBack = { nav.popBackStack() })
+        }
+        composable(Routes.NEW_PROGRESSION) {
+            NewProgressionRoute(
+                onClose = { nav.popBackStack() },
+                onViewProgression = { id ->
+                    nav.navigate(Routes.progression(id)) { popUpTo(Routes.NEW_PROGRESSION) { inclusive = true } }
+                },
+            )
         }
         composable(Routes.SETTINGS) {
             SettingsRoute(
