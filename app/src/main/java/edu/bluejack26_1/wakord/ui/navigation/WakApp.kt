@@ -46,6 +46,7 @@ import edu.bluejack26_1.wakord.ui.feature.explore.ExploreSection
 import edu.bluejack26_1.wakord.ui.feature.explore.ExploreSectionRoute
 import edu.bluejack26_1.wakord.ui.feature.explore.ExploreViewModel
 import edu.bluejack26_1.wakord.ui.feature.home.HomeRoute
+import edu.bluejack26_1.wakord.ui.feature.notifications.NotificationsRoute
 import edu.bluejack26_1.wakord.ui.feature.player.MiniPlayerHost
 import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionCommentsRoute
 import edu.bluejack26_1.wakord.ui.feature.progression.ProgressionDetailRoute
@@ -219,7 +220,15 @@ private fun NavGraphBuilder.mainGraph(nav: NavController) {
                 },
             )
         }
-        composable(Routes.NOTIFICATIONS) { PlaceholderScreen("Notifications") }
+        composable(Routes.NOTIFICATIONS) {
+            NotificationsRoute(
+                onBack = { nav.popBackStack() },
+                onOpenSong = { nav.navigate(Routes.song(it)) },
+                onOpenProgression = { nav.navigate(Routes.progression(it)) },
+                onOpenProfile = { nav.navigate(Routes.user(it)) },
+            )
+        }
+        composable(Routes.USER) { PlaceholderScreen("Profile") }
         composable(Routes.TRAINING) {
             TrainingRoute(
                 onBack = { nav.popBackStack() },
