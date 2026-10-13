@@ -216,7 +216,7 @@ private fun ThemeSelector(selected: ThemeMode, onSelect: (ThemeMode) -> Unit) {
             .fillMaxWidth()
             .height(48.dp)
             .background(c.s3, RoundedCornerShape(16.dp))
-            .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(16.dp))
+            .border(1.dp, c.line, RoundedCornerShape(16.dp))
             .padding(5.dp)
             .selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -264,7 +264,7 @@ private fun SettingsCard(content: @Composable ColumnScope.() -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Column(Modifier.padding(horizontal = 17.dp, vertical = 1.dp), content = content)
     }
@@ -272,7 +272,7 @@ private fun SettingsCard(content: @Composable ColumnScope.() -> Unit) {
 
 @Composable
 private fun CardDivider() {
-    HorizontalDivider(thickness = 1.dp, color = WakTheme.colors.text2.copy(alpha = 0.10f))
+    HorizontalDivider(thickness = 1.dp, color = WakTheme.colors.line)
 }
 
 @Composable

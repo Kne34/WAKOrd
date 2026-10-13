@@ -46,7 +46,7 @@ fun WakSheetFrame(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> 
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         shape = shape,
         containerColor = Color.Transparent,
-        scrimColor = Color(0xFF03060F).copy(alpha = 0.66f),
+        scrimColor = c.scrim,
         dragHandle = null,
         contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
     ) {
@@ -54,7 +54,7 @@ fun WakSheetFrame(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> 
             modifier = Modifier.fillMaxWidth(),
             shape = shape,
             color = c.s2,
-            border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+            border = BorderStroke(1.dp, c.line),
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(
@@ -98,7 +98,7 @@ fun SheetHeader(title: String, subtitle: String, onClose: () -> Unit) {
             modifier = Modifier.size(44.dp),
             shape = CircleShape,
             color = c.s3,
-            border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+            border = BorderStroke(1.dp, c.line),
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(painterResource(R.drawable.ic_close), contentDescription = stringResource(R.string.close), tint = c.text, modifier = Modifier.size(20.dp))

@@ -276,7 +276,7 @@ private fun ProgressionPianoCard(chord: String, playing: Boolean, onClick: () ->
             .semantics { contentDescription = description },
         shape = RoundedCornerShape(22.dp),
         color = if (playing) c.s3 else c.s2,
-        border = BorderStroke(1.dp, if (playing) c.primary else c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, if (playing) c.primary else c.line),
     ) {
         Column(Modifier.padding(start = 15.dp, end = 15.dp, top = 13.dp, bottom = 15.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -300,7 +300,7 @@ private fun ProgressionChordCard(chord: String, voicing: ChordVoicing?, playing:
             .semantics { contentDescription = description },
         shape = RoundedCornerShape(22.dp),
         color = if (playing) c.s3 else c.s2,
-        border = BorderStroke(1.dp, if (playing) c.primary else c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, if (playing) c.primary else c.line),
     ) {
         Column(Modifier.padding(start = 15.dp, end = 15.dp, top = 13.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -398,7 +398,7 @@ private fun SquareAction(@DrawableRes icon: Int, tint: Color, description: Strin
             .semantics { contentDescription = description },
         shape = RoundedCornerShape(18.dp),
         color = c.s3,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(painterResource(icon), contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))

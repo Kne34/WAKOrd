@@ -51,9 +51,7 @@ import edu.bluejack26_1.wakord.ui.components.BackgroundArt
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
 import edu.bluejack26_1.wakord.ui.components.WakButton
 import edu.bluejack26_1.wakord.ui.components.WakButtonVariant
-import edu.bluejack26_1.wakord.ui.components.alertContainer
 import edu.bluejack26_1.wakord.ui.components.glassBorder
-import edu.bluejack26_1.wakord.ui.components.glassColor
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 import edu.bluejack26_1.wakord.ui.theme.jakarta
@@ -203,14 +201,14 @@ private fun StatsCard(summary: SessionSummary, modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .height(74.dp),
         shape = RoundedCornerShape(22.dp),
-        color = glassColor(c),
+        color = c.glass,
         border = glassBorder(c),
     ) {
         Row(Modifier.padding(vertical = 15.dp)) {
             Stat(stringResource(R.string.training_percent, (summary.accuracy * 100).roundToInt()), stringResource(R.string.training_accuracy), c.text)
-            VerticalDivider(color = c.text2.copy(alpha = 0.10f), modifier = Modifier.fillMaxHeight())
+            VerticalDivider(color = c.line, modifier = Modifier.fillMaxHeight())
             Stat(formatDuration(summary.durationMs), stringResource(R.string.complete_time), c.text)
-            VerticalDivider(color = c.text2.copy(alpha = 0.10f), modifier = Modifier.fillMaxHeight())
+            VerticalDivider(color = c.line, modifier = Modifier.fillMaxHeight())
             Stat(
                 pluralStringResource(R.plurals.workout_streak, summary.streakDays, summary.streakDays),
                 stringResource(R.string.complete_streak),
@@ -239,7 +237,7 @@ private fun AnswerChips(answers: List<Boolean>) {
                 modifier = Modifier
                     .weight(1f)
                     .height(28.dp)
-                    .background(if (right) c.primary else alertContainer(c), RoundedCornerShape(9.dp))
+                    .background(if (right) c.primary else c.peachSoft, RoundedCornerShape(9.dp))
                     .semantics { contentDescription = description },
                 contentAlignment = Alignment.Center,
             ) {
@@ -269,7 +267,7 @@ private fun LevelProgressCard(level: TrainingLevel, summary: SessionSummary) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(22.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Column(Modifier.padding(17.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {

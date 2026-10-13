@@ -71,7 +71,6 @@ import edu.bluejack26_1.wakord.ui.components.ProfileAvatar
 import edu.bluejack26_1.wakord.ui.components.WakDialog
 import edu.bluejack26_1.wakord.ui.components.compactCount
 import edu.bluejack26_1.wakord.ui.components.glassBorder
-import edu.bluejack26_1.wakord.ui.components.glassColor
 import edu.bluejack26_1.wakord.ui.components.prettyChord
 import edu.bluejack26_1.wakord.ui.components.relativeTime
 import edu.bluejack26_1.wakord.ui.feature.auth.nameRes
@@ -225,11 +224,11 @@ internal fun ProfileTag(text: String, color: Color = WakTheme.colors.text2, cont
 @Composable
 private fun StatsCard(stats: ProfileStats, progressions: Int, modifier: Modifier = Modifier) {
     val c = WakTheme.colors
-    val divider = c.text2.copy(alpha = 0.10f)
+    val divider = c.line
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
-        color = glassColor(c),
+        color = c.glass,
         border = glassBorder(c),
     ) {
         Row(Modifier.padding(vertical = 13.dp)) {
@@ -280,7 +279,7 @@ private fun ActionButton(text: String, icon: Int, primary: Boolean, onClick: () 
 @Composable
 private fun Tabs(selected: ProfileTab, onSelect: (ProfileTab) -> Unit, modifier: Modifier = Modifier) {
     val c = WakTheme.colors
-    val line = c.text2.copy(alpha = 0.10f)
+    val line = c.line
     val description = stringResource(R.string.profile_tabs_cd)
     val labels = listOf(
         ProfileTab.SONGS to stringResource(R.string.profile_tab_songs),
@@ -473,7 +472,7 @@ private fun EmptyTab(title: String, message: String, action: String, onAction: (
             modifier = Modifier
                 .size(96.dp)
                 .background(c.s3, CircleShape)
-                .border(1.dp, c.text2.copy(alpha = 0.10f), CircleShape),
+                .border(1.dp, c.line, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             Icon(painterResource(R.drawable.ic_bookmark), contentDescription = null, tint = c.text3, modifier = Modifier.size(40.dp))

@@ -122,8 +122,8 @@ fun BackCircleButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
         onClick = onClick,
         modifier = modifier.size(44.dp),
         shape = CircleShape,
-        color = c.s2.copy(alpha = 0.62f),
-        border = BorderStroke(1.dp, c.text.copy(alpha = 0.09f)),
+        color = c.glass,
+        border = BorderStroke(1.dp, c.glassLine),
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(

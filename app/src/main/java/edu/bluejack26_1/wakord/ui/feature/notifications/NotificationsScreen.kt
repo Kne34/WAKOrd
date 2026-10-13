@@ -171,8 +171,8 @@ private fun NotificationRow(notification: AppNotification, onClick: () -> Unit) 
     val c = WakTheme.colors
     val unread = !notification.isRead
     val unreadLabel = stringResource(R.string.notifications_unread_cd)
-    val rowColor = if (c.isDark) c.primary.copy(alpha = 0.12f) else c.primary2.copy(alpha = 0.14f)
-    val lineColor = if (c.isDark) c.text2.copy(alpha = 0.10f) else c.text.copy(alpha = 0.08f)
+    val rowColor = c.primarySoft
+    val lineColor = c.line
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -256,7 +256,7 @@ private fun EmptyNotifications() {
             modifier = Modifier
                 .size(96.dp)
                 .background(c.s3, CircleShape)
-                .border(1.dp, c.text2.copy(alpha = 0.10f), CircleShape),
+                .border(1.dp, c.line, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             Icon(painterResource(R.drawable.ic_bell), contentDescription = null, tint = c.text3, modifier = Modifier.size(40.dp))

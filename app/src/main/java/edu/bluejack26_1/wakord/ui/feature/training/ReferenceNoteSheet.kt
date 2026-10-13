@@ -85,7 +85,7 @@ private fun NoteKey(label: String, selected: Boolean, onClick: () -> Unit, modif
         modifier = modifier.height(48.dp),
         shape = RoundedCornerShape(14.dp),
         color = if (selected) c.primary else c.s3,
-        border = if (selected) null else BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = if (selected) null else BorderStroke(1.dp, c.line),
     ) {
         Box(contentAlignment = Alignment.Center) {
             Text(label, style = jakarta(14.sp), color = if (selected) c.onPrimary else c.text)

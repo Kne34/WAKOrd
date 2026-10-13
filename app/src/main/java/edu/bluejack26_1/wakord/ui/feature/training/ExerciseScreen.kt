@@ -54,7 +54,6 @@ import edu.bluejack26_1.wakord.ui.components.DialogTone
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
 import edu.bluejack26_1.wakord.ui.components.WakButton
 import edu.bluejack26_1.wakord.ui.components.WakDialog
-import edu.bluejack26_1.wakord.ui.components.alertContainer
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 import edu.bluejack26_1.wakord.ui.theme.jakarta
@@ -258,7 +257,7 @@ private fun PlayButton(isPlaying: Boolean, onClick: () -> Unit) {
             Modifier
                 .size(128.dp)
                 .scale(if (isPlaying) pulse else 1f)
-                .background(c.primary.copy(alpha = 0.12f), CircleShape),
+                .background(c.primarySoft, CircleShape),
         )
         Surface(
             onClick = onClick,
@@ -286,7 +285,7 @@ private fun ExerciseChip(text: String, showIcon: Boolean, onClick: () -> Unit) {
         modifier = Modifier.height(36.dp),
         shape = CircleShape,
         color = c.s3,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp),
@@ -336,14 +335,14 @@ private fun AnswerButton(choice: AnswerChoice, state: AnswerState, enabled: Bool
     val c = WakTheme.colors
     val container = when (state) {
         AnswerState.CORRECT -> c.primary
-        AnswerState.WRONG -> alertContainer(c)
-        AnswerState.SELECTED -> c.primary.copy(alpha = 0.12f)
+        AnswerState.WRONG -> c.peachSoft
+        AnswerState.SELECTED -> c.primarySoft
         AnswerState.IDLE -> c.s2
     }
     val border = when (state) {
         AnswerState.CORRECT, AnswerState.SELECTED -> c.primary
         AnswerState.WRONG -> c.orange
-        AnswerState.IDLE -> c.text2.copy(alpha = 0.10f)
+        AnswerState.IDLE -> c.line
     }
     val content = when (state) {
         AnswerState.CORRECT -> c.onPrimary
@@ -386,7 +385,7 @@ private fun FeedbackNotice(feedback: AnswerFeedback) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(if (feedback.isCorrect) c.primary.copy(alpha = 0.12f) else alertContainer(c), RoundedCornerShape(18.dp))
+            .background(if (feedback.isCorrect) c.primarySoft else c.peachSoft, RoundedCornerShape(18.dp))
             .padding(horizontal = 16.dp, vertical = 14.dp),
     ) {
         Icon(

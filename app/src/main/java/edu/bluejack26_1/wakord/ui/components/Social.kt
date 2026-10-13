@@ -67,22 +67,8 @@ fun relativeTime(createdAt: Long, now: Long = System.currentTimeMillis()): Strin
 fun initials(name: String): String =
     name.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }.take(2).joinToString("") { it.first().uppercase() }.ifEmpty { "?" }
 
-private fun avatarColors(seed: String, c: WakColors): Pair<Color, Color> {
-    val dark = listOf(
-        Color(0xFF00363B) to c.primary,
-        Color(0xFF2F2C62) to c.lavender,
-        Color(0xFF581D00) to c.peach,
-        c.s4 to c.text,
-    )
-    val light = listOf(
-        c.primaryText.copy(alpha = 0.14f) to c.primaryText,
-        c.lavender.copy(alpha = 0.14f) to c.lavender,
-        c.peachText.copy(alpha = 0.14f) to c.peachText,
-        c.s4 to c.text,
-    )
-    val palette = if (c.isDark) dark else light
-    return palette[abs(seed.hashCode()) % palette.size]
-}
+private fun avatarColors(seed: String, c: WakColors): Pair<Color, Color> =
+    c.avatars[abs(seed.hashCode()) % c.avatars.size]
 
 @Composable
 fun InitialsAvatar(name: String, seed: String, size: Dp, modifier: Modifier = Modifier, fontSize: TextUnit = 12.sp) {

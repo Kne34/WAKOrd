@@ -60,9 +60,7 @@ import edu.bluejack26_1.wakord.domain.model.TunerInstrument
 import edu.bluejack26_1.wakord.ui.components.BackgroundArt
 import edu.bluejack26_1.wakord.ui.components.NotificationBell
 import edu.bluejack26_1.wakord.ui.components.WakButton
-import edu.bluejack26_1.wakord.ui.components.alertContainer
 import edu.bluejack26_1.wakord.ui.components.glassBorder
-import edu.bluejack26_1.wakord.ui.components.glassColor
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 import edu.bluejack26_1.wakord.ui.theme.jakarta
@@ -195,7 +193,7 @@ private fun HeaderChip(
         modifier = modifier.height(44.dp),
         shape = CircleShape,
         color = c.s3,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp),
@@ -320,9 +318,9 @@ private fun StatusTag(state: TunerUiState) {
             .height(30.dp)
             .background(
                 color = when {
-                    isAlert -> alertContainer(c)
+                    isAlert -> c.peachSoft
                     idle -> c.s3
-                    else -> c.primary.copy(alpha = 0.12f)
+                    else -> c.primarySoft
                 },
                 shape = RoundedCornerShape(8.dp),
             )
@@ -382,7 +380,7 @@ private fun StringCard(state: TunerUiState, onAction: (TunerAction) -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
         shape = RoundedCornerShape(28.dp),
-        color = glassColor(c),
+        color = c.glass,
         border = glassBorder(c),
     ) {
         Column(Modifier.padding(17.dp)) {
@@ -442,7 +440,7 @@ private fun ModeSelector(playMode: Boolean, onListen: () -> Unit, onPlay: () -> 
             .fillMaxWidth()
             .height(44.dp)
             .background(c.s3, RoundedCornerShape(14.dp))
-            .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(14.dp))
+            .border(1.dp, c.line, RoundedCornerShape(14.dp))
             .padding(4.dp)
             .selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -489,7 +487,7 @@ private fun StringTile(
     }
     val border = when {
         isNow -> c.primary
-        isTuned -> c.text2.copy(alpha = 0.10f)
+        isTuned -> c.line
         else -> c.outline
     }
     val content = if (isNow) c.onPrimary else c.text
@@ -557,8 +555,8 @@ private fun MicOffState(onOpenSettings: () -> Unit, onUsePitchPipe: () -> Unit) 
         Box(
             modifier = Modifier
                 .size(96.dp)
-                .background(alertContainer(c), RoundedCornerShape(32.dp))
-                .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(32.dp)),
+                .background(c.peachSoft, RoundedCornerShape(32.dp))
+                .border(1.dp, c.line, RoundedCornerShape(32.dp)),
             contentAlignment = Alignment.Center,
         ) {
             Icon(painterResource(R.drawable.ic_mic_off), contentDescription = null, tint = c.peachText, modifier = Modifier.size(40.dp))

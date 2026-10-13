@@ -71,9 +71,7 @@ import edu.bluejack26_1.wakord.ui.components.WakButton
 import edu.bluejack26_1.wakord.ui.components.WakButtonVariant
 import edu.bluejack26_1.wakord.ui.components.WakDialog
 import edu.bluejack26_1.wakord.ui.components.WakTextField
-import edu.bluejack26_1.wakord.ui.components.alertContainer
 import edu.bluejack26_1.wakord.ui.components.glassBorder
-import edu.bluejack26_1.wakord.ui.components.glassColor
 import edu.bluejack26_1.wakord.ui.components.keyLabel
 import edu.bluejack26_1.wakord.ui.components.prettyChord
 import edu.bluejack26_1.wakord.ui.feature.explore.SongListRow
@@ -149,7 +147,7 @@ fun AnalysisResultScreen(
                         color = c.peachText,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(alertContainer(c), RoundedCornerShape(14.dp))
+                            .background(c.peachSoft, RoundedCornerShape(14.dp))
                             .padding(horizontal = 14.dp, vertical = 10.dp),
                     )
                 }
@@ -202,16 +200,16 @@ private fun DetectionTags(key: String, confidence: Float) {
     val c = WakTheme.colors
     val percent = (confidence * 100).roundToInt()
     val (container, content) = when {
-        confidence >= HIGH_CONFIDENCE -> c.primary.copy(alpha = 0.12f) to c.primaryText
-        confidence >= LOW_CONFIDENCE -> c.lavender.copy(alpha = 0.14f) to c.lavender
-        else -> alertContainer(c) to c.peachText
+        confidence >= HIGH_CONFIDENCE -> c.primarySoft to c.primaryText
+        confidence >= LOW_CONFIDENCE -> c.lavenderSoft to c.lavender
+        else -> c.peachSoft to c.peachText
     }
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(
             modifier = Modifier
                 .height(30.dp)
                 .background(c.s3, RoundedCornerShape(10.dp))
-                .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(10.dp))
+                .border(1.dp, c.line, RoundedCornerShape(10.dp))
                 .padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -245,7 +243,7 @@ private fun ResultCard(
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(26.dp),
-        color = glassColor(c),
+        color = c.glass,
         border = glassBorder(c),
     ) {
         Column(Modifier.padding(17.dp)) {
@@ -259,7 +257,7 @@ private fun ResultCard(
                             .height(64.dp),
                         shape = RoundedCornerShape(14.dp),
                         color = if (active) c.primary else c.s3,
-                        border = BorderStroke(1.dp, if (active) c.primary else c.text2.copy(alpha = 0.10f)),
+                        border = BorderStroke(1.dp, if (active) c.primary else c.line),
                     ) {
                         Column(
                             modifier = Modifier.padding(horizontal = 16.dp),
@@ -473,7 +471,7 @@ private fun ProgressionsSection(progressions: List<ChordProgression>, onOpen: (S
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(22.dp),
                 color = c.s2,
-                border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+                border = BorderStroke(1.dp, c.line),
             ) {
                 Row(Modifier.padding(horizontal = 17.dp, vertical = 15.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
@@ -485,7 +483,7 @@ private fun ProgressionsSection(progressions: List<ChordProgression>, onOpen: (S
                                     modifier = Modifier
                                         .height(34.dp)
                                         .background(c.s3, RoundedCornerShape(14.dp))
-                                        .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(14.dp))
+                                        .border(1.dp, c.line, RoundedCornerShape(14.dp))
                                         .padding(horizontal = 11.dp),
                                     contentAlignment = Alignment.Center,
                                 ) {
@@ -523,7 +521,7 @@ internal fun SaveDialog(isSaving: Boolean, onSave: (String) -> Unit, onDismiss: 
             modifier = Modifier.widthIn(max = 326.dp),
             shape = RoundedCornerShape(30.dp),
             color = c.s2,
-            border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+            border = BorderStroke(1.dp, c.line),
         ) {
             Column(Modifier.padding(start = 23.dp, end = 23.dp, top = 27.dp, bottom = 21.dp)) {
                 Text(stringResource(R.string.result_save_title), style = spaceGrotesk(20.sp), color = c.text)

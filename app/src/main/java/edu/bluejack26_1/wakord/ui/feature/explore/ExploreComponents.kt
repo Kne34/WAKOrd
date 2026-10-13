@@ -28,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -118,13 +117,13 @@ fun TrendingTile(song: Song, onClick: () -> Unit) {
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(6.dp)
-                    .background(Color(0xFF080D1D).copy(alpha = 0.62f), CircleShape)
+                    .background(c.art.ink.copy(alpha = 0.62f), CircleShape)
                     .padding(horizontal = 7.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(painterResource(R.drawable.ic_heart_filled), contentDescription = null, tint = c.peach, modifier = Modifier.size(10.dp))
                 Spacer(Modifier.width(4.dp))
-                Text(compactCount(song.likeCount), style = spaceGrotesk(10.sp), color = Color(0xFFDEE1F9))
+                Text(compactCount(song.likeCount), style = spaceGrotesk(10.sp), color = c.art.inkText)
             }
         }
         Spacer(Modifier.height(8.dp))
@@ -141,7 +140,7 @@ fun ProgressionTile(progression: ChordProgression, onClick: () -> Unit, modifier
         modifier = modifier.height(170.dp),
         shape = RoundedCornerShape(22.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Column(Modifier.padding(17.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -167,7 +166,7 @@ fun ProgressionTile(progression: ChordProgression, onClick: () -> Unit, modifier
                         modifier = Modifier
                             .height(38.dp)
                             .background(c.s3, RoundedCornerShape(12.dp))
-                            .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(12.dp))
+                            .border(1.dp, c.line, RoundedCornerShape(12.dp))
                             .padding(horizontal = 11.dp),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -266,7 +265,7 @@ fun SectionNote(text: String, modifier: Modifier = Modifier) {
             .padding(horizontal = 20.dp)
             .fillMaxWidth()
             .background(c.s2, RoundedCornerShape(20.dp))
-            .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(20.dp))
+            .border(1.dp, c.line, RoundedCornerShape(20.dp))
             .padding(18.dp),
     )
 }

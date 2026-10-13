@@ -59,7 +59,7 @@ fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier) {
             painter = painterResource(R.drawable.bg_splash),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            alpha = if (c.isDark) 0.55f else 0.35f,
+            alpha = c.artAlpha,
             modifier = Modifier
                 .offset(x = (windowWidth() - 630.dp) / 2, y = 80.dp)
                 .wrapContentSize(align = Alignment.TopStart, unbounded = true)
@@ -69,8 +69,8 @@ fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier) {
                     drawContent()
                     drawRect(
                         brush = Brush.radialGradient(
-                            0f to Color.Black,
-                            0.35f to Color.Black,
+                            0f to c.art.mask,
+                            0.35f to c.art.mask,
                             1f to Color.Transparent,
                         ),
                         blendMode = BlendMode.DstIn,

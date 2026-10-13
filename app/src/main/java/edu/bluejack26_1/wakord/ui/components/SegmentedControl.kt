@@ -39,7 +39,7 @@ fun SegmentedControl(
             .fillMaxWidth()
             .height(48.dp)
             .background(c.s3, RoundedCornerShape(16.dp))
-            .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(16.dp))
+            .border(1.dp, c.line, RoundedCornerShape(16.dp))
             .padding(5.dp)
             .semantics { if (description != null) contentDescription = description }
             .selectableGroup(),

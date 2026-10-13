@@ -149,7 +149,7 @@ fun ChordSheetContent(
                 modifier = Modifier.size(44.dp),
                 shape = CircleShape,
                 color = c.s3,
-                border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+                border = BorderStroke(1.dp, c.line),
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(painterResource(R.drawable.ic_close), contentDescription = stringResource(R.string.close), tint = c.text, modifier = Modifier.size(20.dp))
@@ -173,7 +173,7 @@ fun ChordSheetContent(
             Box(
                 modifier = Modifier
                     .background(c.s2, RoundedCornerShape(24.dp))
-                    .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(24.dp))
+                    .border(1.dp, c.line, RoundedCornerShape(24.dp))
                     .padding(horizontal = 7.dp, vertical = 8.dp),
             ) {
                 ChordDiagram(
