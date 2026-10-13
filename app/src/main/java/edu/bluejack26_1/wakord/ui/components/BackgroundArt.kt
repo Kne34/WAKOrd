@@ -44,7 +44,7 @@ fun BackgroundArt(@DrawableRes image: Int, height: Dp, modifier: Modifier = Modi
                 painter = painterResource(res),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                alpha = if (c.isDark) 0.55f else 0.35f,
+                alpha = c.artAlpha,
                 modifier = Modifier.fillMaxSize(),
             )
         }

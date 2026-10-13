@@ -292,7 +292,7 @@ private fun ChordBuilder(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Column(Modifier.padding(15.dp)) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -305,7 +305,7 @@ private fun ChordBuilder(
                         .size(width = 64.dp, height = 44.dp)
                         .alpha(if (canAdd) 1f else 0.4f)
                         .clip(RoundedCornerShape(14.dp))
-                        .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(14.dp))
+                        .border(1.dp, c.line, RoundedCornerShape(14.dp))
                         .clickable(enabled = canAdd, role = Role.Button, onClick = onAdd)
                         .semantics { contentDescription = addLabel },
                     contentAlignment = Alignment.Center,
@@ -318,7 +318,7 @@ private fun ChordBuilder(
                 Modifier
                     .fillMaxWidth()
                     .height(1.dp)
-                    .background(c.text2.copy(alpha = 0.10f)),
+                    .background(c.line),
             )
             Spacer(Modifier.height(14.dp))
             Text(
@@ -354,7 +354,7 @@ private fun ProgressionChip(chord: String, now: Boolean, onRemove: () -> Unit) {
         modifier = Modifier
             .height(44.dp)
             .background(if (now) c.primary else c.s3, RoundedCornerShape(14.dp))
-            .border(1.dp, if (now) c.primary else c.text2.copy(alpha = 0.10f), RoundedCornerShape(14.dp))
+            .border(1.dp, if (now) c.primary else c.line, RoundedCornerShape(14.dp))
             .padding(start = 15.dp, end = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -387,7 +387,7 @@ private fun PickerChip(label: String, selected: Boolean, filled: Boolean, onClic
             filled -> c.s3
             else -> c.s2
         },
-        border = BorderStroke(1.dp, if (selected) c.primary else if (filled) c.text2.copy(alpha = 0.10f) else c.outline),
+        border = BorderStroke(1.dp, if (selected) c.primary else if (filled) c.line else c.outline),
     ) {
         Box(Modifier.padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
             Text(label, style = jakarta(16.sp), color = if (selected) c.onPrimary else c.text, maxLines = 1)

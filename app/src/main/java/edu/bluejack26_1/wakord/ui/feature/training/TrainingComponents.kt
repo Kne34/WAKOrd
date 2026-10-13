@@ -61,9 +61,7 @@ import edu.bluejack26_1.wakord.domain.model.LevelStatus
 import edu.bluejack26_1.wakord.domain.model.PitchReading
 import edu.bluejack26_1.wakord.domain.model.PitchStatus
 import edu.bluejack26_1.wakord.ui.components.WakButton
-import edu.bluejack26_1.wakord.ui.components.alertContainer
 import edu.bluejack26_1.wakord.ui.components.glassBorder
-import edu.bluejack26_1.wakord.ui.components.glassColor
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 import edu.bluejack26_1.wakord.ui.theme.jakarta
 import edu.bluejack26_1.wakord.ui.theme.spaceGrotesk
@@ -112,7 +110,7 @@ fun WorkoutCard(workout: DailyWorkout, onResume: () -> Unit, modifier: Modifier 
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
-        color = glassColor(c),
+        color = c.glass,
         border = glassBorder(c),
     ) {
         Column(Modifier.padding(19.dp)) {
@@ -186,7 +184,7 @@ fun PitchMonitorCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(26.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Column(Modifier.padding(17.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -242,7 +240,7 @@ private fun LiveToggle(isListening: Boolean, onToggle: () -> Unit) {
     ) {
         StatusTag(
             text = stringResource(if (isListening) R.string.pitch_live else R.string.pitch_start),
-            container = if (isListening) c.primary.copy(alpha = 0.12f) else c.s3,
+            container = if (isListening) c.primarySoft else c.s3,
             content = if (isListening) c.primaryText else c.text3,
             leading = {
                 Box(
@@ -272,7 +270,7 @@ private fun PitchTrace(reading: PitchReading?, isListening: Boolean, label: Stri
             .fillMaxWidth()
             .height(96.dp)
             .background(c.s1, RoundedCornerShape(16.dp))
-            .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(16.dp)),
+            .border(1.dp, c.line, RoundedCornerShape(16.dp)),
     ) {
         Canvas(Modifier.fillMaxSize()) {
             val mid = size.height / 2
@@ -337,9 +335,9 @@ private fun SungNoteRow(reading: PitchReading?, isListening: Boolean) {
             }
         }
         when (reading?.status) {
-            PitchStatus.ON_PITCH -> StatusTag(stringResource(R.string.pitch_on), c.primary.copy(alpha = 0.12f), c.primaryText)
-            PitchStatus.FLAT -> StatusTag(stringResource(R.string.pitch_flat), alertContainer(c), c.peachText)
-            PitchStatus.SHARP -> StatusTag(stringResource(R.string.pitch_sharp), alertContainer(c), c.peachText)
+            PitchStatus.ON_PITCH -> StatusTag(stringResource(R.string.pitch_on), c.primarySoft, c.primaryText)
+            PitchStatus.FLAT -> StatusTag(stringResource(R.string.pitch_flat), c.peachSoft, c.peachText)
+            PitchStatus.SHARP -> StatusTag(stringResource(R.string.pitch_sharp), c.peachSoft, c.peachText)
             else -> Unit
         }
     }
@@ -352,14 +350,14 @@ private fun MicOffNotice(onOpenSettings: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .background(c.s1, RoundedCornerShape(16.dp))
-            .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(16.dp))
+            .border(1.dp, c.line, RoundedCornerShape(16.dp))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
             modifier = Modifier
                 .size(48.dp)
-                .background(alertContainer(c), RoundedCornerShape(16.dp)),
+                .background(c.peachSoft, RoundedCornerShape(16.dp)),
             contentAlignment = Alignment.Center,
         ) {
             Icon(painterResource(R.drawable.ic_mic_off), contentDescription = null, tint = c.peachText, modifier = Modifier.size(22.dp))
@@ -383,7 +381,7 @@ private fun ReferenceSelector(selected: Int, onSelect: (Int) -> Unit) {
             .fillMaxWidth()
             .height(48.dp)
             .background(c.s3, RoundedCornerShape(16.dp))
-            .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(16.dp))
+            .border(1.dp, c.line, RoundedCornerShape(16.dp))
             .padding(5.dp)
             .selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -446,7 +444,7 @@ fun LevelCard(progress: LevelProgress, onOpen: () -> Unit, modifier: Modifier = 
             .alpha(if (progress.status == LevelStatus.LOCKED) 0.6f else 1f),
         shape = RoundedCornerShape(22.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, if (inProgress) c.primary else c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, if (inProgress) c.primary else c.line),
     ) {
         Column(Modifier.padding(horizontal = 17.dp, vertical = 15.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -474,7 +472,7 @@ fun LevelCard(progress: LevelProgress, onOpen: () -> Unit, modifier: Modifier = 
                 when (progress.status) {
                     LevelStatus.MASTERED -> StatusTag(
                         text = stringResource(R.string.level_mastered),
-                        container = c.primary.copy(alpha = 0.12f),
+                        container = c.primarySoft,
                         content = c.primaryText,
                         leading = { Icon(painterResource(R.drawable.ic_star), contentDescription = null, tint = c.primaryText, modifier = Modifier.size(11.dp)) },
                     )
@@ -538,7 +536,7 @@ private fun LevelIcon(status: LevelStatus) {
         modifier = Modifier
             .size(44.dp)
             .background(if (mastered) c.primary else c.s3, RoundedCornerShape(14.dp))
-            .then(if (mastered) Modifier else Modifier.border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(14.dp))),
+            .then(if (mastered) Modifier else Modifier.border(1.dp, c.line, RoundedCornerShape(14.dp))),
         contentAlignment = Alignment.Center,
     ) {
         Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(if (mastered) 18.dp else 20.dp))

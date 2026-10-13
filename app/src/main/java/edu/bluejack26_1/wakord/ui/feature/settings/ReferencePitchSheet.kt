@@ -112,7 +112,7 @@ private fun StepButton(icon: Painter, contentDescription: String, enabled: Boole
         modifier = Modifier.size(56.dp),
         shape = CircleShape,
         color = c.s3,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(icon, contentDescription = contentDescription, tint = if (enabled) c.text else c.text3, modifier = Modifier.size(22.dp))

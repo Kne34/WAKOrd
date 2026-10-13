@@ -53,8 +53,6 @@ import edu.bluejack26_1.wakord.ui.theme.SpaceGrotesk
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 
-private val BadgeText = Color(0xFF2B0C00)
-
 data class TopLevelDestination(
     val route: String,
     @param:DrawableRes val icon: Int,
@@ -75,11 +73,11 @@ fun WakBottomBar(currentRoute: String?, onNavigate: (String) -> Unit, modifier: 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(if (c.isDark) c.bg.copy(alpha = 0.88f) else c.s1.copy(alpha = 0.92f)),
+            .background(c.nav),
     ) {
         HorizontalDivider(
             thickness = 1.dp,
-            color = if (c.isDark) c.text2.copy(alpha = 0.10f) else c.text.copy(alpha = 0.08f),
+            color = c.line,
         )
         Row(
             modifier = Modifier
@@ -156,8 +154,8 @@ fun NotificationBell(unreadCount: Int, onClick: () -> Unit, modifier: Modifier =
             onClick = onClick,
             modifier = Modifier.fillMaxSize(),
             shape = CircleShape,
-            color = c.s2.copy(alpha = if (c.isDark) 0.62f else 0.74f),
-            border = BorderStroke(1.dp, c.text.copy(alpha = if (c.isDark) 0.09f else 0.08f)),
+            color = c.glass,
+            border = BorderStroke(1.dp, c.glassLine),
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
@@ -181,7 +179,7 @@ fun NotificationBell(unreadCount: Int, onClick: () -> Unit, modifier: Modifier =
                 Text(
                     text = if (unreadCount > 9) "9+" else "$unreadCount",
                     style = TextStyle(fontFamily = SpaceGrotesk, fontWeight = FontWeight.Bold, fontSize = 10.sp),
-                    color = BadgeText,
+                    color = c.onOrange,
                 )
             }
         }
@@ -214,12 +212,12 @@ fun MiniPlayer(
                 elevation = 18.dp,
                 shape = shape,
                 ambientColor = Color.Transparent,
-                spotColor = if (c.isDark) Color.Black.copy(alpha = 0.45f) else c.text.copy(alpha = 0.14f),
+                spotColor = c.shadow.copy(alpha = if (c.isDark) 0.45f else 0.14f),
             )
             .height(64.dp),
         shape = shape,
         color = if (c.isDark) c.s2.copy(alpha = 0.92f) else c.s1.copy(alpha = 0.96f),
-        border = BorderStroke(1.dp, if (c.isDark) c.text.copy(alpha = 0.09f) else c.text.copy(alpha = 0.08f)),
+        border = BorderStroke(1.dp, c.glassLine),
     ) {
         Box {
             Row(
@@ -297,7 +295,7 @@ fun MiniPlayer(
                     .padding(start = 19.dp, end = 19.dp, bottom = 1.dp)
                     .fillMaxWidth()
                     .height(2.dp)
-                    .background(if (c.isDark) c.text2.copy(alpha = 0.10f) else c.text.copy(alpha = 0.08f), RoundedCornerShape(2.dp)),
+                    .background(c.line, RoundedCornerShape(2.dp)),
             ) {
                 Box(
                     modifier = Modifier

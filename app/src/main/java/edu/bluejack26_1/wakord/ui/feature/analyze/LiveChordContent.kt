@@ -70,7 +70,6 @@ import edu.bluejack26_1.wakord.ui.components.WakDialog
 import edu.bluejack26_1.wakord.ui.components.WakSheetFrame
 import edu.bluejack26_1.wakord.ui.components.fingerText
 import edu.bluejack26_1.wakord.ui.components.glassBorder
-import edu.bluejack26_1.wakord.ui.components.glassColor
 import edu.bluejack26_1.wakord.ui.components.keyLabel
 import edu.bluejack26_1.wakord.ui.components.prettyChord
 import edu.bluejack26_1.wakord.ui.components.voicingLabel
@@ -268,7 +267,7 @@ private fun StatusCard(state: LiveChordUiState, onAction: (LiveChordAction) -> U
             .fillMaxWidth()
             .height(56.dp),
         shape = RoundedCornerShape(20.dp),
-        color = glassColor(c),
+        color = c.glass,
         border = glassBorder(c),
     ) {
         Row(Modifier.padding(end = 15.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -375,7 +374,7 @@ private fun DetectedCard(reading: LiveChordReading?, trackKey: String?, building
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(26.dp),
-        color = glassColor(c),
+        color = c.glass,
         border = glassBorder(c),
     ) {
         Column(Modifier.padding(19.dp)) {
@@ -390,7 +389,7 @@ private fun DetectedCard(reading: LiveChordReading?, trackKey: String?, building
                     Box(
                         modifier = Modifier
                             .fillMaxHeight()
-                            .background(c.primary.copy(alpha = 0.12f), RoundedCornerShape(8.dp))
+                            .background(c.primarySoft, RoundedCornerShape(8.dp))
                             .padding(horizontal = 8.dp),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -461,7 +460,7 @@ private fun ToneChip(tone: Tone, modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .height(58.dp)
             .background(if (root) c.primary else c.s3, RoundedCornerShape(16.dp))
-            .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(16.dp)),
+            .border(1.dp, c.line, RoundedCornerShape(16.dp)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -502,7 +501,7 @@ private fun InstrumentCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(26.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Column(Modifier.padding(start = 15.dp, end = 15.dp, top = 13.dp, bottom = 15.dp)) {
             InstrumentPanel(
@@ -635,7 +634,7 @@ private fun BarSheet(
                     modifier = Modifier.size(44.dp),
                     shape = CircleShape,
                     color = c.s3,
-                    border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+                    border = BorderStroke(1.dp, c.line),
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(painterResource(R.drawable.ic_close), contentDescription = stringResource(R.string.close), tint = c.text, modifier = Modifier.size(20.dp))
@@ -724,7 +723,7 @@ private fun ChipButton(text: String, primary: Boolean, onClick: () -> Unit, icon
         modifier = Modifier.height(32.dp),
         shape = RoundedCornerShape(10.dp),
         color = if (primary) c.primary else c.s3,
-        border = if (primary) null else BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = if (primary) null else BorderStroke(1.dp, c.line),
     ) {
         Row(Modifier.padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             if (icon != null) {
@@ -834,7 +833,7 @@ private fun FretView(
                     modifier = Modifier.height(32.dp),
                     shape = RoundedCornerShape(10.dp),
                     color = c.s3,
-                    border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+                    border = BorderStroke(1.dp, c.line),
                 ) {
                     Row(Modifier.padding(horizontal = 13.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text(stringResource(R.string.live_more_voicings), style = jakarta(12.sp), color = c.text)
@@ -878,7 +877,7 @@ private fun TrackCard(state: LiveChordUiState, onAction: (LiveChordAction) -> Un
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(26.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Column(Modifier.padding(horizontal = 17.dp, vertical = 15.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -923,7 +922,7 @@ private fun TrackCard(state: LiveChordUiState, onAction: (LiveChordAction) -> Un
                         label = stringResource(R.string.track_now),
                         value = prettyChord(reading.symbol),
                         caption = prettyRoman(RomanNumerals.of(reading.symbol, key)),
-                        container = c.primary.copy(alpha = 0.12f),
+                        container = c.primarySoft,
                         border = c.primary,
                         valueColor = c.primaryText,
                     )
@@ -974,7 +973,7 @@ private fun TrackCard(state: LiveChordUiState, onAction: (LiveChordAction) -> Un
                     modifier = Modifier.size(44.dp),
                     shape = RoundedCornerShape(14.dp),
                     color = if (state.isLooping) c.primary.copy(alpha = 0.16f) else c.s3,
-                    border = BorderStroke(1.dp, if (state.isLooping) c.primary else c.text2.copy(alpha = 0.10f)),
+                    border = BorderStroke(1.dp, if (state.isLooping) c.primary else c.line),
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
@@ -1031,8 +1030,8 @@ private fun BarCard(index: Int, bar: ChordTrackBar, playing: Boolean, onOpen: ()
             label = stringResource(R.string.track_bar, index + 1),
             value = prettyChord(bar.symbol),
             caption = prettyRoman(bar.roman),
-            container = if (playing) c.primary.copy(alpha = 0.12f) else c.s3,
-            border = if (playing) c.primary else c.text2.copy(alpha = 0.10f),
+            container = if (playing) c.primarySoft else c.s3,
+            border = if (playing) c.primary else c.line,
             valueColor = if (playing) c.primaryText else c.text,
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))

@@ -181,7 +181,7 @@ private fun MonthChip(month: YearMonth, months: List<YearMonth>, onMonthChange: 
                 .semantics { contentDescription = description },
             shape = CircleShape,
             color = c.s3,
-            border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+            border = BorderStroke(1.dp, c.line),
         ) {
             Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(label, style = jakarta(14.sp), color = c.text)
@@ -221,7 +221,7 @@ private fun StreakCard(icon: Painter, tint: Color, label: String, days: Int, mod
         modifier = modifier.height(90.dp),
         shape = RoundedCornerShape(22.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Column(Modifier.padding(17.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -255,7 +255,7 @@ private fun StatsCard(content: @Composable () -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(22.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Column(Modifier.padding(17.dp)) { content() }
     }
@@ -362,7 +362,7 @@ private fun StreakCalendar(history: List<DayStat>, month: YearMonth, selectedDay
     }
     if (selectedDay != null && YearMonth.from(selectedDay) == month) {
         Spacer(Modifier.height(14.dp))
-        HorizontalDivider(thickness = 1.dp, color = c.text2.copy(alpha = 0.10f))
+        HorizontalDivider(thickness = 1.dp, color = c.line)
         Spacer(Modifier.height(14.dp))
         DayDetail(selectedDay, byDay[selectedDay.toEpochDay()], isToday = selectedDay == today)
     }
@@ -423,7 +423,7 @@ private fun PeriodSelector(period: StatsPeriod, onPeriodChange: (StatsPeriod) ->
             .fillMaxWidth()
             .height(40.dp)
             .background(c.s3, RoundedCornerShape(14.dp))
-            .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(14.dp))
+            .border(1.dp, c.line, RoundedCornerShape(14.dp))
             .padding(4.dp)
             .selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -537,7 +537,7 @@ private fun SkillBreakdown(bySkill: Map<SkillType, Float>) {
     }
     skills.forEachIndexed { i, skill ->
         val accuracy = (bySkill[skill] ?: 0f).coerceIn(0f, 1f)
-        if (i > 0) HorizontalDivider(thickness = 1.dp, color = c.text2.copy(alpha = 0.10f))
+        if (i > 0) HorizontalDivider(thickness = 1.dp, color = c.line)
         Column(Modifier.padding(vertical = 12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(skillName(skill)), style = jakarta(13.sp), color = c.text, modifier = Modifier.weight(1f))

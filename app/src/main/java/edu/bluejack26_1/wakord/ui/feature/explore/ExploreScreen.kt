@@ -213,7 +213,7 @@ private fun SearchRow(
                     modifier = Modifier.size(50.dp),
                     shape = RoundedCornerShape(16.dp),
                     color = c.s3,
-                    border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+                    border = BorderStroke(1.dp, c.line),
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(painterResource(R.drawable.ic_filter), contentDescription = stringResource(R.string.explore_filters), tint = c.text, modifier = Modifier.size(20.dp))
@@ -238,7 +238,7 @@ private fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit, he
             filled -> c.s3
             else -> Color.Transparent
         },
-        border = BorderStroke(1.dp, if (selected) c.primary else if (filled) c.text2.copy(alpha = 0.10f) else c.outline),
+        border = BorderStroke(1.dp, if (selected) c.primary else if (filled) c.line else c.outline),
     ) {
         Box(Modifier.padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
             Text(label, style = jakarta(16.sp), color = if (selected) c.onPrimary else c.text, maxLines = 1)
@@ -468,7 +468,7 @@ private fun Tabs(state: ExploreUiState, onSelect: (SearchTab) -> Unit) {
             Modifier
                 .fillMaxWidth()
                 .height(1.dp)
-                .background(c.text2.copy(alpha = 0.10f)),
+                .background(c.line),
         )
     }
 }
@@ -558,7 +558,7 @@ private fun ChordResult(symbol: String, onClick: () -> Unit) {
             modifier = Modifier.height(44.dp),
             shape = RoundedCornerShape(14.dp),
             color = c.s3,
-            border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+            border = BorderStroke(1.dp, c.line),
         ) {
             Box(Modifier.padding(horizontal = 15.dp), contentAlignment = Alignment.Center) {
                 Text(prettyChord(symbol), style = spaceGrotesk(16.sp), color = c.text)
@@ -629,7 +629,7 @@ private fun NoResults(query: String, onBack: () -> Unit) {
             modifier = Modifier
                 .size(96.dp)
                 .background(c.s3, RoundedCornerShape(32.dp))
-                .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(32.dp)),
+                .border(1.dp, c.line, RoundedCornerShape(32.dp)),
             contentAlignment = Alignment.Center,
         ) {
             Icon(painterResource(R.drawable.ic_search), contentDescription = null, tint = c.text3, modifier = Modifier.size(40.dp))

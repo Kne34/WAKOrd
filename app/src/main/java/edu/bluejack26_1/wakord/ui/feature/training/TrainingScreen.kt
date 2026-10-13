@@ -41,7 +41,6 @@ import edu.bluejack26_1.wakord.ui.components.DialogTone
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
 import edu.bluejack26_1.wakord.ui.components.NotificationBell
 import edu.bluejack26_1.wakord.ui.components.WakDialog
-import edu.bluejack26_1.wakord.ui.components.alertContainer
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 import edu.bluejack26_1.wakord.ui.theme.jakarta
@@ -160,7 +159,7 @@ private fun Header(
         Row(
             modifier = Modifier
                 .height(36.dp)
-                .background(alertContainer(c), CircleShape)
+                .background(c.peachSoft, CircleShape)
                 .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

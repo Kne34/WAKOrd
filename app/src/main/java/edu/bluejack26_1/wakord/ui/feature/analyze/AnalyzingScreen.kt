@@ -112,11 +112,11 @@ fun AnalyzingScreen(stage: AnalysisStage?, recordedMs: Long, onCancel: () -> Uni
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(22.dp),
                 color = c.s2,
-                border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+                border = BorderStroke(1.dp, c.line),
             ) {
                 Column(Modifier.padding(horizontal = 17.dp, vertical = 4.dp)) {
                     stages.forEachIndexed { i, s ->
-                        if (i > 0) HorizontalDivider(thickness = 1.dp, color = c.text2.copy(alpha = 0.10f))
+                        if (i > 0) HorizontalDivider(thickness = 1.dp, color = c.line)
                         StageRow(
                             label = stringResource(
                                 when (s) {

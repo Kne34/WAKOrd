@@ -167,7 +167,7 @@ private fun InstrumentCard(
         modifier = modifier.height(72.dp),
         shape = RoundedCornerShape(20.dp),
         color = if (selected) c.primary else c.s3,
-        border = BorderStroke(1.dp, if (selected) c.primary else c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, if (selected) c.primary else c.line),
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 17.dp),

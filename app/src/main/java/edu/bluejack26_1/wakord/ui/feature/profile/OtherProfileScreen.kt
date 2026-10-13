@@ -235,7 +235,7 @@ private fun Actions(
             modifier = Modifier.size(54.dp),
             shape = RoundedCornerShape(18.dp),
             color = c.s3,
-            border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+            border = BorderStroke(1.dp, c.line),
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(painterResource(R.drawable.ic_share), contentDescription = stringResource(R.string.other_share_cd), tint = c.text, modifier = Modifier.size(20.dp))
@@ -253,7 +253,7 @@ private fun ProgressionCard(progression: ChordProgression, onClick: () -> Unit, 
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Column(Modifier.padding(horizontal = 17.dp, vertical = 15.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -270,7 +270,7 @@ private fun ProgressionCard(progression: ChordProgression, onClick: () -> Unit, 
                         modifier = Modifier
                             .height(36.dp)
                             .background(c.s3, RoundedCornerShape(12.dp))
-                            .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(12.dp))
+                            .border(1.dp, c.line, RoundedCornerShape(12.dp))
                             .padding(horizontal = 11.dp),
                         contentAlignment = Alignment.Center,
                     ) {

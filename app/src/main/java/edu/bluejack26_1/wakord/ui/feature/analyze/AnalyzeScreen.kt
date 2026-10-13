@@ -54,7 +54,6 @@ import edu.bluejack26_1.wakord.domain.model.DetectedChord
 import edu.bluejack26_1.wakord.ui.components.BackgroundArt
 import edu.bluejack26_1.wakord.ui.components.NotificationBell
 import edu.bluejack26_1.wakord.ui.components.WakButton
-import edu.bluejack26_1.wakord.ui.components.alertContainer
 import edu.bluejack26_1.wakord.ui.components.prettyChord
 import edu.bluejack26_1.wakord.ui.components.relativeTime
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
@@ -63,7 +62,6 @@ import edu.bluejack26_1.wakord.ui.theme.jakarta
 import edu.bluejack26_1.wakord.ui.theme.spaceGrotesk
 import java.util.Locale
 
-private val OnOrange = Color(0xFF2B0C00)
 private const val LEVEL_DOTS = 28
 private const val PREVIEW_COUNT = 3
 
@@ -145,7 +143,7 @@ private fun ModeSelector(mode: AnalyzeMode, onSelect: (AnalyzeMode) -> Unit, mod
             .fillMaxWidth()
             .height(48.dp)
             .background(c.s3, RoundedCornerShape(16.dp))
-            .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(16.dp))
+            .border(1.dp, c.line, RoundedCornerShape(16.dp))
             .padding(5.dp)
             .selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -234,7 +232,7 @@ private fun RecordBlock(state: AnalyzeUiState, onToggle: () -> Unit) {
                             Icon(
                                 painterResource(if (recording) R.drawable.ic_stop else R.drawable.ic_mic),
                                 contentDescription = stringResource(if (recording) R.string.analyze_stop_cd else R.string.analyze_start_cd),
-                                tint = if (recording) OnOrange else c.onPrimary,
+                                tint = if (recording) c.onOrange else c.onPrimary,
                                 modifier = Modifier.size(40.dp),
                             )
                         }
@@ -313,7 +311,7 @@ private fun HistoryRow(result: AnalysisResult, onClick: () -> Unit) {
             modifier = Modifier
                 .size(44.dp)
                 .background(c.s3, RoundedCornerShape(14.dp))
-                .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(14.dp)),
+                .border(1.dp, c.line, RoundedCornerShape(14.dp)),
             contentAlignment = Alignment.Center,
         ) {
             Icon(painterResource(R.drawable.ic_nav_analyze), contentDescription = null, tint = c.primaryText, modifier = Modifier.size(20.dp))
@@ -346,8 +344,8 @@ private fun MicOffBlock(onOpenSettings: () -> Unit) {
         Box(
             modifier = Modifier
                 .size(96.dp)
-                .background(alertContainer(c), RoundedCornerShape(32.dp))
-                .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(32.dp)),
+                .background(c.peachSoft, RoundedCornerShape(32.dp))
+                .border(1.dp, c.line, RoundedCornerShape(32.dp)),
             contentAlignment = Alignment.Center,
         ) {
             Icon(painterResource(R.drawable.ic_mic_off), contentDescription = null, tint = c.peachText, modifier = Modifier.size(40.dp))

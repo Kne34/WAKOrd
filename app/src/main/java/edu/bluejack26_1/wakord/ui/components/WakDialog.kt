@@ -66,12 +66,12 @@ private fun WakDialogContent(
         DialogTone.Error, DialogTone.Danger -> c.error
         DialogTone.Destructive -> c.peach
     }
-    val iconContainer = if (tone == DialogTone.Destructive) alertContainer(c) else accent.copy(alpha = 0.12f)
+    val iconContainer = if (tone == DialogTone.Destructive) c.peachSoft else accent.copy(alpha = 0.12f)
     Surface(
         modifier = Modifier.widthIn(max = 326.dp),
         shape = RoundedCornerShape(30.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Column(
             modifier = Modifier.padding(start = 23.dp, end = 23.dp, top = 27.dp, bottom = 21.dp),
