@@ -23,10 +23,10 @@
     <string name="tuner_string_cd">String %1$d, %2$s</string>
 
     <string name="allow_mic_title">Allow microphone?</string>
-    <string name="allow_mic_message">WAKord listens to tune your instrument and detect chords. Audio stays on your phone unless you save it.</string>
+    <string name="allow_mic_message">WAKOrd listens to tune your instrument and detect chords. Audio stays on your phone unless you save it.</string>
     <string name="allow_microphone">Allow microphone</string>
     <string name="mic_off_title">Microphone access is off</string>
-    <string name="mic_off_tuner_message">WAKord needs the mic to hear your strings. Your audio is processed on this phone and never recorded.</string>
+    <string name="mic_off_tuner_message">WAKOrd needs the mic to hear your strings. Your audio is processed on this phone and never recorded.</string>
     <string name="use_pitch_pipe">Use pitch pipe instead</string>
     <string name="tuner_pitch_pipe">Pitch pipe</string>
     <string name="tuner_pitch_pipe_hint">Tap a string to hear its note</string>

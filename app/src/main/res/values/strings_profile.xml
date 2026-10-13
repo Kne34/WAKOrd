@@ -62,7 +62,7 @@
     <string name="other_follow">Follow</string>
     <string name="other_following">Following</string>
     <string name="other_share_cd">Share profile</string>
-    <string name="other_share_text">Check out %1$s on WAKord (@%2$s)</string>
+    <string name="other_share_text">Check out %1$s on WAKOrd (@%2$s)</string>
     <string name="other_stat_followers">followers</string>
     <string name="other_stat_following">following</string>
     <string name="other_stat_progressions">progressions</string>

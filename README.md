@@ -1,8 +1,8 @@
-# WAKord
+# WAKOrd
 
 Tune, learn chords, train your ear, and share chord progressions.
 
-WAKord is an Android music companion for guitarists, ukulele players, and every musician who wants to tune, learn, and create in one place.
+WAKOrd is an Android music companion for guitarists, ukulele players, and every musician who wants to tune, learn, and create in one place.
 
 | Home | Explore | Song | Tuner | Analyze | Profile |
 |---|---|---|---|---|---|

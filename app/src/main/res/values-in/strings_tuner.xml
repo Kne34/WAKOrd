@@ -23,10 +23,10 @@
     <string name="tuner_string_cd">Senar %1$d, %2$s</string>
 
     <string name="allow_mic_title">Izinkan mikrofon?</string>
-    <string name="allow_mic_message">WAKord mendengarkan untuk menyetem instrumen dan mendeteksi chord. Audio tetap di HP-mu kecuali kamu menyimpannya.</string>
+    <string name="allow_mic_message">WAKOrd mendengarkan untuk menyetem instrumen dan mendeteksi chord. Audio tetap di HP-mu kecuali kamu menyimpannya.</string>
     <string name="allow_microphone">Izinkan mikrofon</string>
     <string name="mic_off_title">Akses mikrofon mati</string>
-    <string name="mic_off_tuner_message">WAKord butuh mikrofon untuk mendengar senarmu. Audio diproses di HP ini dan tidak pernah direkam.</string>
+    <string name="mic_off_tuner_message">WAKOrd butuh mikrofon untuk mendengar senarmu. Audio diproses di HP ini dan tidak pernah direkam.</string>
     <string name="use_pitch_pipe">Pakai pitch pipe saja</string>
     <string name="tuner_pitch_pipe">Pitch pipe</string>
     <string name="tuner_pitch_pipe_hint">Ketuk senar untuk mendengar nadanya</string>

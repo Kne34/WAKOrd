@@ -25,7 +25,7 @@
     <string name="song_saved">Saved</string>
     <string name="song_comments_cd">Comments, %1$s</string>
     <string name="share">Share</string>
-    <string name="song_share_text">%1$s by %2$s on WAKord</string>
+    <string name="song_share_text">%1$s by %2$s on WAKOrd</string>
     <string name="song_reset_transpose">Reset transpose</string>
 
     <string name="transpose">Transpose</string>

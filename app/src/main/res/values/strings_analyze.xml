@@ -12,7 +12,7 @@
     <string name="analyze_recent_empty">Your analyses will show up here.</string>
     <string name="analyze_voice_memo">Voice memo · %1$s</string>
     <string name="analyze_yesterday">Yesterday</string>
-    <string name="analyze_mic_off_message">Turn on microphone access so WAKord can listen and detect the chords you play.</string>
+    <string name="analyze_mic_off_message">Turn on microphone access so WAKOrd can listen and detect the chords you play.</string>
     <string name="see_less">Show less</string>
 
     <string name="analyzing_title">Analyzing</string>
@@ -32,7 +32,7 @@
         <item quantity="one">%1$d chord found</item>
         <item quantity="other">%1$d chords found</item>
     </plurals>
-    <string name="result_fallback">AI analysis was unavailable, so WAKord used basic detection.</string>
+    <string name="result_fallback">AI analysis was unavailable, so WAKOrd used basic detection.</string>
     <string name="result_play">Play back</string>
     <string name="result_stop">Stop</string>
     <string name="result_save">Save as progression</string>
@@ -48,7 +48,7 @@
     <string name="result_search_artist_cd">Search songs by %1$s</string>
     <string name="result_progressions">Progressions to try next</string>
     <string name="result_open_progression_cd">Open %1$s</string>
-    <string name="result_share_text">%1$s · %2$s · detected with WAKord</string>
+    <string name="result_share_text">%1$s · %2$s · detected with WAKOrd</string>
     <string name="result_save_title">Save as progression</string>
     <string name="result_save_message">Give your progression a name. It will be posted to your profile.</string>
     <string name="result_save_label">Title</string>

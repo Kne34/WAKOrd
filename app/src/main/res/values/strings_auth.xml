@@ -37,7 +37,7 @@
     <string name="register_subtitle">One place for your tuner, chord sheets and progressions.</string>
     <string name="create_account">Create account</string>
     <string name="account_created_title">Account created</string>
-    <string name="account_created_message">Welcome to WAKord, %1$s. Tell us what you play so we can tune your feed.</string>
+    <string name="account_created_message">Welcome to WAKOrd, %1$s. Tell us what you play so we can tune your feed.</string>
 
     <string name="account_created_action">Pick my instruments</string>
     <string name="preferences_title">What do you play?</string>
