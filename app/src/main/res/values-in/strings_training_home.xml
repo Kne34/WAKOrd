@@ -16,7 +16,7 @@
     <string name="training_resume">Lanjutkan latihan harian</string>
 
     <string name="pitch_monitor_title">Monitor nada</string>
-    <string name="pitch_live">Live</string>
+    <string name="pitch_live">Langsung</string>
     <string name="pitch_start">Mulai</string>
     <string name="pitch_start_cd">Mulai mendengarkan</string>
     <string name="pitch_stop_cd">Berhenti mendengarkan</string>

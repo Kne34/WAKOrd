@@ -27,12 +27,12 @@
     <string name="recommended_play_cd">Buka %1$s</string>
 
     <string name="saved_chords_title">Chord yang baru disimpan</string>
-    <string name="saved_chords_empty">Simpan chord dari progression mana pun dan chord itu akan muncul di sini.</string>
+    <string name="saved_chords_empty">Simpan chord dari progresi mana pun dan chord itu akan muncul di sini.</string>
 
     <string name="feed_title">Feed-mu</string>
-    <string name="feed_subtitle">Lagu &amp; progression</string>
+    <string name="feed_subtitle">Lagu &amp; progresi</string>
     <string name="feed_key_of">Kunci %1$s</string>
-    <string name="feed_progression_meta">Progression chord · %1$s</string>
+    <string name="feed_progression_meta">Progresi chord · %1$s</string>
     <string name="feed_play_cd">Putar %1$s</string>
     <string name="feed_comments_cd">%1$s komentar</string>
     <string name="feed_end">Kamu sudah melihat semuanya</string>
