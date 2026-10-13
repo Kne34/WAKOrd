@@ -25,6 +25,7 @@ data class SongDetailUiState(
     val replyingTo: Comment? = null,
     val isPosting: Boolean = false,
     val showCommentBlocked: Boolean = false,
+    @param:StringRes val loadError: Int? = null,
     @param:StringRes val errorMessage: Int? = null,
 )
 
@@ -42,6 +43,7 @@ sealed interface SongDetailAction {
     data object PostComment : SongDetailAction
     data class ToggleCommentLike(val comment: Comment) : SongDetailAction
     data object DismissCommentBlocked : SongDetailAction
+    data object Retry : SongDetailAction
     data object DismissError : SongDetailAction
 }
 

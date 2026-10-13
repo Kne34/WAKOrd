@@ -12,42 +12,55 @@ import edu.bluejack26_1.wakord.core.error.messageRes
 import edu.bluejack26_1.wakord.domain.repository.FollowRepository
 import edu.bluejack26_1.wakord.domain.repository.ProfileRepository
 import edu.bluejack26_1.wakord.domain.repository.UserRepository
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class OtherProfileViewModel(
     private val uid: String,
     userRepository: UserRepository,
-    profileRepository: ProfileRepository,
+    private val profileRepository: ProfileRepository,
     private val followRepository: FollowRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(OtherProfileUiState())
     val uiState: StateFlow<OtherProfileUiState> = _uiState.asStateFlow()
 
+    private var loadJob: Job? = null
+
     init {
+        load()
+        viewModelScope.launch { userRepository.currentUser().catch { }.collect { me -> _uiState.update { it.copy(isMe = me?.uid == uid) } } }
+        viewModelScope.launch { followRepository.isFollowing(uid).catch { }.collect { v -> _uiState.update { it.copy(isFollowing = v) } } }
+        viewModelScope.launch { followRepository.stats(uid).catch { }.collect { v -> _uiState.update { it.copy(stats = v) } } }
         viewModelScope.launch {
-            profileRepository.user(uid).collect { u ->
-                _uiState.update {
-                    it.copy(isLoading = false, user = u, errorMessage = if (u == null) AppError.NotFound.messageRes() else it.errorMessage)
-                }
-            }
-        }
-        viewModelScope.launch { userRepository.currentUser().collect { me -> _uiState.update { it.copy(isMe = me?.uid == uid) } } }
-        viewModelScope.launch { followRepository.isFollowing(uid).collect { v -> _uiState.update { it.copy(isFollowing = v) } } }
-        viewModelScope.launch { followRepository.stats(uid).collect { v -> _uiState.update { it.copy(stats = v) } } }
-        viewModelScope.launch {
-            profileRepository.progressionsBy(uid).collect { list ->
+            profileRepository.progressionsBy(uid).catch { }.collect { list ->
                 _uiState.update { it.copy(progressions = list.sortedByDescending { p -> p.likeCount }) }
             }
+        }
+    }
+
+    private fun load() {
+        loadJob?.cancel()
+        _uiState.update { it.copy(isLoading = true, loadError = null) }
+        loadJob = viewModelScope.launch {
+            profileRepository.user(uid)
+                .catch { e -> _uiState.update { it.copy(isLoading = false, loadError = e.messageRes()) } }
+                .collect { u ->
+                    _uiState.update {
+                        it.copy(isLoading = false, user = u, errorMessage = if (u == null) AppError.NotFound.messageRes() else it.errorMessage)
+                    }
+                }
         }
     }
 
     fun onAction(action: OtherProfileAction) {
         when (action) {
             OtherProfileAction.ToggleFollow -> toggleFollow()
+            OtherProfileAction.Retry -> load()
             OtherProfileAction.DismissError -> _uiState.update { it.copy(errorMessage = null) }
         }
     }

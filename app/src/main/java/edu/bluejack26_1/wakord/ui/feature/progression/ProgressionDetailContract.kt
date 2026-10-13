@@ -24,6 +24,7 @@ data class ProgressionDetailUiState(
     val commentDraft: String = "",
     val isPosting: Boolean = false,
     val showCommentBlocked: Boolean = false,
+    @param:StringRes val loadError: Int? = null,
     @param:StringRes val errorMessage: Int? = null,
 )
 
@@ -40,5 +41,6 @@ sealed interface ProgressionDetailAction {
     data object PostComment : ProgressionDetailAction
     data class ToggleCommentLike(val comment: Comment) : ProgressionDetailAction
     data object DismissCommentBlocked : ProgressionDetailAction
+    data object Retry : ProgressionDetailAction
     data object DismissError : ProgressionDetailAction
 }

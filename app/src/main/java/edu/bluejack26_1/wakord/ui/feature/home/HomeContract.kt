@@ -30,6 +30,7 @@ data class HomeUiState(
     val isLoading: Boolean = true,
     val isLoadingMore: Boolean = false,
     val endReached: Boolean = false,
+    @param:StringRes val loadError: Int? = null,
     @param:StringRes val errorMessage: Int? = null,
 )
 

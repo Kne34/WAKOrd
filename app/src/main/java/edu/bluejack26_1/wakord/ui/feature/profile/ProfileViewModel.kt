@@ -19,9 +19,11 @@ import edu.bluejack26_1.wakord.ui.feature.home.SavedChord
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
@@ -43,23 +45,25 @@ class ProfileViewModel(
 
     private val currentUser = userRepository.currentUser()
 
+    private var loadJob: Job? = null
+
     init {
-        viewModelScope.launch {
-            currentUser.collect { u -> _uiState.update { it.copy(isLoading = false, user = u) } }
-        }
+        load()
         viewModelScope.launch {
             currentUser.filterNotNull().flatMapLatest { profileRepository.progressionsBy(it.uid) }
+                .catch { }
                 .collect { list -> _uiState.update { it.copy(myProgressions = list) } }
         }
         viewModelScope.launch {
             currentUser.filterNotNull().flatMapLatest { followRepository.stats(it.uid) }
+                .catch { }
                 .collect { stats -> _uiState.update { it.copy(stats = stats) } }
         }
         viewModelScope.launch {
-            savedLibraryRepository.entries(SavedType.SONG).collect { list -> _uiState.update { it.copy(savedSongs = list) } }
+            savedLibraryRepository.entries(SavedType.SONG).catch { }.collect { list -> _uiState.update { it.copy(savedSongs = list) } }
         }
         viewModelScope.launch {
-            savedLibraryRepository.entries(SavedType.CHORD).collect { list ->
+            savedLibraryRepository.entries(SavedType.CHORD).catch { }.collect { list ->
                 val chords = withContext(computeDispatcher) {
                     list.map { SavedChord(it.id, VoicingGenerator.voicings(it.id, limit = 1).firstOrNull()) }
                 }
@@ -72,6 +76,16 @@ class ProfileViewModel(
         syncNow()
     }
 
+    private fun load() {
+        loadJob?.cancel()
+        _uiState.update { it.copy(isLoading = true, loadError = null) }
+        loadJob = viewModelScope.launch {
+            currentUser
+                .catch { e -> _uiState.update { it.copy(isLoading = false, loadError = e.messageRes()) } }
+                .collect { u -> _uiState.update { it.copy(isLoading = false, user = u) } }
+        }
+    }
+
     fun onAction(action: ProfileAction) {
         when (action) {
             is ProfileAction.SelectTab -> _uiState.update { it.copy(tab = action.tab) }
@@ -79,6 +93,7 @@ class ProfileViewModel(
             ProfileAction.CancelRemove -> _uiState.update { it.copy(pendingRemoval = null) }
             ProfileAction.ConfirmRemove -> confirmRemove()
             ProfileAction.SyncNow -> syncNow()
+            ProfileAction.Retry -> load()
             ProfileAction.DismissError -> _uiState.update { it.copy(errorMessage = null) }
         }
     }

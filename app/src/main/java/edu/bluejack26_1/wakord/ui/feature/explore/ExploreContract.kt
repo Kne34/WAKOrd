@@ -23,6 +23,7 @@ data class ExploreUiState(
     val isSearching: Boolean = false,
     val results: SearchResults = SearchResults(),
     val selectedTab: SearchTab = SearchTab.SONGS,
+    @param:StringRes val loadError: Int? = null,
     @param:StringRes val errorMessage: Int? = null,
 ) {
     val showResults: Boolean get() = query.isNotBlank()
