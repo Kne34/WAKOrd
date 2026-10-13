@@ -69,6 +69,9 @@ import edu.bluejack26_1.wakord.domain.validation.DefaultAuthValidator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
 
 class AppContainer(context: Context) {
     private val appContext = context.applicationContext
@@ -110,4 +113,10 @@ class AppContainer(context: Context) {
     val authValidator: AuthValidator = DefaultAuthValidator()
     val tuningRepository: TuningRepository by lazy { FirebaseTuningRepository(firebaseAuth, firebaseDatabase) }
     val syncRepository: SyncRepository = FirebaseSyncRepository(firebaseDatabase, authRepository, savedItemsRepository, settingsRepository, savedLibraryRepository, appScope)
+
+    fun startSync() {
+        appScope.launch {
+            authRepository.currentUserId.filterNotNull().distinctUntilChanged().collect { syncScheduler.schedule() }
+        }
+    }
 }
