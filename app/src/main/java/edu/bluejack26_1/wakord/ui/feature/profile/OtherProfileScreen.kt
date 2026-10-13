@@ -45,6 +45,7 @@ import edu.bluejack26_1.wakord.domain.model.Difficulty
 import edu.bluejack26_1.wakord.domain.model.ProfileStats
 import edu.bluejack26_1.wakord.domain.model.User
 import edu.bluejack26_1.wakord.ui.components.BackgroundArt
+import edu.bluejack26_1.wakord.ui.components.ErrorState
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
 import edu.bluejack26_1.wakord.ui.components.ProfileAvatar
 import edu.bluejack26_1.wakord.ui.components.compactCount
@@ -93,6 +94,9 @@ fun OtherProfileScreen(
                 }
             }
             when {
+                state.loadError != null && user == null -> item(key = "error") {
+                    ErrorState(stringResource(state.loadError), { onAction(OtherProfileAction.Retry) }, Modifier.padding(top = 80.dp))
+                }
                 state.isLoading -> item(key = "loading") {
                     Box(
                         Modifier

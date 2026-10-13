@@ -72,6 +72,7 @@ import edu.bluejack26_1.wakord.domain.model.SearchResults
 import edu.bluejack26_1.wakord.domain.model.Song
 import edu.bluejack26_1.wakord.ui.components.ChordCard
 import edu.bluejack26_1.wakord.ui.components.ChordSheet
+import edu.bluejack26_1.wakord.ui.components.ErrorState
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
 import edu.bluejack26_1.wakord.ui.components.InitialsAvatar
 import edu.bluejack26_1.wakord.ui.components.NotificationBell
@@ -309,7 +310,14 @@ private fun BrowseContent(
         if (showFilters) {
             item(key = "filters") { Filters(state, onAction) }
         }
-        if (state.isLoading && state.trendingSongs.isEmpty() && state.trendingProgressions.isEmpty() && state.topThisWeek.isEmpty()) {
+        val nothingLoaded = state.trendingSongs.isEmpty() && state.trendingProgressions.isEmpty() && state.topThisWeek.isEmpty()
+        if (state.loadError != null && nothingLoaded && !state.isLoading) {
+            item(key = "error") {
+                ErrorState(stringResource(state.loadError), { onAction(ExploreAction.Refresh) }, Modifier.padding(top = 40.dp))
+            }
+            return@LazyColumn
+        }
+        if (state.isLoading && nothingLoaded) {
             item(key = "loading") {
                 Box(Modifier.fillMaxWidth().padding(top = 80.dp), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = c.primary)
