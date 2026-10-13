@@ -68,6 +68,7 @@ import edu.bluejack26_1.wakord.domain.model.SongLine
 import edu.bluejack26_1.wakord.domain.model.SongSection
 import edu.bluejack26_1.wakord.ui.components.AvatarSmall
 import edu.bluejack26_1.wakord.ui.components.BackgroundArt
+import edu.bluejack26_1.wakord.ui.components.ErrorState
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
 import edu.bluejack26_1.wakord.ui.components.UserAvatar
 import edu.bluejack26_1.wakord.ui.components.compactCount
@@ -134,6 +135,7 @@ fun SongDetailScreen(
                         .padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
                 )
             }
+            state.loadError != null -> ErrorState(stringResource(state.loadError), { onAction(SongDetailAction.Retry) }, Modifier.align(Alignment.Center))
             state.isLoading -> CircularProgressIndicator(color = c.primary, modifier = Modifier.align(Alignment.Center))
             else -> Column(
                 modifier = Modifier

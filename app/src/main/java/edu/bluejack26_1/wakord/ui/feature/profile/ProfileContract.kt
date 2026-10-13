@@ -23,6 +23,7 @@ data class ProfileUiState(
     val myProgressions: List<ChordProgression> = emptyList(),
     val syncStatus: SyncStatus = SyncStatus(),
     val pendingRemoval: SavedEntry? = null,
+    @param:StringRes val loadError: Int? = null,
     @param:StringRes val errorMessage: Int? = null,
 )
 
@@ -32,6 +33,7 @@ sealed interface ProfileAction {
     data object ConfirmRemove : ProfileAction
     data object CancelRemove : ProfileAction
     data object SyncNow : ProfileAction
+    data object Retry : ProfileAction
     data object DismissError : ProfileAction
 }
 
@@ -110,10 +112,12 @@ data class OtherProfileUiState(
     val isFollowing: Boolean = false,
     val isMe: Boolean = false,
     val progressions: List<ChordProgression> = emptyList(),
+    @param:StringRes val loadError: Int? = null,
     @param:StringRes val errorMessage: Int? = null,
 )
 
 sealed interface OtherProfileAction {
     data object ToggleFollow : OtherProfileAction
+    data object Retry : OtherProfileAction
     data object DismissError : OtherProfileAction
 }

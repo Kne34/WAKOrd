@@ -68,6 +68,7 @@ import edu.bluejack26_1.wakord.domain.model.Song
 import edu.bluejack26_1.wakord.domain.model.SongLine
 import edu.bluejack26_1.wakord.domain.model.SongSection
 import edu.bluejack26_1.wakord.ui.components.ChordCard
+import edu.bluejack26_1.wakord.ui.components.ErrorState
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
 import edu.bluejack26_1.wakord.ui.components.NotificationBell
 import edu.bluejack26_1.wakord.ui.components.ProfileAvatar
@@ -182,7 +183,7 @@ fun HomeScreen(
                 }
             }
             item(key = "feed-footer") {
-                FeedFooter(state)
+                FeedFooter(state, onRetry = { onAction(HomeAction.Refresh) })
             }
         }
     }
@@ -608,7 +609,7 @@ private fun ProgressionCard(
 }
 
 @Composable
-private fun FeedFooter(state: HomeUiState) {
+private fun FeedFooter(state: HomeUiState, onRetry: () -> Unit) {
     val c = WakTheme.colors
     Box(
         modifier = Modifier
@@ -617,6 +618,7 @@ private fun FeedFooter(state: HomeUiState) {
         contentAlignment = Alignment.Center,
     ) {
         when {
+            state.loadError != null && state.feed.isEmpty() -> ErrorState(stringResource(state.loadError), onRetry)
             state.isLoading && state.feed.isEmpty() -> CircularProgressIndicator(color = c.primary)
             state.isLoadingMore -> Row(verticalAlignment = Alignment.CenterVertically) {
                 CircularProgressIndicator(color = c.primary, strokeWidth = 2.dp, modifier = Modifier.size(18.dp))

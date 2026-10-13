@@ -25,6 +25,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -43,9 +44,30 @@ class ProgressionDetailViewModel(
 
     private var chordSavedJob: Job? = null
 
+    private var loadJob: Job? = null
+
     init {
+        load()
+        viewModelScope.launch { progressionRepository.isLiked(progressionId).catch { }.collect { v -> _uiState.update { it.copy(isLiked = v) } } }
         viewModelScope.launch {
-            progressionRepository.progression(progressionId).collect { progression ->
+            savedItemsRepository.isSaved(SavedType.PROGRESSION, progressionId).catch { }.collect { v -> _uiState.update { it.copy(isSaved = v) } }
+        }
+        viewModelScope.launch { commentRepository.comments(progressionId).catch { }.collect { v -> _uiState.update { it.copy(comments = v) } } }
+        viewModelScope.launch {
+            playbackController.state.collect { playback ->
+                val mine = playback.progression?.id == progressionId
+                _uiState.update { it.copy(isPlaying = mine && playback.isPlaying, playingIndex = if (mine) playback.chordIndex else null) }
+            }
+        }
+    }
+
+    private fun load() {
+        loadJob?.cancel()
+        _uiState.update { it.copy(isLoading = true, loadError = null) }
+        loadJob = viewModelScope.launch {
+            progressionRepository.progression(progressionId)
+                .catch { e -> _uiState.update { it.copy(isLoading = false, loadError = e.messageRes()) } }
+                .collect { progression ->
                 val chords = progression?.chords.orEmpty()
                 val (guitar, ukulele) = withContext(computeDispatcher) {
                     diagrams(chords, VoicingGenerator.GUITAR_STANDARD) to diagrams(chords, VoicingGenerator.UKULELE_STANDARD)
@@ -59,17 +81,6 @@ class ProgressionDetailViewModel(
                         errorMessage = if (progression == null) AppError.NotFound.messageRes() else it.errorMessage,
                     )
                 }
-            }
-        }
-        viewModelScope.launch { progressionRepository.isLiked(progressionId).collect { v -> _uiState.update { it.copy(isLiked = v) } } }
-        viewModelScope.launch {
-            savedItemsRepository.isSaved(SavedType.PROGRESSION, progressionId).collect { v -> _uiState.update { it.copy(isSaved = v) } }
-        }
-        viewModelScope.launch { commentRepository.comments(progressionId).collect { v -> _uiState.update { it.copy(comments = v) } } }
-        viewModelScope.launch {
-            playbackController.state.collect { playback ->
-                val mine = playback.progression?.id == progressionId
-                _uiState.update { it.copy(isPlaying = mine && playback.isPlaying, playingIndex = if (mine) playback.chordIndex else null) }
             }
         }
     }
@@ -93,6 +104,7 @@ class ProgressionDetailViewModel(
             ProgressionDetailAction.PostComment -> postComment()
             is ProgressionDetailAction.ToggleCommentLike -> toggleCommentLike(action.comment)
             ProgressionDetailAction.DismissCommentBlocked -> _uiState.update { it.copy(showCommentBlocked = false) }
+            ProgressionDetailAction.Retry -> load()
             ProgressionDetailAction.DismissError -> _uiState.update { it.copy(errorMessage = null) }
         }
     }
@@ -117,7 +129,7 @@ class ProgressionDetailViewModel(
         }
         chordSavedJob?.cancel()
         chordSavedJob = viewModelScope.launch {
-            savedItemsRepository.isSaved(SavedType.CHORD, symbol).collect { v -> _uiState.update { it.copy(isChordSaved = v) } }
+            savedItemsRepository.isSaved(SavedType.CHORD, symbol).catch { }.collect { v -> _uiState.update { it.copy(isChordSaved = v) } }
         }
     }
 

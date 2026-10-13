@@ -19,4 +19,5 @@
     <string name="not_now">Nanti saja</string>
     <string name="open_settings">Buka pengaturan</string>
     <string name="step_of">Langkah %1$d dari %2$d</string>
+    <string name="error_load_title">Gagal memuat</string>
 </resources>

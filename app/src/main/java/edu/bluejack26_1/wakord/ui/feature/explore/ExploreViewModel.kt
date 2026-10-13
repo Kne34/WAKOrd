@@ -105,7 +105,7 @@ class ExploreViewModel(
     private fun loadTrending() {
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, endReached = false) }
+            _uiState.update { it.copy(isLoading = true, endReached = false, loadError = null) }
             val f = filter()
             val songs = async { exploreRepository.trendingSongs(fetchSizeFor(FETCH_LIMIT)) }
             val weekly = async { exploreRepository.topSongsThisWeek(fetchSizeFor(topLimit)) }
@@ -119,7 +119,7 @@ class ExploreViewModel(
                     topThisWeek = SearchEngine.applyFilter(weeklySongs, f).take(topLimit),
                     trendingProgressions = SearchEngine.applyFilter(progressions.await().getOrDefault(emptyList()), f).take(FETCH_LIMIT),
                     endReached = weeklySongs.size < fetchSizeFor(topLimit),
-                    errorMessage = error?.messageRes() ?: s.errorMessage,
+                    loadError = error?.messageRes(),
                 )
             }
         }

@@ -111,7 +111,7 @@ class HomeViewModel(
     private fun refresh() {
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, feed = emptyList(), endReached = false, errorMessage = null) }
+            _uiState.update { it.copy(isLoading = true, feed = emptyList(), endReached = false, errorMessage = null, loadError = null) }
             cursor = null
             shownSongIds.clear()
             baseLikes.clear()
@@ -126,7 +126,7 @@ class HomeViewModel(
                 _uiState.update { it.copy(recommended = Recommender.recommendSongs(all, user, activity, affinity)) }
                 appendPage(firstPage)
             }.onFailure { e ->
-                _uiState.update { it.copy(errorMessage = e.messageRes()) }
+                _uiState.update { it.copy(loadError = e.messageRes()) }
             }
             _uiState.update { it.copy(isLoading = false) }
         }

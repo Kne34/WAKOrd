@@ -54,6 +54,7 @@ import edu.bluejack26_1.wakord.domain.model.Comment
 import edu.bluejack26_1.wakord.domain.model.Difficulty
 import edu.bluejack26_1.wakord.ui.components.BackgroundArt
 import edu.bluejack26_1.wakord.ui.components.ChordDiagram
+import edu.bluejack26_1.wakord.ui.components.ErrorState
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
 import edu.bluejack26_1.wakord.ui.components.PianoKeyboard
 import edu.bluejack26_1.wakord.ui.components.SegmentedControl
@@ -165,6 +166,9 @@ fun ProgressionDetailScreen(
                     }
                     ProgressionActions(state, progression, onAction)
                     CommentsSection(state.comments, onOpenComments)
+                }
+                state.loadError != null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    ErrorState(stringResource(state.loadError), { onAction(ProgressionDetailAction.Retry) })
                 }
                 state.isLoading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = c.primary)

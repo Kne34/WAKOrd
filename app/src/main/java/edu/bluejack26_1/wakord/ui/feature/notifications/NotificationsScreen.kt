@@ -46,6 +46,7 @@ import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.domain.model.AppNotification
 import edu.bluejack26_1.wakord.domain.model.NotificationType
 import edu.bluejack26_1.wakord.domain.model.TargetType
+import edu.bluejack26_1.wakord.ui.components.ErrorState
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
 import edu.bluejack26_1.wakord.ui.components.UserAvatar
 import edu.bluejack26_1.wakord.ui.components.relativeTime
@@ -101,6 +102,9 @@ fun NotificationsScreen(
             }
         }
         when {
+            state.loadError != null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                ErrorState(stringResource(state.loadError), { onAction(NotificationsAction.Retry) })
+            }
             state.isLoading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = c.primary)
             }

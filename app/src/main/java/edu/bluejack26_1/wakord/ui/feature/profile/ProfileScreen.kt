@@ -65,6 +65,7 @@ import edu.bluejack26_1.wakord.domain.model.User
 import edu.bluejack26_1.wakord.ui.components.BackgroundArt
 import edu.bluejack26_1.wakord.ui.components.ChordCard
 import edu.bluejack26_1.wakord.ui.components.DialogTone
+import edu.bluejack26_1.wakord.ui.components.ErrorState
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
 import edu.bluejack26_1.wakord.ui.components.NotificationBell
 import edu.bluejack26_1.wakord.ui.components.ProfileAvatar
@@ -146,6 +147,9 @@ fun ProfileScreen(
                 Tabs(state.tab, onSelect = { onAction(ProfileAction.SelectTab(it)) }, modifier = Modifier.padding(top = 22.dp))
             }
             when {
+                state.loadError != null && state.user == null -> item(key = "error") {
+                    ErrorState(stringResource(state.loadError), { onAction(ProfileAction.Retry) }, Modifier.padding(top = 32.dp))
+                }
                 state.isLoading -> item(key = "loading") {
                     Box(
                         Modifier

@@ -98,11 +98,17 @@ class ExploreViewModelTest {
     }
 
     @Test
-    fun `offline shows network error`() = runTest(main.dispatcher) {
+    fun `offline shows a load error that refresh clears`() = runTest(main.dispatcher) {
         repository.offline = true
         val vm = viewModel()
         advanceUntilIdle()
-        assertEquals(R.string.error_network, vm.uiState.value.errorMessage)
+        assertEquals(R.string.error_network, vm.uiState.value.loadError)
         assertTrue(vm.uiState.value.trendingSongs.isEmpty())
+
+        repository.offline = false
+        vm.onAction(ExploreAction.Refresh)
+        advanceUntilIdle()
+        assertEquals(null, vm.uiState.value.loadError)
+        assertTrue(vm.uiState.value.trendingSongs.isNotEmpty())
     }
 }
