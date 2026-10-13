@@ -73,6 +73,7 @@ fun AnalyzeRoute(
         if (!granted) liveViewModel.onAction(LiveChordAction.MicrophoneDenied)
     }
     val liveActive = mode == AnalyzeMode.Live && hasPermission
+    BackHandler(enabled = mode == AnalyzeMode.Live && live.isBuilding) { liveViewModel.onAction(LiveChordAction.FinishBuilding) }
     LifecycleStartEffect(liveActive, liveViewModel) {
         if (liveActive) liveViewModel.onAction(LiveChordAction.StartListening)
         onStopOrDispose {
