@@ -312,6 +312,10 @@ fun NavController.openExploreSearch(query: String) {
 }
 
 fun NavController.navigateTopLevel(route: String) {
+    if (route == Routes.HOME && currentDestination?.route == Routes.TRAINING) {
+        popBackStack(Routes.HOME, inclusive = false)
+        return
+    }
     navigate(route) {
         popUpTo(Routes.HOME) { saveState = true }
         launchSingleTop = true
