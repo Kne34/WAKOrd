@@ -8,11 +8,11 @@
     <string name="tuner_string_label">Senar %1$d · %2$s</string>
     <string name="tuner_play_a_string">Petik satu senar</string>
     <string name="tuner_listening">Mendengarkan…</string>
-    <string name="tuner_in_tune">Pas · %1$s cents</string>
-    <string name="tuner_flat">Rendah · %1$s cents · kencangkan</string>
-    <string name="tuner_sharp">Tinggi · %1$s cents · kendurkan</string>
+    <string name="tuner_in_tune">Pas · %1$s sen</string>
+    <string name="tuner_flat">Rendah · %1$s sen · kencangkan</string>
+    <string name="tuner_sharp">Tinggi · %1$s sen · kendurkan</string>
     <string name="tuner_flat_scale">Rendah · −50</string>
-    <string name="tuner_zero_cents">0 cents</string>
+    <string name="tuner_zero_cents">0 sen</string>
     <string name="tuner_sharp_scale">+50 · Tinggi</string>
 
     <string name="tuner_strings_low_to_high">Senar · rendah ke tinggi</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="song_chord_sheet">Chord sheet</string>
+    <string name="song_chord_sheet">Lembar chord</string>
     <string name="more_options">Opsi lainnya</string>
     <string name="song_cover_cd">Sampul %1$s</string>
     <string name="song_stats">%1$s suka · %2$s simpan</string>

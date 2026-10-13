@@ -46,7 +46,7 @@
     <string name="new_prog_add_chord_cd">Tambah %1$s</string>
     <string name="new_prog_remove_chord_cd">Hapus %1$s</string>
     <string name="new_prog_picker">Pemilih chord</string>
-    <string name="new_prog_root">Root</string>
+    <string name="new_prog_root">Nada dasar</string>
     <string name="new_prog_quality">Jenis</string>
     <string name="new_prog_description">Deskripsi (opsional)</string>
     <string name="new_prog_description_placeholder">Nuansanya apa? Ada tips?</string>
