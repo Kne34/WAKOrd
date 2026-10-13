@@ -33,7 +33,7 @@
     <string name="pitch_more">Lainnya</string>
     <string name="pitch_note_range">Pilih nada apa saja dari C2 sampai B5</string>
     <string name="pitch_octave">Oktaf</string>
-    <string name="pitch_mic_off_message">Nyalakan akses mikrofon supaya WAKord bisa mendengar suaramu.</string>
+    <string name="pitch_mic_off_message">Nyalakan akses mikrofon supaya WAKOrd bisa mendengar suaramu.</string>
 
     <string name="curriculum_title">Kurikulum</string>
     <plurals name="curriculum_mastered">

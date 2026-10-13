@@ -27,7 +27,7 @@
     <string name="settings_saved_on_phone">kept on this phone</string>
     <string name="settings_keep_offline">Keep saved items offline</string>
     <string name="settings_log_out">Log out</string>
-    <string name="settings_footer">WAKord %1$s · made by KO &amp; WA</string>
+    <string name="settings_footer">WAKOrd %1$s · made by KO &amp; WA</string>
 
     <string name="settings_pitch_subtitle">The tuner and pitch training tune A4 to this frequency</string>
     <string name="settings_pitch_lower">Lower by 1 Hz</string>
@@ -36,7 +36,7 @@
     <string name="settings_pitch_reset">Reset to 440 Hz</string>
     <string name="settings_done">Done</string>
 
-    <string name="logout_title">Log out of WAKord?</string>
+    <string name="logout_title">Log out of WAKOrd?</string>
     <string name="logout_message">Your saved songs and chords stay synced. You can log back in any time.</string>
     <string name="cancel">Cancel</string>
 </resources>

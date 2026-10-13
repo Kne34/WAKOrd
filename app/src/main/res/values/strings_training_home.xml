@@ -34,7 +34,7 @@
     <string name="pitch_more">More</string>
     <string name="pitch_note_range">Pick any note from C2 to B5</string>
     <string name="pitch_octave">Octave</string>
-    <string name="pitch_mic_off_message">Turn on microphone access so WAKord can hear you sing.</string>
+    <string name="pitch_mic_off_message">Turn on microphone access so WAKOrd can hear you sing.</string>
 
     <string name="curriculum_title">Curriculum</string>
     <plurals name="curriculum_mastered">

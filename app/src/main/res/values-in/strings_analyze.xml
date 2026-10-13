@@ -12,7 +12,7 @@
     <string name="analyze_recent_empty">Hasil analisismu akan muncul di sini.</string>
     <string name="analyze_voice_memo">Rekaman suara · %1$s</string>
     <string name="analyze_yesterday">Kemarin</string>
-    <string name="analyze_mic_off_message">Nyalakan akses mikrofon supaya WAKord bisa mendengar dan mendeteksi chord yang kamu mainkan.</string>
+    <string name="analyze_mic_off_message">Nyalakan akses mikrofon supaya WAKOrd bisa mendengar dan mendeteksi chord yang kamu mainkan.</string>
     <string name="see_less">Lebih sedikit</string>
 
     <string name="analyzing_title">Menganalisis</string>
@@ -31,7 +31,7 @@
     <plurals name="result_chords_found">
         <item quantity="other">%1$d chord ditemukan</item>
     </plurals>
-    <string name="result_fallback">Analisis AI sedang tidak tersedia, jadi WAKord memakai deteksi dasar.</string>
+    <string name="result_fallback">Analisis AI sedang tidak tersedia, jadi WAKOrd memakai deteksi dasar.</string>
     <string name="result_play">Putar</string>
     <string name="result_stop">Berhenti</string>
     <string name="result_save">Simpan sebagai progresi</string>
@@ -46,7 +46,7 @@
     <string name="result_search_artist_cd">Cari lagu dari %1$s</string>
     <string name="result_progressions">Progresi untuk dicoba</string>
     <string name="result_open_progression_cd">Buka %1$s</string>
-    <string name="result_share_text">%1$s · %2$s · dideteksi dengan WAKord</string>
+    <string name="result_share_text">%1$s · %2$s · dideteksi dengan WAKOrd</string>
     <string name="result_save_title">Simpan sebagai progresi</string>
     <string name="result_save_message">Beri nama progresimu. Progresi ini akan tampil di profilmu.</string>
     <string name="result_save_label">Judul</string>
