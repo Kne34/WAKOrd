@@ -19,4 +19,5 @@
     <string name="not_now">Not now</string>
     <string name="open_settings">Open settings</string>
     <string name="step_of">Step %1$d of %2$d</string>
+    <string name="error_load_title">Couldn’t load this</string>
 </resources>
