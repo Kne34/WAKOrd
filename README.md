@@ -40,6 +40,8 @@ From the command line:
 ./gradlew testDebugUnitTest lintDebug
 ```
 
+For a signed release build, place the release keystore and a keystore.properties file (storeFile, storePassword, keyAlias, keyPassword) in the project root, then run ./gradlew assembleRelease bundleRelease. Neither file is committed. Without them the release build is unsigned.
+
 The database schema and security rules are described in [docs/database.md](docs/database.md). Sample data lives in seed/wakord-seed.json.
 
 ## Demo account
