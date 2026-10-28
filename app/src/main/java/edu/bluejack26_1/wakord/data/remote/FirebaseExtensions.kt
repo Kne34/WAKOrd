@@ -33,16 +33,22 @@ fun Query.valueFlow(): Flow<DataSnapshot> = callbackFlow {
     awaitClose { removeEventListener(listener) }
 }
 
-fun DataSnapshot.string(key: String): String = child(key).getValue(String::class.java).orEmpty()
+fun DataNode.string(key: String): String = child(key).asString().orEmpty()
 
-fun DataSnapshot.int(key: String): Int = child(key).getValue(Long::class.java)?.toInt() ?: 0
+fun DataNode.int(key: String): Int = child(key).asLong()?.toInt() ?: 0
 
-fun DataSnapshot.long(key: String): Long = child(key).getValue(Long::class.java) ?: 0L
+fun DataNode.long(key: String): Long = child(key).asLong() ?: 0L
 
-fun DataSnapshot.strings(key: String): List<String> =
-    child(key).children.mapNotNull { it.getValue(String::class.java) }
+fun DataNode.strings(key: String): List<String> =
+    child(key).children.mapNotNull { it.asString() }
 
 fun FirebaseAuth.requireUid(): String = currentUser?.uid ?: throw AppError.NotLoggedIn
+
+fun FirebaseAuth.uidFlow(): Flow<String?> = callbackFlow {
+    val listener = FirebaseAuth.AuthStateListener { trySend(it.currentUser?.uid) }
+    addAuthStateListener(listener)
+    awaitClose { removeAuthStateListener(listener) }
+}
 
 fun String.toDatabaseKey(): String = this
     .replace("#", "s")

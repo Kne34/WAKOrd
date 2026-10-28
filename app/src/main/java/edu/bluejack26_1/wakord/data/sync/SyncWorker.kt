@@ -18,10 +18,12 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
     override suspend fun doWork(): Result {
         val container = (applicationContext as WAKordApp).container
         val results = listOf(
+            runCatching { container.firebaseBackup.flush() == 0 },
             container.savedLibraryRepository.syncNow().map { it == 0 },
             container.trainingRepository.syncPending().map { true },
             container.analysisRepository.syncPending().map { true },
         )
+        container.backUpUserData()
         val needsRetry = results.any { r -> r.getOrNull() == false || r.exceptionOrNull().let { it != null && it !is AppError.NotLoggedIn } }
         return if (needsRetry) Result.retry() else Result.success()
     }

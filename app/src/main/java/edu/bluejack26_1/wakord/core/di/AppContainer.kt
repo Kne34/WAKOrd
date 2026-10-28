@@ -22,7 +22,10 @@ import edu.bluejack26_1.wakord.core.training.MicPitchSource
 import edu.bluejack26_1.wakord.core.training.PitchSource
 import edu.bluejack26_1.wakord.data.local.AppDatabase
 import edu.bluejack26_1.wakord.data.remote.GeminiChordAnalyzer
+import edu.bluejack26_1.wakord.data.remote.FirebaseRemoteDatabase
 import edu.bluejack26_1.wakord.data.remote.GeminiCommentModerator
+import edu.bluejack26_1.wakord.data.remote.firebaseCall
+import edu.bluejack26_1.wakord.data.remote.uidFlow
 import edu.bluejack26_1.wakord.data.repository.CachedUserPhotoRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseAuthRepository
 import edu.bluejack26_1.wakord.data.repository.FirebaseCommentRepository
@@ -43,6 +46,8 @@ import edu.bluejack26_1.wakord.data.repository.RoomDraftRepository
 import edu.bluejack26_1.wakord.data.repository.RoomSettingsRepository
 import edu.bluejack26_1.wakord.data.repository.RoomTrainingRepository
 import edu.bluejack26_1.wakord.data.repository.SyncScheduler
+import edu.bluejack26_1.wakord.data.sync.FirebaseBackup
+import edu.bluejack26_1.wakord.data.sync.UserDataBackup
 import edu.bluejack26_1.wakord.data.sync.WorkManagerSyncScheduler
 import edu.bluejack26_1.wakord.domain.repository.AnalysisRepository
 import edu.bluejack26_1.wakord.domain.repository.AuthRepository
@@ -69,8 +74,13 @@ import edu.bluejack26_1.wakord.domain.validation.DefaultAuthValidator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class AppContainer(context: Context) {
@@ -81,42 +91,63 @@ class AppContainer(context: Context) {
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     val connectivityObserver: ConnectivityObserver by lazy { AndroidConnectivityObserver(appContext) }
+    private val isOnline: StateFlow<Boolean> by lazy { connectivityObserver.isOnline.stateIn(appScope, SharingStarted.Eagerly, true) }
+    val firebaseBackup: FirebaseBackup by lazy {
+        FirebaseBackup(
+            remote = FirebaseRemoteDatabase(firebaseDatabase),
+            dao = database.backupDao(),
+            isOnline = isOnline,
+            userId = firebaseAuth.uidFlow(),
+            scheduler = syncScheduler,
+        )
+    }
     val settingsRepository: SettingsRepository by lazy { RoomSettingsRepository(database.settingsDao()) }
     val tonePlayer: TonePlayer by lazy { SynthTonePlayer() }
     val audioInput: AudioInput by lazy { MicAudioInput() }
     val pitchDetector: PitchDetector by lazy { YinPitchDetector() }
     val pitchSource: PitchSource by lazy { MicPitchSource(appContext, audioInput, pitchDetector) }
-    val authRepository: AuthRepository by lazy { FirebaseAuthRepository(firebaseAuth, firebaseDatabase) }
-    val songRepository: SongRepository by lazy { FirebaseSongRepository(firebaseAuth, firebaseDatabase) }
-    val commentRepository: CommentRepository by lazy { FirebaseCommentRepository(firebaseAuth, firebaseDatabase, GeminiCommentModerator()) }
+    val authRepository: AuthRepository by lazy { FirebaseAuthRepository(firebaseAuth, firebaseBackup) }
+    val songRepository: SongRepository by lazy { FirebaseSongRepository(firebaseAuth, firebaseBackup) }
+    val commentRepository: CommentRepository by lazy { FirebaseCommentRepository(firebaseAuth, firebaseBackup, GeminiCommentModerator()) }
     private val offlineSaved: OfflineSavedItemsRepository by lazy {
-        OfflineSavedItemsRepository(database.savedItemDao(), FirebaseSavedItemsRemote(firebaseAuth, firebaseDatabase), syncScheduler)
+        OfflineSavedItemsRepository(database.savedItemDao(), FirebaseSavedItemsRemote(firebaseAuth, firebaseBackup), syncScheduler)
     }
     val syncScheduler: SyncScheduler by lazy { WorkManagerSyncScheduler(appContext) }
     val savedItemsRepository: SavedItemsRepository get() = offlineSaved
     val savedLibraryRepository: SavedLibraryRepository get() = offlineSaved
-    val progressionRepository: ProgressionRepository by lazy { FirebaseProgressionRepository(firebaseAuth, firebaseDatabase) }
-    val userRepository: UserRepository by lazy { FirebaseUserRepository(firebaseAuth, firebaseDatabase) }
-    val feedRepository: FeedRepository by lazy { FirebaseFeedRepository(firebaseAuth, firebaseDatabase) }
+    val progressionRepository: ProgressionRepository by lazy { FirebaseProgressionRepository(firebaseAuth, firebaseBackup) }
+    val userRepository: UserRepository by lazy { FirebaseUserRepository(firebaseAuth, firebaseBackup) }
+    val feedRepository: FeedRepository by lazy { FirebaseFeedRepository(firebaseAuth, firebaseBackup) }
     val playbackController: PlaybackController by lazy { TonePlaybackController(tonePlayer, appScope) }
-    val exploreRepository: ExploreRepository by lazy { FirebaseExploreRepository(firebaseDatabase) }
-    val trainingRepository: TrainingRepository by lazy { RoomTrainingRepository(database.trainingDao(), firebaseAuth, firebaseDatabase) }
-    val analysisRepository: AnalysisRepository by lazy { RoomAnalysisRepository(database.analysisDao(), firebaseAuth, firebaseDatabase) }
+    val exploreRepository: ExploreRepository by lazy { FirebaseExploreRepository(firebaseBackup) }
+    val trainingRepository: TrainingRepository by lazy { RoomTrainingRepository(database.trainingDao(), firebaseAuth, firebaseBackup) }
+    val analysisRepository: AnalysisRepository by lazy { RoomAnalysisRepository(database.analysisDao(), firebaseAuth, firebaseBackup) }
     val audioCapture: AudioCapture by lazy { AndroidAudioCapture(appContext) }
     val chordAnalyzer: ChordAnalyzer by lazy { FallbackChordAnalyzer(GeminiChordAnalyzer(), AlgorithmChordAnalyzer()) }
-    val profileRepository: ProfileRepository by lazy { FirebaseProfileRepository(firebaseAuth, firebaseDatabase, appContext.contentResolver) }
+    val profileRepository: ProfileRepository by lazy { FirebaseProfileRepository(firebaseAuth, firebaseBackup, appContext.contentResolver) }
     val userPhotoRepository: UserPhotoRepository by lazy { CachedUserPhotoRepository(profileRepository, appScope) }
     val draftRepository: DraftRepository by lazy { RoomDraftRepository(database.draftDao(), firebaseAuth) }
-    val followRepository: FollowRepository by lazy { FirebaseFollowRepository(firebaseAuth, firebaseDatabase) }
-    val notificationRepository: NotificationRepository by lazy { FirebaseNotificationRepository(firebaseAuth, firebaseDatabase) }
+    val followRepository: FollowRepository by lazy { FirebaseFollowRepository(firebaseAuth, firebaseBackup) }
+    val notificationRepository: NotificationRepository by lazy { FirebaseNotificationRepository(firebaseAuth, firebaseBackup) }
     val notificationWatcher: NotificationWatcher by lazy { NotificationWatcher(appContext, notificationRepository, settingsRepository, appScope) }
     val authValidator: AuthValidator = DefaultAuthValidator()
-    val tuningRepository: TuningRepository by lazy { FirebaseTuningRepository(firebaseAuth, firebaseDatabase) }
-    val syncRepository: SyncRepository = FirebaseSyncRepository(firebaseDatabase, authRepository, savedItemsRepository, settingsRepository, savedLibraryRepository, appScope)
+    val tuningRepository: TuningRepository by lazy { FirebaseTuningRepository(firebaseAuth, firebaseBackup) }
+    val syncRepository: SyncRepository = FirebaseSyncRepository(firebaseDatabase, authRepository, savedItemsRepository, settingsRepository, savedLibraryRepository, firebaseBackup, appScope)
 
     fun startSync() {
         appScope.launch {
             authRepository.currentUserId.filterNotNull().distinctUntilChanged().collect { syncScheduler.schedule() }
         }
+        appScope.launch {
+            isOnline.drop(1).filter { it }.collect {
+                firebaseCall { firebaseBackup.flush() }
+                savedLibraryRepository.syncNow()
+            }
+        }
+    }
+
+    suspend fun backUpUserData() {
+        val uid = firebaseAuth.currentUser?.uid ?: return
+        UserDataBackup.run(firebaseBackup, uid)
     }
 }

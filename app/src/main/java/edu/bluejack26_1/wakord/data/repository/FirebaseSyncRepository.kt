@@ -3,6 +3,7 @@ package edu.bluejack26_1.wakord.data.repository
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import edu.bluejack26_1.wakord.data.remote.valueFlow
+import edu.bluejack26_1.wakord.data.sync.FirebaseBackup
 import edu.bluejack26_1.wakord.domain.model.SavedType
 import edu.bluejack26_1.wakord.domain.model.SyncStatus
 import edu.bluejack26_1.wakord.domain.repository.AuthRepository
@@ -28,6 +29,7 @@ class FirebaseSyncRepository(
     private val savedItemsRepository: SavedItemsRepository,
     settingsRepository: SettingsRepository,
     private val library: SavedLibraryRepository,
+    private val backup: FirebaseBackup,
     scope: CoroutineScope,
 ) : SyncRepository {
     @Volatile
@@ -58,7 +60,7 @@ class FirebaseSyncRepository(
                 connected,
                 savedItemsRepository.saved(SavedType.SONG).catch { emit(emptyList()) },
                 savedItemsRepository.saved(SavedType.CHORD).catch { emit(emptyList()) },
-                library.pendingCount.catch { emit(0) },
+                combine(library.pendingCount, backup.pendingCount) { saved, writes -> saved + writes }.catch { emit(0) },
                 library.lastSyncedAt.catch { emit(null) },
             ) { online, songs, chords, pending, synced ->
                 if (online) lastSyncedAt = System.currentTimeMillis()
