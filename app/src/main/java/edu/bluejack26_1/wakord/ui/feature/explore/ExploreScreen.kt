@@ -16,10 +16,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -62,6 +64,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.core.music.VoicingGenerator
 import edu.bluejack26_1.wakord.domain.model.ArtistResult
@@ -76,6 +79,8 @@ import edu.bluejack26_1.wakord.ui.components.ErrorState
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
 import edu.bluejack26_1.wakord.ui.components.InitialsAvatar
 import edu.bluejack26_1.wakord.ui.components.NotificationBell
+import edu.bluejack26_1.wakord.ui.components.WakButton
+import edu.bluejack26_1.wakord.ui.components.WakButtonVariant
 import edu.bluejack26_1.wakord.ui.components.levelLabel
 import edu.bluejack26_1.wakord.ui.components.prettyChord
 import edu.bluejack26_1.wakord.ui.feature.chord.ChordSheetAction
@@ -99,7 +104,7 @@ fun ExploreScreen(
     unreadNotifications: Int = 0,
 ) {
     val c = WakTheme.colors
-    var showFilters by rememberSaveable { mutableStateOf(true) }
+    var showFilters by rememberSaveable { mutableStateOf(false) }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -122,13 +127,26 @@ fun ExploreScreen(
             searching = state.showResults,
             onQueryChange = { onAction(ExploreAction.QueryChanged(it)) },
             onClear = { onAction(ExploreAction.ClearQuery) },
-            onToggleFilters = { showFilters = !showFilters },
+            activeFilters = listOfNotNull(state.selectedGenre, state.selectedLevel).size,
+            onOpenFilters = { showFilters = true },
         )
         if (state.showResults) {
             SearchResultsContent(state, onAction, onOpenSong, onOpenProgression, onOpenChord = { onChordAction(ChordSheetAction.Open(it)) })
         } else {
-            BrowseContent(state, onAction, showFilters, onOpenSong, onOpenProgression, onOpenSection)
+            BrowseContent(state, onAction, onOpenSong, onOpenProgression, onOpenSection)
         }
+    }
+
+    if (showFilters) {
+        FilterDialog(
+            state = state,
+            onApply = { genre, level ->
+                onAction(ExploreAction.SelectGenre(genre))
+                onAction(ExploreAction.SelectLevel(level))
+                showFilters = false
+            },
+            onDismiss = { showFilters = false },
+        )
     }
 
     val symbol = chordSheet.symbol
@@ -152,7 +170,8 @@ private fun SearchRow(
     searching: Boolean,
     onQueryChange: (String) -> Unit,
     onClear: () -> Unit,
-    onToggleFilters: () -> Unit,
+    activeFilters: Int,
+    onOpenFilters: () -> Unit,
 ) {
     val c = WakTheme.colors
     val shape = RoundedCornerShape(16.dp)
@@ -209,15 +228,40 @@ private fun SearchRow(
         AnimatedVisibility(visible = !searching) {
             Row {
                 Spacer(Modifier.width(10.dp))
-                Surface(
-                    onClick = onToggleFilters,
-                    modifier = Modifier.size(50.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    color = c.s3,
-                    border = BorderStroke(1.dp, c.line),
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(painterResource(R.drawable.ic_filter), contentDescription = stringResource(R.string.explore_filters), tint = c.text, modifier = Modifier.size(20.dp))
+                val filtered = activeFilters > 0
+                val filterLabel = if (filtered) {
+                    pluralStringResource(R.plurals.explore_filters_active, activeFilters, activeFilters)
+                } else {
+                    stringResource(R.string.explore_filters)
+                }
+                Box {
+                    Surface(
+                        onClick = onOpenFilters,
+                        modifier = Modifier.size(50.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        color = if (filtered) c.primary.copy(alpha = 0.16f) else c.s3,
+                        border = BorderStroke(1.dp, if (filtered) c.primary else c.line),
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                painterResource(R.drawable.ic_filter),
+                                contentDescription = filterLabel,
+                                tint = if (filtered) c.primaryText else c.text,
+                                modifier = Modifier.size(20.dp),
+                            )
+                        }
+                    }
+                    if (filtered) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .offset(x = 5.dp, y = (-5).dp)
+                                .size(20.dp)
+                                .background(c.primary, CircleShape),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(activeFilters.toString(), style = spaceGrotesk(11.sp, FontWeight.Bold), color = c.onPrimary)
+                        }
                     }
                 }
             }
@@ -247,36 +291,117 @@ private fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit, he
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun Filters(state: ExploreUiState, onAction: (ExploreAction) -> Unit) {
+private fun FilterDialog(
+    state: ExploreUiState,
+    onApply: (String?, Difficulty?) -> Unit,
+    onDismiss: () -> Unit,
+) {
     val c = WakTheme.colors
-    Column(Modifier.padding(top = 12.dp)) {
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+    var genre by rememberSaveable { mutableStateOf(state.selectedGenre) }
+    var level by rememberSaveable { mutableStateOf(state.selectedLevel) }
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier.widthIn(max = 360.dp),
+            shape = RoundedCornerShape(30.dp),
+            color = c.s2,
+            border = BorderStroke(1.dp, c.line),
         ) {
-            item {
-                FilterChip(stringResource(R.string.explore_all), state.selectedGenre == null, { onAction(ExploreAction.SelectGenre(null)) }, 38.dp, filled = false)
-            }
-            items(state.genres) { genre ->
-                FilterChip(genre, state.selectedGenre == genre, { onAction(ExploreAction.SelectGenre(genre)) }, 38.dp, filled = false)
+            Column(Modifier.padding(start = 22.dp, end = 22.dp, top = 22.dp, bottom = 18.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(R.string.explore_filters), style = spaceGrotesk(22.sp), color = c.text, modifier = Modifier.weight(1f))
+                    Icon(
+                        painterResource(R.drawable.ic_close),
+                        contentDescription = stringResource(R.string.close),
+                        tint = c.text2,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .clickable(onClick = onDismiss)
+                            .padding(8.dp),
+                    )
+                }
+                FilterGroupLabel(stringResource(R.string.explore_genre))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FilterChip(stringResource(R.string.explore_all), genre == null, { genre = null }, 38.dp, filled = false)
+                    state.genres.forEach { option ->
+                        FilterChip(option, genre == option, { genre = option }, 38.dp, filled = false)
+                    }
+                }
+                FilterGroupLabel(stringResource(R.string.explore_level))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FilterChip(stringResource(R.string.explore_any), level == null, { level = null }, 34.dp, filled = true)
+                    Difficulty.entries.forEach { option ->
+                        FilterChip(levelLabel(option), level == option, { level = option }, 34.dp, filled = true)
+                    }
+                }
+                Spacer(Modifier.height(24.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    WakButton(
+                        text = stringResource(R.string.explore_reset_filters),
+                        onClick = {
+                            genre = null
+                            level = null
+                        },
+                        modifier = Modifier.weight(1f),
+                        variant = WakButtonVariant.Secondary,
+                        enabled = genre != null || level != null,
+                    )
+                    WakButton(
+                        text = stringResource(R.string.explore_show_results),
+                        onClick = { onApply(genre, level) },
+                        modifier = Modifier.weight(1.4f),
+                    )
+                }
             }
         }
-        Spacer(Modifier.height(12.dp))
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            item {
-                Text(stringResource(R.string.explore_level), style = spaceGrotesk(11.sp, FontWeight.Medium), color = c.text3, modifier = Modifier.padding(end = 4.dp))
-            }
-            item {
-                FilterChip(stringResource(R.string.explore_any), state.selectedLevel == null, { onAction(ExploreAction.SelectLevel(null)) }, 34.dp, filled = true)
-            }
-            items(Difficulty.entries) { level ->
-                FilterChip(levelLabel(level), state.selectedLevel == level, { onAction(ExploreAction.SelectLevel(level)) }, 34.dp, filled = true)
-            }
+    }
+}
+
+@Composable
+private fun FilterGroupLabel(text: String) {
+    Text(
+        text = text,
+        style = spaceGrotesk(11.sp, FontWeight.Medium),
+        color = WakTheme.colors.text3,
+        modifier = Modifier.padding(top = 20.dp, bottom = 10.dp),
+    )
+}
+
+@Composable
+private fun ActiveFilters(state: ExploreUiState, onAction: (ExploreAction) -> Unit) {
+    LazyRow(
+        modifier = Modifier.padding(top = 12.dp),
+        contentPadding = PaddingValues(horizontal = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        state.selectedGenre?.let { genre ->
+            item(key = "genre") { FilterLabel(genre) { onAction(ExploreAction.SelectGenre(null)) } }
+        }
+        state.selectedLevel?.let { level ->
+            item(key = "level") { FilterLabel(levelLabel(level)) { onAction(ExploreAction.SelectLevel(null)) } }
+        }
+    }
+}
+
+@Composable
+private fun FilterLabel(label: String, onRemove: () -> Unit) {
+    val c = WakTheme.colors
+    val removeLabel = stringResource(R.string.explore_remove_filter, label)
+    Surface(
+        onClick = onRemove,
+        modifier = Modifier
+            .height(34.dp)
+            .semantics { contentDescription = removeLabel },
+        shape = CircleShape,
+        color = c.primary.copy(alpha = 0.16f),
+        border = BorderStroke(1.dp, c.primary),
+    ) {
+        Row(Modifier.padding(start = 14.dp, end = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(label, style = jakarta(14.sp), color = c.primaryText, maxLines = 1)
+            Spacer(Modifier.width(6.dp))
+            Icon(painterResource(R.drawable.ic_close), contentDescription = null, tint = c.primaryText, modifier = Modifier.size(14.dp))
         }
     }
 }
@@ -285,7 +410,6 @@ private fun Filters(state: ExploreUiState, onAction: (ExploreAction) -> Unit) {
 private fun BrowseContent(
     state: ExploreUiState,
     onAction: (ExploreAction) -> Unit,
-    showFilters: Boolean,
     onOpenSong: (String) -> Unit,
     onOpenProgression: (String) -> Unit,
     onOpenSection: (ExploreSection) -> Unit,
@@ -307,8 +431,8 @@ private fun BrowseContent(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 24.dp),
     ) {
-        if (showFilters) {
-            item(key = "filters") { Filters(state, onAction) }
+        if (state.selectedGenre != null || state.selectedLevel != null) {
+            item(key = "filters") { ActiveFilters(state, onAction) }
         }
         val nothingLoaded = state.trendingSongs.isEmpty() && state.trendingProgressions.isEmpty() && state.topThisWeek.isEmpty()
         if (state.loadError != null && nothingLoaded && !state.isLoading) {
