@@ -347,9 +347,11 @@ private fun SyncRow(sync: SyncStatus) {
     val songs = pluralStringResource(R.plurals.settings_saved_songs, sync.savedSongs, sync.savedSongs)
     val chords = pluralStringResource(R.plurals.settings_saved_chords, sync.savedChords, sync.savedChords)
     val synced = sync.lastSyncedAt
+    val recent = synced != null && System.currentTimeMillis() - synced < 60_000
     val time = when {
         synced == null -> stringResource(R.string.settings_saved_on_phone)
-        sync.isOnline && System.currentTimeMillis() - synced < 60_000 -> stringResource(R.string.settings_just_now)
+        sync.isOnline && recent -> stringResource(R.string.settings_just_now)
+        recent -> stringResource(R.string.settings_last_synced, stringResource(R.string.settings_just_now))
         else -> stringResource(R.string.settings_last_synced, stringResource(R.string.time_ago, relativeTime(synced)))
     }
     Row(

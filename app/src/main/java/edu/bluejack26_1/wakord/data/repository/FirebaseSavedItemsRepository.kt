@@ -1,32 +1,32 @@
 package edu.bluejack26_1.wakord.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
+import edu.bluejack26_1.wakord.data.remote.NodeOrder
+import edu.bluejack26_1.wakord.data.remote.NodeQuery
 import edu.bluejack26_1.wakord.data.remote.firebaseCall
 import edu.bluejack26_1.wakord.data.remote.requireUid
 import edu.bluejack26_1.wakord.data.remote.string
 import edu.bluejack26_1.wakord.data.remote.toDatabaseKey
-import edu.bluejack26_1.wakord.data.remote.valueFlow
+import edu.bluejack26_1.wakord.data.sync.FirebaseBackup
 import edu.bluejack26_1.wakord.domain.model.SavedType
 import edu.bluejack26_1.wakord.domain.repository.SavedItemsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.tasks.await
 
 class FirebaseSavedItemsRepository(
     private val auth: FirebaseAuth,
-    private val database: FirebaseDatabase,
+    private val backup: FirebaseBackup,
 ) : SavedItemsRepository {
     override fun isSaved(type: SavedType, id: String): Flow<Boolean> {
         val uid = auth.currentUser?.uid ?: return flowOf(false)
-        return database.getReference("saves/$uid/${type.path}/${id.toDatabaseKey()}").valueFlow().map { it.exists() }
+        return backup.observe("saves/$uid/${type.path}/${id.toDatabaseKey()}").map { it.exists() }
     }
 
     override fun saved(type: SavedType): Flow<List<String>> {
         val uid = auth.currentUser?.uid ?: return flowOf(emptyList())
-        return database.getReference("saves/$uid/${type.path}").orderByChild("savedAt").valueFlow().map { snapshot ->
+        return backup.observe(NodeQuery("saves/$uid/${type.path}", NodeOrder.Child("savedAt"))).map { snapshot ->
             snapshot.children.map { it.string("id") }.filter { it.isNotEmpty() }.reversed()
         }
     }
@@ -39,7 +39,6 @@ class FirebaseSavedItemsRepository(
         if (type != SavedType.CHORD) {
             updates["${type.path}/$id/saveCount"] = ServerValue.increment(if (saved) 1L else -1L)
         }
-        database.reference.updateChildren(updates).await()
-        Unit
+        backup.update(updates)
     }
 }

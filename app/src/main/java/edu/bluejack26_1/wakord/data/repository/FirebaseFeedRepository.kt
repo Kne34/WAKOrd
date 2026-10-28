@@ -1,11 +1,12 @@
 package edu.bluejack26_1.wakord.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import edu.bluejack26_1.wakord.data.remote.NodeOrder
+import edu.bluejack26_1.wakord.data.remote.NodeQuery
 import edu.bluejack26_1.wakord.data.remote.firebaseCall
 import edu.bluejack26_1.wakord.data.remote.requireUid
 import edu.bluejack26_1.wakord.data.remote.string
-import edu.bluejack26_1.wakord.data.remote.valueFlow
+import edu.bluejack26_1.wakord.data.sync.FirebaseBackup
 import edu.bluejack26_1.wakord.domain.model.FeedPage
 import edu.bluejack26_1.wakord.domain.model.SavedType
 import edu.bluejack26_1.wakord.domain.model.Song
@@ -24,27 +25,25 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.tasks.await
 
 class FirebaseFeedRepository(
     private val auth: FirebaseAuth,
-    private val database: FirebaseDatabase,
+    private val backup: FirebaseBackup,
 ) : FeedRepository {
     override suspend fun songs(): Result<List<Song>> = firebaseCall {
-        database.getReference("songs").get().await().children.map { it.toSong() }
+        backup.get("songs").children.map { it.toSong() }
     }
 
     override suspend fun progressionsPage(before: Long?, pageSize: Int): Result<FeedPage> = firebaseCall {
-        val ordered = database.getReference("progressions").orderByChild("createdAt")
-        val query = (if (before != null) ordered.endBefore(before.toDouble()) else ordered).limitToLast(pageSize)
-        val page = query.get().await().children.map { it.toProgression() }.sortedByDescending { it.createdAt }
+        val query = NodeQuery("progressions", NodeOrder.Child("createdAt"), endBefore = before?.toDouble(), limitToLast = pageSize)
+        val page = backup.get(query).children.map { it.toProgression() }.sortedByDescending { it.createdAt }
         FeedPage(page, if (page.size == pageSize) page.last().createdAt else null)
     }
 
     override suspend fun commentCounts(ids: List<String>): Result<Map<String, Int>> = firebaseCall {
         coroutineScope {
             ids.map { id ->
-                async { id to database.getReference("comments/$id").get().await().childrenCount.toInt() }
+                async { id to (firebaseCall { backup.get("comments/$id").childrenCount }.getOrNull() ?: 0) }
             }.awaitAll().toMap()
         }
     }
@@ -52,10 +51,10 @@ class FirebaseFeedRepository(
     override suspend fun activity(): Result<UserActivity> = firebaseCall {
         val uid = auth.requireUid()
         coroutineScope {
-            val liked = async { database.getReference("userLikes/$uid").get().await().children.mapNotNull { it.key }.toSet() }
-            val played = async { database.getReference("plays/$uid").get().await().children.mapNotNull { it.key }.toSet() }
+            val liked = async { backup.get("userLikes/$uid").children.mapNotNull { it.key }.toSet() }
+            val played = async { backup.get("plays/$uid").children.mapNotNull { it.key }.toSet() }
             val saved = async {
-                val saves = database.getReference("saves/$uid").get().await()
+                val saves = backup.get("saves/$uid")
                 listOf(SavedType.SONG, SavedType.PROGRESSION)
                     .flatMap { type -> saves.child(type.path).children.map { it.string("id") } }
                     .filter { it.isNotEmpty() }
@@ -67,7 +66,7 @@ class FirebaseFeedRepository(
 
     override fun likedIds(): Flow<Set<String>> {
         val uid = auth.currentUser?.uid ?: return flowOf(emptySet())
-        return database.getReference("userLikes/$uid").valueFlow()
+        return backup.observe("userLikes/$uid")
             .map { snapshot -> snapshot.children.mapNotNull { it.key }.toSet() }
             .catch { emit(emptySet()) }
     }
@@ -75,12 +74,12 @@ class FirebaseFeedRepository(
 
 class FirebaseUserRepository(
     private val auth: FirebaseAuth,
-    private val database: FirebaseDatabase,
+    private val backup: FirebaseBackup,
 ) : UserRepository {
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun currentUser(): Flow<User?> = uidFlow().flatMapLatest { uid ->
         if (uid == null) flowOf(null)
-        else database.getReference("users/$uid").valueFlow().map { if (it.exists()) it.toUser(uid) else null }
+        else backup.observe("users/$uid").map { if (it.exists()) it.toUser(uid) else null }
     }
 
     private fun uidFlow(): Flow<String?> = callbackFlow {

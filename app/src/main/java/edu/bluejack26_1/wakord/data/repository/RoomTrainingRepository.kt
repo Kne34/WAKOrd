@@ -1,7 +1,6 @@
 package edu.bluejack26_1.wakord.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import edu.bluejack26_1.wakord.data.local.TrainingDao
 import edu.bluejack26_1.wakord.data.local.TrainingSessionEntity
 import edu.bluejack26_1.wakord.data.remote.firebaseCall
@@ -9,18 +8,18 @@ import edu.bluejack26_1.wakord.data.remote.int
 import edu.bluejack26_1.wakord.data.remote.long
 import edu.bluejack26_1.wakord.data.remote.requireUid
 import edu.bluejack26_1.wakord.data.remote.string
+import edu.bluejack26_1.wakord.data.sync.FirebaseBackup
 import edu.bluejack26_1.wakord.domain.model.TrainingSession
 import edu.bluejack26_1.wakord.domain.repository.TrainingRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.tasks.await
 
 class RoomTrainingRepository(
     private val dao: TrainingDao,
     private val auth: FirebaseAuth,
-    private val database: FirebaseDatabase,
+    private val backup: FirebaseBackup,
 ) : TrainingRepository {
     private val uid: String get() = auth.currentUser?.uid.orEmpty()
 
@@ -38,7 +37,7 @@ class RoomTrainingRepository(
         val owner = auth.requireUid()
         val pending = dao.unsynced(owner)
         if (pending.isNotEmpty()) {
-            database.reference.updateChildren(
+            backup.update(
                 pending.associate { e ->
                     "training/$owner/sessions/${e.id}" to mapOf(
                         "level" to e.level,
@@ -49,7 +48,7 @@ class RoomTrainingRepository(
                         "startedAt" to e.startedAt,
                     )
                 },
-            ).await()
+            )
             dao.markSynced(pending.map { it.id })
         }
         pending.size
@@ -57,7 +56,7 @@ class RoomTrainingRepository(
 
     override suspend fun refreshFromRemote(): Result<Unit> = firebaseCall {
         val owner = auth.requireUid()
-        val remote = database.getReference("training/$owner/sessions").get().await().children.map { c ->
+        val remote = backup.get("training/$owner/sessions").children.map { c ->
             TrainingSessionEntity(
                 id = c.key.orEmpty(),
                 ownerUid = owner,
