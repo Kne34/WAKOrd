@@ -13,6 +13,7 @@ object ChordRecognizer {
     private const val TIE = 0.001f
     const val MIN_BUILT_NOTES = 3
     private val SUFFIXES = listOf("", "m", "7", "maj7", "m7", "dim", "aug", "sus2", "sus4", "m7b5", "6", "m6", "dim7", "add9")
+    private val EXTENDED_SUFFIXES = listOf("9", "maj9", "m9", "11", "m11", "13", "maj13", "m13", "7sus4", "madd9")
     private val INTERVAL_NAMES = listOf("R", "m2", "M2", "m3", "M3", "P4", "d5", "P5", "A5", "M6", "m7", "M7")
 
     data class Match(val root: Int, val suffix: String, val score: Float) {
@@ -21,15 +22,20 @@ object ChordRecognizer {
 
     private val FLAT_ROOTS = setOf(1, 3, 8, 10)
 
-    private val templates: List<Triple<Int, String, FloatArray>> = (0 until 12).flatMap { root ->
-        SUFFIXES.map { suffix ->
+    private val templates = templatesFor(SUFFIXES)
+    private val builtTemplates = templates + templatesFor(EXTENDED_SUFFIXES)
+
+    private fun templatesFor(suffixes: List<String>): List<Triple<Int, String, FloatArray>> = (0 until 12).flatMap { root ->
+        suffixes.map { suffix ->
             val t = FloatArray(12)
             ChordTheory.intervals(suffix).forEach { t[(root + it) % 12] = 1f }
             Triple(root, suffix, t)
         }
     }
 
-    fun rank(chroma: FloatArray): List<Match> = templates
+    fun rank(chroma: FloatArray): List<Match> = rank(chroma, templates)
+
+    private fun rank(chroma: FloatArray, candidates: List<Triple<Int, String, FloatArray>>): List<Match> = candidates
         .map { (root, suffix, template) ->
             val notes = template.count { it > 0f }
             Match(root, suffix, cosine(chroma, template) - COMPLEXITY_PENALTY * (notes - 3).coerceAtLeast(0))
@@ -51,7 +57,7 @@ object ChordRecognizer {
         if (pitchClasses.size < MIN_BUILT_NOTES) return null
         val chroma = FloatArray(12).also { c -> pitchClasses.forEach { c[it] = 1f } }
         val bass = Math.floorMod(midis.min(), 12)
-        val ranked = rank(chroma)
+        val ranked = rank(chroma, builtTemplates)
         val top = ranked.first().score
         val best = ranked.firstOrNull { it.score >= top - TIE && it.root == bass } ?: ranked.first()
         return reading(best, ranked.firstOrNull { it.symbol != best.symbol })
@@ -70,16 +76,23 @@ object ChordRecognizer {
             quality = quality(best.suffix),
             extensions = extensions(best.suffix),
             notes = intervals.map { NoteNames.name(best.root + it, preferFlats = best.root in FLAT_ROOTS) },
-            intervals = intervals.map { if (it == 2 && best.suffix.contains("9")) "9" else INTERVAL_NAMES[it] },
+            intervals = intervals.map { intervalName(it, best.suffix) },
             matchPercent = (best.score.coerceIn(0f, 1f) * 100).roundToInt(),
             alternative = alternative?.symbol,
         )
     }
 
+    private fun intervalName(interval: Int, suffix: String): String = when {
+        interval == 2 && suffix.contains("9") -> "9"
+        interval == 5 && suffix.contains("11") -> "11"
+        interval == 9 && suffix.contains("13") -> "13"
+        else -> INTERVAL_NAMES[interval]
+    }
+
     private fun quality(suffix: String): String = when {
         suffix.startsWith("dim") || suffix == "m7b5" -> "diminished"
         suffix == "aug" -> "augmented"
-        suffix.startsWith("sus") -> "suspended"
+        suffix.contains("sus") -> "suspended"
         suffix.startsWith("m") && !suffix.startsWith("maj") -> "minor"
         else -> "major"
     }
@@ -89,7 +102,13 @@ object ChordRecognizer {
         "maj7" -> listOf("maj7")
         "m7b5" -> listOf("7", "b5")
         "6", "m6" -> listOf("6")
-        "add9" -> listOf("9")
+        "add9", "madd9" -> listOf("9")
+        "9", "m9" -> listOf("7", "9")
+        "maj9" -> listOf("maj7", "9")
+        "11", "m11" -> listOf("7", "11")
+        "13", "m13" -> listOf("7", "13")
+        "maj13" -> listOf("maj7", "13")
+        "7sus4" -> listOf("7")
         else -> emptyList()
     }
 

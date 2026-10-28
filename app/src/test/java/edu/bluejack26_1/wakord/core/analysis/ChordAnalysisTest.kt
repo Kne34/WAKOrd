@@ -39,6 +39,16 @@ class ChordAnalysisTest {
     }
 
     @Test
+    fun `names chords built from five or more keys`() {
+        val cmaj9 = ChordRecognizer.fromNotes(listOf(48, 52, 55, 59, 62))!!
+        assertEquals("Cmaj9", cmaj9.symbol)
+        assertEquals(listOf("R", "M3", "P5", "M7", "9"), cmaj9.intervals)
+        assertEquals("Dm9", ChordRecognizer.fromNotes(listOf(50, 53, 57, 60, 64))?.symbol)
+        assertEquals("G9", ChordRecognizer.fromNotes(listOf(43, 47, 50, 53, 57, 67))?.symbol)
+        assertEquals("C", ChordRecognizer.fromNotes(listOf(48, 52, 55, 60, 64, 67, 72))?.symbol)
+    }
+
+    @Test
     fun `describes a chord from its symbol`() {
         val reading = ChordRecognizer.readingOf("Am7")
         assertEquals("Am7", reading?.symbol)
