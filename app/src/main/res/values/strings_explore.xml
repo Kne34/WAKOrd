@@ -4,6 +4,14 @@
     <string name="explore_search_placeholder">Songs, chords or artists</string>
     <string name="explore_clear_search">Clear search</string>
     <string name="explore_filters">Filters</string>
+    <plurals name="explore_filters_active">
+        <item quantity="one">Filters, %1$d active</item>
+        <item quantity="other">Filters, %1$d active</item>
+    </plurals>
+    <string name="explore_genre">Genre</string>
+    <string name="explore_reset_filters">Reset</string>
+    <string name="explore_show_results">Show results</string>
+    <string name="explore_remove_filter">Remove filter %1$s</string>
     <string name="explore_all">All</string>
     <string name="explore_level">Level</string>
     <string name="explore_any">Any</string>
