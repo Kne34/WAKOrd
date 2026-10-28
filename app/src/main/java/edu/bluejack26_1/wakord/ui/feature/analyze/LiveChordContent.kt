@@ -139,7 +139,7 @@ private fun extensionText(reading: LiveChordReading): String {
     if (reading.quality == "suspended") return reading.symbol.substringAfter("sus", "").take(1)
     return reading.extensions.joinToString(" ") {
         when (it) {
-            "9" -> "add 9"
+            "9" -> if (reading.extensions.size > 1) "9" else "add 9"
             "maj7" -> if (reading.quality == "major") "7" else "maj 7"
             else -> it.replace("b", "♭").replace("#", "♯")
         }
