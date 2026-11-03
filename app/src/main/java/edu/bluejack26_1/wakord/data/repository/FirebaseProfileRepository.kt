@@ -8,10 +8,11 @@ import androidx.core.graphics.scale
 import androidx.core.net.toUri
 import android.util.Base64
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import edu.bluejack26_1.wakord.data.remote.NodeOrder
+import edu.bluejack26_1.wakord.data.remote.NodeQuery
 import edu.bluejack26_1.wakord.data.remote.firebaseCall
 import edu.bluejack26_1.wakord.data.remote.requireUid
-import edu.bluejack26_1.wakord.data.remote.valueFlow
+import edu.bluejack26_1.wakord.data.sync.FirebaseBackup
 import edu.bluejack26_1.wakord.domain.model.ChordProgression
 import edu.bluejack26_1.wakord.domain.model.ProfileUpdate
 import edu.bluejack26_1.wakord.domain.model.User
@@ -19,41 +20,39 @@ import edu.bluejack26_1.wakord.domain.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
 class FirebaseProfileRepository(
     private val auth: FirebaseAuth,
-    private val database: FirebaseDatabase,
+    private val backup: FirebaseBackup,
     private val contentResolver: ContentResolver,
 ) : ProfileRepository {
     override fun user(uid: String): Flow<User?> =
-        database.getReference("users/$uid").valueFlow().map { if (it.exists()) it.toUser(uid) else null }
+        backup.observe("users/$uid").map { if (it.exists()) it.toUser(uid) else null }
 
     override fun progressionsBy(uid: String): Flow<List<ChordProgression>> =
-        database.getReference("progressions").orderByChild("authorId").equalTo(uid).valueFlow().map { snapshot ->
+        backup.observe(NodeQuery("progressions", NodeOrder.Child("authorId"), equalTo = uid)).map { snapshot ->
             snapshot.children.map { it.toProgression() }.sortedByDescending { it.likeCount }
         }
 
     override suspend fun updateProfile(update: ProfileUpdate): Result<Unit> = firebaseCall {
         val uid = auth.requireUid()
-        database.getReference("users/$uid").updateChildren(
+        backup.update(
             mapOf(
-                "fullName" to update.fullName.trim(),
-                "username" to update.username.trim().lowercase(),
-                "bio" to update.bio.trim(),
-                "instruments" to update.instruments.map { it.name },
-                "genres" to update.genres.toList(),
+                "users/$uid/fullName" to update.fullName.trim(),
+                "users/$uid/username" to update.username.trim().lowercase(),
+                "users/$uid/bio" to update.bio.trim(),
+                "users/$uid/instruments" to update.instruments.map { it.name },
+                "users/$uid/genres" to update.genres.toList(),
             ),
-        ).await()
-        Unit
+        )
     }
 
     override suspend fun uploadPhoto(uri: String): Result<String> = firebaseCall {
         val uid = auth.requireUid()
         val dataUrl = withContext(Dispatchers.IO) { encodePhoto(uri.toUri()) }
-        database.getReference("users/$uid/photoUrl").setValue(dataUrl).await()
+        backup.update(mapOf("users/$uid/photoUrl" to dataUrl))
         dataUrl
     }
 

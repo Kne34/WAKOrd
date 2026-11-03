@@ -1,5 +1,6 @@
 package edu.bluejack26_1.wakord.ui.feature.training
 
+import edu.bluejack26_1.wakord.core.error.AppError
 import edu.bluejack26_1.wakord.core.training.Curriculum
 import edu.bluejack26_1.wakord.core.training.PitchSource
 import edu.bluejack26_1.wakord.core.training.QuestionGenerator
@@ -13,6 +14,7 @@ import edu.bluejack26_1.wakord.testutil.RecordingTonePlayer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -67,6 +69,8 @@ class TrainingViewModelsTest {
             vm.onAction(ExerciseAction.Select(pick))
             vm.onAction(ExerciseAction.Check)
             assertEquals(it < 8, vm.uiState.value.feedback?.isCorrect)
+            assertEquals(it + 1, vm.uiState.value.answers.size)
+            assertEquals(it < 8, vm.uiState.value.answers.last())
             time += 15_000
             vm.onAction(ExerciseAction.Next)
         }
@@ -82,6 +86,11 @@ class TrainingViewModelsTest {
         val saved = repository.sessions.value.single()
         assertEquals(SkillType.SINGLE_NOTE, saved.skill)
         assertEquals(10, saved.total)
+
+        vm.onAction(ExerciseAction.Retry)
+        assertNull(vm.uiState.value.summary)
+        assertTrue(vm.uiState.value.answers.isEmpty())
+        assertEquals(0, vm.uiState.value.index)
     }
 
     @Test
@@ -125,5 +134,26 @@ class TrainingViewModelsTest {
         vm.onAction(PitchMonitorAction.ToggleListening)
         assertFalse(vm.uiState.value.isListening)
         assertTrue(vm.uiState.value.reading == null)
+    }
+
+    @Test
+    fun `pitch monitor shows the reference pitch from settings`() = runTest(main.dispatcher) {
+        settings.referencePitch.value = 442f
+        val vm = PitchMonitorViewModel(PitchSource { MutableSharedFlow() }, player, settings)
+        advanceUntilIdle()
+        assertEquals(442f, vm.uiState.value.referencePitch)
+
+        settings.referencePitch.value = 432f
+        advanceUntilIdle()
+        assertEquals(432f, vm.uiState.value.referencePitch)
+    }
+
+    @Test
+    fun `pitch monitor shows mic off when the microphone is blocked`() = runTest(main.dispatcher) {
+        val vm = PitchMonitorViewModel(PitchSource { flow { throw AppError.MicrophoneOff } }, player, settings)
+        vm.onAction(PitchMonitorAction.ToggleListening)
+        advanceUntilIdle()
+        assertTrue(vm.uiState.value.microphoneOff)
+        assertFalse(vm.uiState.value.isListening)
     }
 }

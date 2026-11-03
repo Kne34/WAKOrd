@@ -9,6 +9,7 @@ data class NotificationsUiState(
     val newItems: List<AppNotification> = emptyList(),
     val earlierItems: List<AppNotification> = emptyList(),
     val unreadCount: Int = 0,
+    @param:StringRes val loadError: Int? = null,
     @param:StringRes val errorMessage: Int? = null,
 ) {
     val isEmpty: Boolean get() = !isLoading && newItems.isEmpty() && earlierItems.isEmpty()
@@ -17,6 +18,7 @@ data class NotificationsUiState(
 sealed interface NotificationsAction {
     data class Open(val notification: AppNotification) : NotificationsAction
     data object MarkAllRead : NotificationsAction
+    data object Retry : NotificationsAction
     data object DismissError : NotificationsAction
 }
 

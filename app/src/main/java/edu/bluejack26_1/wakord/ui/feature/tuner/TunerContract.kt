@@ -39,6 +39,7 @@ sealed interface TunerAction {
     data class SelectString(val index: Int) : TunerAction
     data object ToggleAuto : TunerAction
     data object UsePitchPipe : TunerAction
+    data object UseListening : TunerAction
     data class PlayPitchPipe(val index: Int) : TunerAction
     data class SaveCustomTuning(val name: String, val notes: List<String>) : TunerAction
     data class OpenSheet(val sheet: TunerSheet) : TunerAction

@@ -36,7 +36,7 @@
     <string name="register_subtitle">Satu tempat untuk tuner, chord sheet, dan progresimu.</string>
     <string name="create_account">Buat akun</string>
     <string name="account_created_title">Akun berhasil dibuat</string>
-    <string name="account_created_message">Selamat datang di WAKord, %1$s. Ceritakan alat musikmu supaya feed-mu pas.</string>
+    <string name="account_created_message">Selamat datang di WAKOrd, %1$s. Ceritakan alat musikmu supaya feed-mu pas.</string>
 
     <string name="account_created_action">Pilih alat musikku</string>
     <string name="preferences_title">Kamu main apa?</string>

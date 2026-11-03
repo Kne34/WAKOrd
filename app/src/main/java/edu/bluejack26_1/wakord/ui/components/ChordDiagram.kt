@@ -110,7 +110,7 @@ fun ChordCard(
 ) {
     val c = WakTheme.colors
     val shape = RoundedCornerShape(20.dp)
-    val border = BorderStroke(1.dp, if (selected) c.primary else c.text2.copy(alpha = 0.10f))
+    val border = BorderStroke(1.dp, if (selected) c.primary else c.line)
     val content: @Composable () -> Unit = {
         Column(Modifier.padding(start = 9.dp, end = 9.dp, top = 11.dp, bottom = 13.dp)) {
             Text(

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_channel">Aktivitas</string>
+    <string name="notification_like">%1$s menyukai %2$s</string>
+    <string name="notification_comment">%1$s berkomentar: %2$s</string>
+    <string name="notification_reply">%1$s membalasmu: %2$s</string>
+    <string name="notification_follow">%1$s mulai mengikutimu</string>
+    <string name="notifications_mark_all">Tandai semua dibaca</string>
+    <string name="notifications_new">Baru · %1$d</string>
+    <string name="notifications_earlier">Sebelumnya</string>
+    <string name="notifications_unread_cd">Belum dibaca</string>
+    <string name="notifications_empty_title">Semua sudah kamu lihat</string>
+    <string name="notifications_empty_message">Suka, komentar, dan pengikut baru akan muncul di sini.</string>
+    <string name="notifications_row_like_progression">%1$s menyukai progresimu “%2$s”</string>
+    <string name="notifications_row_like">%1$s menyukai “%2$s”</string>
+    <string name="notifications_row_comment">%1$s berkomentar: “%2$s”</string>
+    <string name="notifications_row_reply">%1$s membalas: “%2$s”</string>
+</resources>

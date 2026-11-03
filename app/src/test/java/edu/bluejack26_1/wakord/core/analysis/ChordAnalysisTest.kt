@@ -31,6 +31,40 @@ class ChordAnalysisTest {
     }
 
     @Test
+    fun `names a chord from piano keys and prefers the lowest key as root`() {
+        assertEquals("C", ChordRecognizer.fromNotes(listOf(60, 64, 67))?.symbol)
+        assertEquals("Am7", ChordRecognizer.fromNotes(listOf(57, 60, 64, 67))?.symbol)
+        assertEquals("C6", ChordRecognizer.fromNotes(listOf(60, 64, 67, 69))?.symbol)
+        assertEquals("Em", ChordRecognizer.fromNotes(listOf(52, 55, 59, 64))?.symbol)
+    }
+
+    @Test
+    fun `names chords built from five or more keys`() {
+        val cmaj9 = ChordRecognizer.fromNotes(listOf(48, 52, 55, 59, 62))!!
+        assertEquals("Cmaj9", cmaj9.symbol)
+        assertEquals(listOf("R", "M3", "P5", "M7", "9"), cmaj9.intervals)
+        assertEquals("Dm9", ChordRecognizer.fromNotes(listOf(50, 53, 57, 60, 64))?.symbol)
+        assertEquals("G9", ChordRecognizer.fromNotes(listOf(43, 47, 50, 53, 57, 67))?.symbol)
+        assertEquals("C", ChordRecognizer.fromNotes(listOf(48, 52, 55, 60, 64, 67, 72))?.symbol)
+    }
+
+    @Test
+    fun `describes a chord from its symbol`() {
+        val reading = ChordRecognizer.readingOf("Am7")
+        assertEquals("Am7", reading?.symbol)
+        assertEquals("minor", reading?.quality)
+        assertEquals(listOf("A", "C", "E", "G"), reading?.notes)
+        assertEquals("Bbmaj7", ChordRecognizer.readingOf("Bbmaj7")?.symbol)
+        assertNull(ChordRecognizer.readingOf("nope"))
+    }
+
+    @Test
+    fun `needs at least three different notes to name a chord`() {
+        assertNull(ChordRecognizer.fromNotes(listOf(60, 64)))
+        assertNull(ChordRecognizer.fromNotes(listOf(60, 64, 72, 76)))
+    }
+
+    @Test
     fun `recognizes triads and seventh chords from sound`() {
         assertEquals("C", ChordRecognizer.recognize(tone(listOf(48, 60, 64, 67), 0.3), rate)?.symbol)
         assertEquals("Am", ChordRecognizer.recognize(tone(listOf(57, 60, 64, 69), 0.3), rate)?.symbol)
@@ -85,16 +119,16 @@ class ChordAnalysisTest {
     @Test
     fun `algorithm reports nothing for silence`() = runTest {
         val result = AlgorithmChordAnalyzer().analyze(FloatArray(rate * 2), rate)
-        assertEquals(AppError.NotFound, result.exceptionOrNull())
+        assertEquals(AppError.NoChordsHeard, result.exceptionOrNull())
     }
 
     @Test
-    fun `fallback runs only when the ai fails or hears nothing`() = runTest {
+    fun `fallback runs only when the ai fails`() = runTest {
         val algorithm = FakeChordAnalyzer(Result.success(SampleAnalysis.result.copy(source = AnalysisSource.ALGORITHM)))
         val failing = FallbackChordAnalyzer(FakeChordAnalyzer(Result.failure(AppError.Network)), algorithm)
         assertEquals(AnalysisSource.ALGORITHM, failing.analyze(FloatArray(10), rate).getOrThrow().source)
         val empty = FallbackChordAnalyzer(FakeChordAnalyzer(Result.success(SampleAnalysis.result.copy(chords = emptyList()))), algorithm)
-        assertEquals(AnalysisSource.ALGORITHM, empty.analyze(FloatArray(10), rate).getOrThrow().source)
+        assertEquals(AppError.NoChordsHeard, empty.analyze(FloatArray(10), rate).exceptionOrNull())
         val working = FallbackChordAnalyzer(FakeChordAnalyzer(), algorithm)
         assertEquals(AnalysisSource.AI, working.analyze(FloatArray(10), rate).getOrThrow().source)
     }

@@ -1,6 +1,7 @@
 package edu.bluejack26_1.wakord.ui.feature.progression
 
 import androidx.annotation.StringRes
+import edu.bluejack26_1.wakord.core.music.VoicingGenerator
 import edu.bluejack26_1.wakord.domain.model.ChordProgression
 import edu.bluejack26_1.wakord.domain.model.ChordVoicing
 import edu.bluejack26_1.wakord.domain.model.Comment
@@ -9,6 +10,7 @@ data class ProgressionDetailUiState(
     val isLoading: Boolean = true,
     val progression: ChordProgression? = null,
     val chordDiagrams: List<ChordVoicing?> = emptyList(),
+    val ukuleleDiagrams: List<ChordVoicing?> = emptyList(),
     val isLiked: Boolean = false,
     val isSaved: Boolean = false,
     val isPlaying: Boolean = false,
@@ -16,17 +18,19 @@ data class ProgressionDetailUiState(
     val selectedChord: String? = null,
     val voicings: List<ChordVoicing> = emptyList(),
     val selectedVoicing: Int = 0,
+    val chordTuning: List<Int> = VoicingGenerator.GUITAR_STANDARD,
     val isChordSaved: Boolean = false,
     val comments: List<Comment> = emptyList(),
     val commentDraft: String = "",
     val isPosting: Boolean = false,
     val showCommentBlocked: Boolean = false,
+    @param:StringRes val loadError: Int? = null,
     @param:StringRes val errorMessage: Int? = null,
 )
 
 sealed interface ProgressionDetailAction {
     data object TogglePlay : ProgressionDetailAction
-    data class OpenChord(val symbol: String) : ProgressionDetailAction
+    data class OpenChord(val symbol: String, val tuning: List<Int> = VoicingGenerator.GUITAR_STANDARD) : ProgressionDetailAction
     data object CloseChord : ProgressionDetailAction
     data class SelectVoicing(val index: Int) : ProgressionDetailAction
     data object PreviewChord : ProgressionDetailAction
@@ -37,5 +41,6 @@ sealed interface ProgressionDetailAction {
     data object PostComment : ProgressionDetailAction
     data class ToggleCommentLike(val comment: Comment) : ProgressionDetailAction
     data object DismissCommentBlocked : ProgressionDetailAction
+    data object Retry : ProgressionDetailAction
     data object DismissError : ProgressionDetailAction
 }

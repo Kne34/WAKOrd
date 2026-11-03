@@ -1,23 +1,22 @@
 package edu.bluejack26_1.wakord.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import edu.bluejack26_1.wakord.data.local.AnalysisDao
 import edu.bluejack26_1.wakord.data.local.AnalysisEntity
 import edu.bluejack26_1.wakord.data.remote.firebaseCall
 import edu.bluejack26_1.wakord.data.remote.requireUid
+import edu.bluejack26_1.wakord.data.sync.FirebaseBackup
 import edu.bluejack26_1.wakord.domain.model.AnalysisResult
 import edu.bluejack26_1.wakord.domain.repository.AnalysisRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.tasks.await
 
 class RoomAnalysisRepository(
     private val dao: AnalysisDao,
     private val auth: FirebaseAuth,
-    private val database: FirebaseDatabase,
+    private val backup: FirebaseBackup,
 ) : AnalysisRepository {
     private val uid: String get() = auth.currentUser?.uid.orEmpty()
 
@@ -35,7 +34,7 @@ class RoomAnalysisRepository(
         val owner = auth.requireUid()
         val pending = dao.unsynced(owner)
         if (pending.isNotEmpty()) {
-            database.reference.updateChildren(
+            backup.update(
                 pending.associate { e ->
                     "analyses/$owner/${e.id}" to mapOf(
                         "createdAt" to e.createdAt,
@@ -47,7 +46,7 @@ class RoomAnalysisRepository(
                         "source" to e.source,
                     )
                 },
-            ).await()
+            )
             dao.markSynced(pending.map { it.id })
         }
         pending.size

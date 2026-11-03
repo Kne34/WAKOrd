@@ -216,7 +216,7 @@ private fun ThemeSelector(selected: ThemeMode, onSelect: (ThemeMode) -> Unit) {
             .fillMaxWidth()
             .height(48.dp)
             .background(c.s3, RoundedCornerShape(16.dp))
-            .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(16.dp))
+            .border(1.dp, c.line, RoundedCornerShape(16.dp))
             .padding(5.dp)
             .selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -264,7 +264,7 @@ private fun SettingsCard(content: @Composable ColumnScope.() -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Column(Modifier.padding(horizontal = 17.dp, vertical = 1.dp), content = content)
     }
@@ -272,7 +272,7 @@ private fun SettingsCard(content: @Composable ColumnScope.() -> Unit) {
 
 @Composable
 private fun CardDivider() {
-    HorizontalDivider(thickness = 1.dp, color = WakTheme.colors.text2.copy(alpha = 0.10f))
+    HorizontalDivider(thickness = 1.dp, color = WakTheme.colors.line)
 }
 
 @Composable
@@ -347,9 +347,11 @@ private fun SyncRow(sync: SyncStatus) {
     val songs = pluralStringResource(R.plurals.settings_saved_songs, sync.savedSongs, sync.savedSongs)
     val chords = pluralStringResource(R.plurals.settings_saved_chords, sync.savedChords, sync.savedChords)
     val synced = sync.lastSyncedAt
+    val recent = synced != null && System.currentTimeMillis() - synced < 60_000
     val time = when {
         synced == null -> stringResource(R.string.settings_saved_on_phone)
-        sync.isOnline && System.currentTimeMillis() - synced < 60_000 -> stringResource(R.string.settings_just_now)
+        sync.isOnline && recent -> stringResource(R.string.settings_just_now)
+        recent -> stringResource(R.string.settings_last_synced, stringResource(R.string.settings_just_now))
         else -> stringResource(R.string.settings_last_synced, stringResource(R.string.time_ago, relativeTime(synced)))
     }
     Row(

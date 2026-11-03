@@ -71,6 +71,7 @@ class NewProgressionViewModel(
             is NewProgressionAction.DescriptionChanged -> edit { it.copy(description = action.value.take(MAX_DESCRIPTION)) }
             NewProgressionAction.TogglePreview -> if (_uiState.value.isPreviewing) stopPreview() else preview()
             NewProgressionAction.Upload -> upload()
+            NewProgressionAction.SaveDraft -> saveDraft()
             NewProgressionAction.DismissUploaded -> _uiState.update { it.copy(uploadedId = null) }
             NewProgressionAction.DismissError -> _uiState.update { it.copy(errorMessage = null) }
         }
@@ -82,6 +83,15 @@ class NewProgressionViewModel(
         draftJob = viewModelScope.launch {
             delay(DRAFT_DELAY_MS)
             draftRepository.saveDraft(_uiState.value.toDraft())
+        }
+    }
+
+    private fun saveDraft() {
+        draftJob?.cancel()
+        stopPreview()
+        viewModelScope.launch {
+            draftRepository.saveDraft(_uiState.value.toDraft())
+            _uiState.update { it.copy(isDraftSaved = true) }
         }
     }
 

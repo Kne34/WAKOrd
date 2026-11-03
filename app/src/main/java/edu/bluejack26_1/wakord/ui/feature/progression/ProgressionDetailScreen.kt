@@ -27,6 +27,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,14 +47,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import edu.bluejack26_1.wakord.R
+import edu.bluejack26_1.wakord.core.music.VoicingGenerator
 import edu.bluejack26_1.wakord.domain.model.ChordProgression
 import edu.bluejack26_1.wakord.domain.model.ChordVoicing
 import edu.bluejack26_1.wakord.domain.model.Comment
 import edu.bluejack26_1.wakord.domain.model.Difficulty
 import edu.bluejack26_1.wakord.ui.components.BackgroundArt
 import edu.bluejack26_1.wakord.ui.components.ChordDiagram
+import edu.bluejack26_1.wakord.ui.components.ErrorState
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
-import edu.bluejack26_1.wakord.ui.components.InitialsAvatar
+import edu.bluejack26_1.wakord.ui.components.PianoKeyboard
+import edu.bluejack26_1.wakord.ui.components.SegmentedControl
+import edu.bluejack26_1.wakord.ui.components.UserAvatar
+import edu.bluejack26_1.wakord.ui.components.chordNotes
 import edu.bluejack26_1.wakord.ui.components.levelContainer
 import edu.bluejack26_1.wakord.ui.components.compactCount
 import edu.bluejack26_1.wakord.ui.components.keyLabel
@@ -90,9 +100,11 @@ fun ProgressionDetailScreen(
     onShare: () -> Unit,
     onOpenComments: () -> Unit,
     modifier: Modifier = Modifier,
+    onOpenAuthor: (String) -> Unit = {},
 ) {
     val c = WakTheme.colors
     val progression = state.progression
+    var view by rememberSaveable { mutableStateOf(ChordView.Guitar) }
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -131,10 +143,32 @@ fun ProgressionDetailScreen(
                         .navigationBarsPadding()
                         .padding(bottom = 24.dp),
                 ) {
-                    ProgressionInfo(progression)
-                    ChordGrid(progression.chords, state.chordDiagrams, state.playingIndex, onOpen = { onAction(ProgressionDetailAction.OpenChord(it)) })
+                    ProgressionInfo(progression, onOpenAuthor = { onOpenAuthor(progression.authorId) })
+                    SegmentedControl(
+                        labels = listOf(
+                            stringResource(R.string.instrument_guitar),
+                            stringResource(R.string.instrument_ukulele),
+                            stringResource(R.string.instrument_piano),
+                        ),
+                        selectedIndex = view.ordinal,
+                        onSelect = { view = ChordView.entries[it] },
+                        modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 22.dp),
+                        description = stringResource(R.string.progression_view_cd),
+                    )
+                    when (view) {
+                        ChordView.Guitar -> ChordGrid(progression.chords, state.chordDiagrams, state.playingIndex, onOpen = {
+                            onAction(ProgressionDetailAction.OpenChord(it))
+                        })
+                        ChordView.Ukulele -> ChordGrid(progression.chords, state.ukuleleDiagrams, state.playingIndex, onOpen = {
+                            onAction(ProgressionDetailAction.OpenChord(it, VoicingGenerator.UKULELE_STANDARD))
+                        })
+                        ChordView.Piano -> PianoList(progression.chords, state.playingIndex, onOpen = { onAction(ProgressionDetailAction.OpenChord(it)) })
+                    }
                     ProgressionActions(state, progression, onAction)
                     CommentsSection(state.comments, onOpenComments)
+                }
+                state.loadError != null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    ErrorState(stringResource(state.loadError), { onAction(ProgressionDetailAction.Retry) })
                 }
                 state.isLoading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = c.primary)
@@ -151,8 +185,10 @@ fun ProgressionDetailScreen(
     }
 }
 
+private enum class ChordView { Guitar, Ukulele, Piano }
+
 @Composable
-private fun ProgressionInfo(progression: ChordProgression) {
+private fun ProgressionInfo(progression: ChordProgression, onOpenAuthor: () -> Unit) {
     val c = WakTheme.colors
     Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -163,8 +199,13 @@ private fun ProgressionInfo(progression: ChordProgression) {
         Spacer(Modifier.height(14.dp))
         Text(progression.title, style = spaceGrotesk(30.sp).copy(lineHeight = 38.sp), color = c.text)
         Spacer(Modifier.height(14.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            InitialsAvatar(progression.authorName, progression.authorId, 36.dp)
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(onClickLabel = stringResource(R.string.other_open_cd), onClick = onOpenAuthor),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            UserAvatar(progression.authorName, progression.authorId, 36.dp)
             Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f)) {
                 Text(progression.authorName, style = jakarta(13.sp, FontWeight.SemiBold), color = c.text, maxLines = 1)
@@ -195,7 +236,7 @@ private fun InfoTag(text: String, container: Color, content: Color) {
 @Composable
 private fun ChordGrid(chords: List<String>, diagrams: List<ChordVoicing?>, playingIndex: Int?, onOpen: (String) -> Unit) {
     Column(
-        modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 22.dp),
+        modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         chords.withIndex().chunked(2).forEach { row ->
@@ -216,6 +257,43 @@ private fun ChordGrid(chords: List<String>, diagrams: List<ChordVoicing?>, playi
 }
 
 @Composable
+private fun PianoList(chords: List<String>, playingIndex: Int?, onOpen: (String) -> Unit) {
+    Column(
+        modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        chords.forEachIndexed { index, chord ->
+            ProgressionPianoCard(chord, playing = index == playingIndex, onClick = { onOpen(chord) })
+        }
+    }
+}
+
+@Composable
+private fun ProgressionPianoCard(chord: String, playing: Boolean, onClick: () -> Unit) {
+    val c = WakTheme.colors
+    val description = stringResource(R.string.progression_chord_cd, prettyChord(chord))
+    val keys = remember(chord) { VoicingGenerator.pianoNotes(chord).toSet() }
+    Surface(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics { contentDescription = description },
+        shape = RoundedCornerShape(22.dp),
+        color = if (playing) c.s3 else c.s2,
+        border = BorderStroke(1.dp, if (playing) c.primary else c.line),
+    ) {
+        Column(Modifier.padding(start = 15.dp, end = 15.dp, top = 13.dp, bottom = 15.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(prettyChord(chord), style = spaceGrotesk(20.sp), color = c.text, modifier = Modifier.weight(1f), maxLines = 1)
+                Text(chordNotes(chord).joinToString(" · "), style = spaceGrotesk(12.sp, FontWeight.Medium), color = c.text3, maxLines = 1)
+            }
+            Spacer(Modifier.height(10.dp))
+            PianoKeyboard(highlighted = keys, keyboardHeight = 120.dp)
+        }
+    }
+}
+
+@Composable
 private fun ProgressionChordCard(chord: String, voicing: ChordVoicing?, playing: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val c = WakTheme.colors
     val description = stringResource(R.string.progression_chord_cd, prettyChord(chord))
@@ -226,7 +304,7 @@ private fun ProgressionChordCard(chord: String, voicing: ChordVoicing?, playing:
             .semantics { contentDescription = description },
         shape = RoundedCornerShape(22.dp),
         color = if (playing) c.s3 else c.s2,
-        border = BorderStroke(1.dp, if (playing) c.primary else c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, if (playing) c.primary else c.line),
     ) {
         Column(Modifier.padding(start = 15.dp, end = 15.dp, top = 13.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -324,7 +402,7 @@ private fun SquareAction(@DrawableRes icon: Int, tint: Color, description: Strin
             .semantics { contentDescription = description },
         shape = RoundedCornerShape(18.dp),
         color = c.s3,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(painterResource(icon), contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
@@ -354,7 +432,7 @@ private fun CommentsSection(comments: List<Comment>, onOpenComments: () -> Unit)
         Spacer(Modifier.height(12.dp))
         preview.forEach { comment ->
             Row(Modifier.padding(bottom = 12.dp)) {
-                InitialsAvatar(comment.authorName, comment.authorId, 34.dp, fontSize = 11.sp)
+                UserAvatar(comment.authorName, comment.authorId, 34.dp, fontSize = 11.sp)
                 Spacer(Modifier.width(12.dp))
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {

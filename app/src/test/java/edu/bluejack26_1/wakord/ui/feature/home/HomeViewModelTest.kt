@@ -2,6 +2,7 @@ package edu.bluejack26_1.wakord.ui.feature.home
 
 import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.data.fake.FakeFeedRepository
+import edu.bluejack26_1.wakord.data.fake.FakeNotificationRepository
 import edu.bluejack26_1.wakord.data.fake.FakePlaybackController
 import edu.bluejack26_1.wakord.data.fake.FakeProgressionRepository
 import edu.bluejack26_1.wakord.data.fake.FakeSavedItemsRepository
@@ -41,7 +42,7 @@ class HomeViewModelTest {
     )
 
     private fun viewModel() = HomeViewModel(
-        users, feed, saved, progressions, playback, training,
+        users, feed, saved, progressions, playback, training, FakeNotificationRepository(),
         computeDispatcher = main.dispatcher, clock = { now }, zone = ZoneOffset.UTC,
     )
 
@@ -64,6 +65,7 @@ class HomeViewModelTest {
         val s = vm.uiState.value
         assertFalse(s.isLoading)
         assertEquals("Keane Wilson", s.userName)
+        assertEquals(2, s.unreadNotifications)
         assertTrue(s.recommended.isNotEmpty())
         assertEquals(HomeViewModel.PAGE_SIZE + 2, s.feed.size)
         assertTrue(s.feed.all { it.commentCount == 2 })

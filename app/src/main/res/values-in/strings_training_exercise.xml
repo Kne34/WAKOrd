@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="skill_notes">Nada</string>
+    <string name="skill_intervals">Interval</string>
+    <string name="skill_chord_quality">Jenis chord</string>
+    <string name="skill_progressions">Progresi</string>
+
+    <string name="exercise_quit_cd">Keluar dari latihan</string>
+    <string name="exercise_counter">%1$d/%2$d</string>
+    <string name="exercise_progress_cd">Soal %1$d dari %2$d</string>
+    <string name="exercise_listen">Dengarkan dan tebak</string>
+    <string name="exercise_prompt_note">Nada apa ini?</string>
+    <string name="exercise_prompt_interval">Interval apa ini?</string>
+    <string name="exercise_prompt_quality">Chord apa ini?</string>
+    <string name="exercise_prompt_progression">Progresi apa ini?</string>
+    <string name="exercise_play_cd">Putar suaranya lagi</string>
+    <string name="exercise_hear_first">Dengar %1$s dulu</string>
+    <string name="exercise_play_slower">Putar lebih lambat</string>
+    <string name="exercise_check">Cek jawaban</string>
+    <string name="exercise_correct">Benar! %1$s</string>
+    <string name="exercise_wrong">Belum tepat. Jawabannya %1$s</string>
+    <string name="exercise_next">Soal berikutnya</string>
+    <string name="exercise_finish">Lihat hasil</string>
+    <string name="exercise_quit_title">Keluar dari set ini?</string>
+    <string name="exercise_quit_message">Jawabanmu sejauh ini tidak akan disimpan.</string>
+    <string name="exercise_quit">Keluar</string>
+    <string name="exercise_keep_going">Lanjutkan</string>
+
+    <string name="complete_title">Sesi selesai</string>
+    <string name="complete_share_cd">Bagikan hasil</string>
+    <string name="complete_score">%1$d/%2$d</string>
+    <string name="complete_correct">benar</string>
+    <string name="complete_great">Telingamu tajam!</string>
+    <string name="complete_nice">Kerja bagus</string>
+    <string name="complete_keep">Terus berlatih</string>
+    <string name="complete_subtitle">%1$s · Level %2$d</string>
+    <string name="complete_time">Waktu</string>
+    <string name="complete_streak">Streak</string>
+    <string name="complete_answers">Jawabanmu</string>
+    <string name="complete_answer_right">Soal %1$d, benar</string>
+    <string name="complete_answer_wrong">Soal %1$d, salah</string>
+    <string name="complete_level_progress">Progres Level %1$d</string>
+    <string name="complete_best">Terbaik %1$d%%</string>
+    <string name="complete_unlock_hint">Raih skor 80%% atau lebih dalam satu set untuk membuka Level %1$d · %2$s</string>
+    <string name="complete_unlocked">Level %1$d · %2$s sekarang terbuka</string>
+    <string name="complete_master_hint">Raih skor 80%% atau lebih dalam satu set untuk menguasai level ini</string>
+    <string name="complete_mastered">Level dikuasai. Pertahankan skor terbaikmu.</string>
+    <string name="complete_next_level">Lanjut ke Level %1$d</string>
+    <string name="complete_try_again">Coba lagi</string>
+    <string name="complete_practice_again">Latihan lagi</string>
+    <string name="complete_retry_level">Ulangi Level %1$d</string>
+    <string name="complete_back">Kembali ke latihan</string>
+    <string name="complete_share_text">Aku dapat skor %1$d/%2$d di %3$s · Level %4$d di WAKOrd</string>
+</resources>

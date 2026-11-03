@@ -68,10 +68,11 @@ import edu.bluejack26_1.wakord.domain.model.Song
 import edu.bluejack26_1.wakord.domain.model.SongLine
 import edu.bluejack26_1.wakord.domain.model.SongSection
 import edu.bluejack26_1.wakord.ui.components.ChordCard
+import edu.bluejack26_1.wakord.ui.components.ErrorState
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
-import edu.bluejack26_1.wakord.ui.components.InitialsAvatar
 import edu.bluejack26_1.wakord.ui.components.NotificationBell
-import edu.bluejack26_1.wakord.ui.components.alertContainer
+import edu.bluejack26_1.wakord.ui.components.ProfileAvatar
+import edu.bluejack26_1.wakord.ui.components.UserAvatar
 import edu.bluejack26_1.wakord.ui.components.compactCount
 import edu.bluejack26_1.wakord.ui.components.levelColor
 import edu.bluejack26_1.wakord.ui.components.levelContainer
@@ -80,6 +81,7 @@ import edu.bluejack26_1.wakord.ui.components.prettyChord
 import edu.bluejack26_1.wakord.ui.components.relativeTime
 import edu.bluejack26_1.wakord.ui.feature.song.songCover
 import edu.bluejack26_1.wakord.ui.feature.song.songWideCover
+import edu.bluejack26_1.wakord.ui.theme.ArtColors
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 import edu.bluejack26_1.wakord.ui.theme.jakarta
@@ -88,11 +90,12 @@ import java.util.Calendar
 
 private data class WideInk(val text: Color, val tagText: Color)
 
-private val WideInks = mapOf(
-    R.drawable.wide_golden_hour_glow to WideInk(Color(0xFF2B0C00), Color(0xFFFFD9C9)),
-    R.drawable.wide_midnight_waves to WideInk(Color(0xFF15133D), Color(0xFFE5E3FD)),
-    R.drawable.wide_subtle_resonance to WideInk(Color(0xFF00363B), Color(0xFFC9F7FB)),
-)
+private fun wideInk(image: Int, art: ArtColors) = when (image) {
+    R.drawable.wide_golden_hour_glow -> WideInk(art.goldenInk, art.goldenTag)
+    R.drawable.wide_midnight_waves -> WideInk(art.midnightInk, art.midnightTag)
+    R.drawable.wide_subtle_resonance -> WideInk(art.resonanceInk, art.resonanceTag)
+    else -> WideInk(art.ink, art.onInk)
+}
 
 private fun Song.distinctChords(): List<String> =
     sections.flatMap { section -> section.lines.flatMap { line -> line.segments.mapNotNull { it.chord } } }.distinct()
@@ -147,7 +150,7 @@ fun HomeScreen(
             contentPadding = PaddingValues(bottom = 24.dp),
         ) {
             item(key = "header") {
-                HomeHeader(state.userName, unreadNotifications, onOpenProfile, onOpenSearch, onOpenNotifications)
+                HomeHeader(state.userName, state.userId, state.photoUrl, unreadNotifications, onOpenProfile, onOpenSearch, onOpenNotifications)
             }
             item(key = "workout") {
                 WorkoutCard(state.workout, onOpenTraining)
@@ -180,7 +183,7 @@ fun HomeScreen(
                 }
             }
             item(key = "feed-footer") {
-                FeedFooter(state)
+                FeedFooter(state, onRetry = { onAction(HomeAction.Refresh) })
             }
         }
     }
@@ -189,6 +192,8 @@ fun HomeScreen(
 @Composable
 private fun HomeHeader(
     userName: String,
+    userId: String,
+    photoUrl: String?,
     unreadNotifications: Int,
     onOpenProfile: () -> Unit,
     onOpenSearch: () -> Unit,
@@ -202,9 +207,10 @@ private fun HomeHeader(
             .padding(start = 20.dp, end = 20.dp, top = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        InitialsAvatar(
+        ProfileAvatar(
             name = userName,
-            seed = userName,
+            seed = userId.ifEmpty { userName },
+            photoUrl = photoUrl,
             size = 40.dp,
             fontSize = 14.sp,
             modifier = Modifier
@@ -235,7 +241,7 @@ private fun WorkoutCard(workout: DailyWorkout, onOpen: () -> Unit) {
             .fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 17.dp, vertical = 15.dp),
@@ -265,7 +271,7 @@ private fun WorkoutCard(workout: DailyWorkout, onOpen: () -> Unit) {
                         Spacer(Modifier.width(6.dp))
                         Row(
                             modifier = Modifier
-                                .background(alertContainer(c), RoundedCornerShape(8.dp))
+                                .background(c.peachSoft, RoundedCornerShape(8.dp))
                                 .padding(horizontal = 8.dp, vertical = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
@@ -361,8 +367,9 @@ private fun RecommendedSection(songs: List<Song>, onOpenSong: (String) -> Unit, 
 
 @Composable
 private fun WideSongCard(song: Song, onClick: () -> Unit) {
+    val art = WakTheme.colors.art
     val image = songWideCover(song.id)
-    val ink = WideInks[image] ?: WideInk(Color(0xFF080D1D), Color.White)
+    val ink = wideInk(image, art)
     val description = stringResource(R.string.recommended_play_cd, song.title)
     Box(
         modifier = Modifier
@@ -398,10 +405,10 @@ private fun WideSongCard(song: Song, onClick: () -> Unit) {
                 .align(Alignment.BottomEnd)
                 .padding(12.dp)
                 .size(48.dp)
-                .background(Color(0xFF080D1D), RoundedCornerShape(14.dp)),
+                .background(art.ink, RoundedCornerShape(14.dp)),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(painterResource(R.drawable.ic_play), contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+            Icon(painterResource(R.drawable.ic_play), contentDescription = null, tint = art.onInk, modifier = Modifier.size(20.dp))
         }
     }
 }
@@ -422,7 +429,7 @@ private fun SavedChordsSection(chords: List<SavedChord>, onSeeAll: () -> Unit) {
                     .padding(horizontal = 20.dp)
                     .fillMaxWidth()
                     .background(c.s2, RoundedCornerShape(20.dp))
-                    .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(20.dp))
+                    .border(1.dp, c.line, RoundedCornerShape(20.dp))
                     .padding(18.dp),
             )
         } else {
@@ -513,11 +520,11 @@ private fun ProgressionCard(
             .fillMaxWidth(),
         shape = RoundedCornerShape(22.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Column(Modifier.padding(17.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                InitialsAvatar(progression.authorName, progression.authorId, 34.dp)
+                UserAvatar(progression.authorName, progression.authorId, 34.dp)
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {
                     Text(progression.authorName, style = jakarta(13.sp, FontWeight.SemiBold), color = c.text, maxLines = 1)
@@ -537,7 +544,7 @@ private fun ProgressionCard(
                         modifier = Modifier
                             .height(44.dp)
                             .background(c.s3, RoundedCornerShape(14.dp))
-                            .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(14.dp))
+                            .border(1.dp, c.line, RoundedCornerShape(14.dp))
                             .padding(horizontal = 15.dp),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -602,7 +609,7 @@ private fun ProgressionCard(
 }
 
 @Composable
-private fun FeedFooter(state: HomeUiState) {
+private fun FeedFooter(state: HomeUiState, onRetry: () -> Unit) {
     val c = WakTheme.colors
     Box(
         modifier = Modifier
@@ -611,6 +618,7 @@ private fun FeedFooter(state: HomeUiState) {
         contentAlignment = Alignment.Center,
     ) {
         when {
+            state.loadError != null && state.feed.isEmpty() -> ErrorState(stringResource(state.loadError), onRetry)
             state.isLoading && state.feed.isEmpty() -> CircularProgressIndicator(color = c.primary)
             state.isLoadingMore -> Row(verticalAlignment = Alignment.CenterVertically) {
                 CircularProgressIndicator(color = c.primary, strokeWidth = 2.dp, modifier = Modifier.size(18.dp))

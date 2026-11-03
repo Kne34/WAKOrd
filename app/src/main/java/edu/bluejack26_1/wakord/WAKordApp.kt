@@ -10,6 +10,7 @@ class WAKordApp : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
-        container.syncScheduler.schedule()
+        container.startSync()
+        container.notificationWatcher.start()
     }
 }

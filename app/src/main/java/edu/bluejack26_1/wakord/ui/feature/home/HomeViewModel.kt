@@ -20,6 +20,7 @@ import edu.bluejack26_1.wakord.domain.model.Song
 import edu.bluejack26_1.wakord.domain.model.User
 import edu.bluejack26_1.wakord.domain.model.UserActivity
 import edu.bluejack26_1.wakord.domain.repository.FeedRepository
+import edu.bluejack26_1.wakord.domain.repository.NotificationRepository
 import edu.bluejack26_1.wakord.domain.repository.ProgressionRepository
 import edu.bluejack26_1.wakord.domain.repository.SavedItemsRepository
 import edu.bluejack26_1.wakord.domain.repository.TrainingRepository
@@ -44,6 +45,7 @@ class HomeViewModel(
     private val progressionRepository: ProgressionRepository,
     private val playbackController: PlaybackController,
     private val trainingRepository: TrainingRepository,
+    private val notificationRepository: NotificationRepository,
     private val computeDispatcher: CoroutineDispatcher = Dispatchers.Default,
     private val clock: () -> Long = System::currentTimeMillis,
     private val zone: ZoneId = ZoneId.systemDefault(),
@@ -63,7 +65,7 @@ class HomeViewModel(
         viewModelScope.launch {
             userRepository.currentUser().collect { u ->
                 user = u
-                _uiState.update { it.copy(userName = u?.fullName.orEmpty(), photoUrl = u?.photoUrl) }
+                _uiState.update { it.copy(userName = u?.fullName.orEmpty(), userId = u?.uid.orEmpty(), photoUrl = u?.photoUrl) }
             }
         }
         viewModelScope.launch {
@@ -76,6 +78,9 @@ class HomeViewModel(
         }
         viewModelScope.launch {
             feedRepository.likedIds().collect { ids -> applyLikes(ids) }
+        }
+        viewModelScope.launch {
+            notificationRepository.unreadCount.collect { count -> _uiState.update { it.copy(unreadNotifications = count) } }
         }
         viewModelScope.launch {
             trainingRepository.sessions.collect { sessions ->
@@ -106,7 +111,7 @@ class HomeViewModel(
     private fun refresh() {
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, feed = emptyList(), endReached = false, errorMessage = null) }
+            _uiState.update { it.copy(isLoading = true, feed = emptyList(), endReached = false, errorMessage = null, loadError = null) }
             cursor = null
             shownSongIds.clear()
             baseLikes.clear()
@@ -121,7 +126,7 @@ class HomeViewModel(
                 _uiState.update { it.copy(recommended = Recommender.recommendSongs(all, user, activity, affinity)) }
                 appendPage(firstPage)
             }.onFailure { e ->
-                _uiState.update { it.copy(errorMessage = e.messageRes()) }
+                _uiState.update { it.copy(loadError = e.messageRes()) }
             }
             _uiState.update { it.copy(isLoading = false) }
         }
@@ -205,6 +210,7 @@ class HomeViewModel(
                     progressionRepository = container.progressionRepository,
                     playbackController = container.playbackController,
                     trainingRepository = container.trainingRepository,
+                    notificationRepository = container.notificationRepository,
                 )
             }
         }

@@ -4,6 +4,13 @@
     <string name="explore_search_placeholder">Lagu, chord, atau artis</string>
     <string name="explore_clear_search">Hapus pencarian</string>
     <string name="explore_filters">Filter</string>
+    <plurals name="explore_filters_active">
+        <item quantity="other">Filter, %1$d aktif</item>
+    </plurals>
+    <string name="explore_genre">Genre</string>
+    <string name="explore_reset_filters">Atur ulang</string>
+    <string name="explore_show_results">Tampilkan hasil</string>
+    <string name="explore_remove_filter">Hapus filter %1$s</string>
     <string name="explore_all">Semua</string>
     <string name="explore_level">Level</string>
     <string name="explore_any">Semua</string>
@@ -12,7 +19,7 @@
     <string name="explore_level_advanced">Mahir</string>
 
     <string name="explore_trending_now">Lagi tren</string>
-    <string name="explore_trending_progressions">Progression populer</string>
+    <string name="explore_trending_progressions">Progresi populer</string>
     <string name="explore_top_week">Lagu teratas minggu ini</string>
     <string name="explore_progression_meta">%1$s · %2$s kali diputar</string>
     <string name="explore_song_meta">%1$s · Kunci %2$s</string>
@@ -24,7 +31,7 @@
     <string name="search_tab_chords">Chord %1$d</string>
     <string name="search_tab_artists">Artis %1$d</string>
     <string name="search_lyric_match">Lirik: “%1$s”</string>
-    <string name="search_progressions">Progression</string>
+    <string name="search_progressions">Progresi</string>
     <plurals name="search_artist_songs">
         <item quantity="other">%1$d lagu</item>
     </plurals>

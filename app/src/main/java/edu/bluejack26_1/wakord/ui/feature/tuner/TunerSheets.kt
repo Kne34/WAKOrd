@@ -24,11 +24,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,6 +57,8 @@ import edu.bluejack26_1.wakord.ui.theme.jakarta
 import edu.bluejack26_1.wakord.ui.theme.spaceGrotesk
 
 private const val SEMITONE_RANGE = 12
+
+private val noteListSaver = listSaver<SnapshotStateList<String>, String>(save = { it.toList() }, restore = { it.toMutableStateList() })
 
 @Composable
 private fun stringCountLabel(instrument: TunerInstrument): String =
@@ -100,7 +103,7 @@ private fun InstrumentList(selected: TunerInstrument, onSelect: (TunerInstrument
                     .fillMaxWidth()
                     .height(64.dp)
                     .background(if (isSelected) c.s3 else Color.Transparent, RoundedCornerShape(18.dp))
-                    .border(1.dp, if (isSelected) c.primary else c.text2.copy(alpha = 0.10f), RoundedCornerShape(18.dp))
+                    .border(1.dp, if (isSelected) c.primary else c.line, RoundedCornerShape(18.dp))
                     .selectable(selected = isSelected, role = Role.RadioButton, onClick = { onSelect(instrument) })
                     .padding(horizontal = 17.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -136,9 +139,9 @@ fun CustomTuningSheet(state: TunerUiState, onAction: (TunerAction) -> Unit) {
     val c = WakTheme.colors
     val instrument = state.instrument
     val standard = TuningPresets.default(instrument).notes
-    val draft = remember(state.tuning) { mutableStateListOf(*state.tuning.notes.toTypedArray()) }
+    val draft = rememberSaveable(state.tuning, saver = noteListSaver) { state.tuning.notes.toMutableStateList() }
     var name by rememberSaveable { mutableStateOf(if (state.tuning.isCustom) state.tuning.name else "") }
-    var nameError by remember { mutableStateOf(false) }
+    var nameError by rememberSaveable { mutableStateOf(false) }
     val options = state.presets + state.customForInstrument
     val match = options.firstOrNull { it.notes == draft.toList() }
     val close = { onAction(TunerAction.CloseSheet) }
@@ -235,7 +238,7 @@ private fun StringNoteRow(number: Int, note: String, standardNote: String, onSte
             .fillMaxWidth()
             .height(52.dp)
             .background(c.s3, RoundedCornerShape(16.dp))
-            .border(1.dp, if (changed) c.orange else c.text2.copy(alpha = 0.10f), RoundedCornerShape(16.dp))
+            .border(1.dp, if (changed) c.orange else c.line, RoundedCornerShape(16.dp))
             .padding(start = 15.dp, end = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

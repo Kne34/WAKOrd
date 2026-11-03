@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="analyze_title">Analisis</string>
+    <string name="analyze_mode_record">Rekam audio</string>
+    <string name="analyze_mode_live">Chord live</string>
+    <string name="analyze_record_intro">Mainkan atau senandungkan sampai 30 detik. Kami akan mendeteksi chord dan menyarankan lagu.</string>
+    <string name="analyze_start_cd">Mulai merekam</string>
+    <string name="analyze_stop_cd">Berhenti merekam</string>
+    <string name="analyze_tap_to_start">Ketuk untuk mulai merekam</string>
+    <string name="analyze_listening">Mendengarkan… ketuk untuk berhenti dan menganalisis</string>
+    <string name="analyze_recent">Analisis terbaru</string>
+    <string name="analyze_recent_empty">Hasil analisismu akan muncul di sini.</string>
+    <string name="analyze_voice_memo">Rekaman suara · %1$s</string>
+    <string name="analyze_yesterday">Kemarin</string>
+    <string name="analyze_mic_off_message">Nyalakan akses mikrofon supaya WAKOrd bisa mendengar dan mendeteksi chord yang kamu mainkan.</string>
+    <string name="see_less">Lebih sedikit</string>
+
+    <string name="analyzing_title">Menganalisis</string>
+    <string name="analyzing_cancel_cd">Batalkan analisis</string>
+    <string name="analyzing_step">Langkah %1$d dari %2$d</string>
+    <string name="analyzing_recording">rekaman %1$s</string>
+    <string name="analyzing_headline">Mencari chord-mu</string>
+    <string name="analyzing_body">Memisahkan harmoni dari melodi. Biasanya hanya butuh beberapa detik.</string>
+    <string name="analyzing_stage_noise">Membersihkan suara latar</string>
+    <string name="analyzing_stage_chords">Mendeteksi chord</string>
+    <string name="analyzing_stage_songs">Mencocokkan lagu &amp; artis</string>
+
+    <string name="result_title">Hasil</string>
+    <string name="result_share_cd">Bagikan hasil</string>
+    <string name="result_confidence">Keyakinan %1$d%%</string>
+    <plurals name="result_chords_found">
+        <item quantity="other">%1$d chord ditemukan</item>
+    </plurals>
+    <string name="result_fallback">Analisis AI sedang tidak tersedia, jadi WAKOrd memakai deteksi dasar.</string>
+    <string name="result_play">Putar</string>
+    <string name="result_stop">Berhenti</string>
+    <string name="result_save">Simpan sebagai progresi</string>
+    <string name="result_saved">Tersimpan</string>
+    <string name="result_songs">Lagu dengan chord ini</string>
+    <string name="result_songs_empty">Belum ada lagu di katalog yang memakai chord ini.</string>
+    <string name="result_full_match">%1$s · cocok 100%%</string>
+    <plurals name="result_partial_match">
+        <item quantity="other">%1$s · %2$d dari %3$d chord</item>
+    </plurals>
+    <string name="result_artists">Artis terkait</string>
+    <string name="result_search_artist_cd">Cari lagu dari %1$s</string>
+    <string name="result_progressions">Progresi untuk dicoba</string>
+    <string name="result_open_progression_cd">Buka %1$s</string>
+    <string name="result_share_text">%1$s · %2$s · dideteksi dengan WAKOrd</string>
+    <string name="result_save_title">Simpan sebagai progresi</string>
+    <string name="result_save_message">Beri nama progresimu. Progresi ini akan tampil di profilmu.</string>
+    <string name="result_save_label">Judul</string>
+    <string name="result_save_placeholder">Progresi baruku</string>
+    <string name="result_saved_title">Progresi tersimpan</string>
+    <string name="result_saved_message">Kamu bisa menemukannya di Progresiku pada profilmu.</string>
+    <string name="result_open">Buka progresi</string>
+    <string name="result_timeline_cd">Linimasa chord</string>
+</resources>

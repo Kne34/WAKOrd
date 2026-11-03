@@ -7,17 +7,20 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.bluejack26_1.wakord.domain.model.ThemeMode
+import edu.bluejack26_1.wakord.ui.components.LocalUserPhotos
 import edu.bluejack26_1.wakord.ui.navigation.WakApp
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val settings = (application as WAKordApp).container.settingsRepository
+        val container = (application as WAKordApp).container
+        val settings = container.settingsRepository
         setContent {
             val themeMode by settings.themeMode.collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
             val darkTheme = when (themeMode) {
@@ -33,7 +36,9 @@ class MainActivity : ComponentActivity() {
                 onDispose {}
             }
             WAKordTheme(darkTheme = darkTheme) {
-                WakApp()
+                CompositionLocalProvider(LocalUserPhotos provides container.userPhotoRepository) {
+                    WakApp()
+                }
             }
         }
     }

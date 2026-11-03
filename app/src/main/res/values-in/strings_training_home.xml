@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="training_title">Latihan Telinga &amp; Nada</string>
+    <string name="training_subtitle">Delapan menit sehari. Latih telingamu mengenali nada, interval, dan chord.</string>
+    <string name="training_stats">Statistik latihan</string>
+    <string name="training_minutes_value">%1$d/%2$d</string>
+    <string name="training_min">menit</string>
+    <string name="training_daily_workout">Latihan harian</string>
+    <plurals name="training_minutes_to_go">
+        <item quantity="other">%1$d menit lagi</item>
+    </plurals>
+    <string name="training_goal_done">Target hari ini tercapai</string>
+    <string name="training_percent">%1$d%%</string>
+    <string name="training_accuracy">Akurasi</string>
+    <string name="training_trials">Percobaan</string>
+    <string name="training_resume">Lanjutkan latihan harian</string>
+
+    <string name="pitch_monitor_title">Monitor nada</string>
+    <string name="pitch_live">Langsung</string>
+    <string name="pitch_start">Mulai</string>
+    <string name="pitch_start_cd">Mulai mendengarkan</string>
+    <string name="pitch_stop_cd">Berhenti mendengarkan</string>
+    <string name="pitch_target">Target %1$s · %2$s Hz</string>
+    <string name="pitch_you_are_singing">Nada yang kamu nyanyikan</string>
+    <string name="pitch_cents">%1$s sen</string>
+    <string name="pitch_tap_start">Ketuk Mulai lalu nyanyikan nada referensi</string>
+    <string name="pitch_no_signal">Nyanyikan atau senandungkan nada yang stabil</string>
+    <string name="pitch_on">Tepat</string>
+    <string name="pitch_flat">Terlalu rendah</string>
+    <string name="pitch_sharp">Terlalu tinggi</string>
+    <string name="pitch_reference_note">Nada referensi</string>
+    <string name="pitch_play_reference">Putar nada referensi</string>
+    <string name="pitch_more">Lainnya</string>
+    <string name="pitch_note_range">Pilih nada apa saja dari C2 sampai B5</string>
+    <string name="pitch_octave">Oktaf</string>
+    <string name="pitch_mic_off_message">Nyalakan akses mikrofon supaya WAKOrd bisa mendengar suaramu.</string>
+
+    <string name="curriculum_title">Kurikulum</string>
+    <plurals name="curriculum_mastered">
+        <item quantity="other">%1$d dari %2$d dikuasai</item>
+    </plurals>
+    <string name="level_number">Level %1$d</string>
+    <string name="level_in_progress">Level %1$d · Sedang berjalan</string>
+    <string name="level_unlocked">Level %1$d · Terbuka</string>
+    <string name="level_locked">Level %1$d · Terkunci</string>
+    <string name="level_mastered">Dikuasai</string>
+    <string name="level_continue">Lanjutkan</string>
+    <string name="level_start">Mulai</string>
+    <string name="level_unlock_hint">Selesaikan Level %1$d untuk membuka</string>
+    <string name="level_progress">%1$d/10</string>
+    <string name="level_locked_title">Level %1$d masih terkunci</string>
+    <string name="level_locked_message">Selesaikan Level %1$d · %2$s untuk membuka %3$s.</string>
+    <string name="level_go_to">Ke Level %1$d</string>
+</resources>

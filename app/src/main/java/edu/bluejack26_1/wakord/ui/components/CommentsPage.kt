@@ -183,7 +183,7 @@ private fun CommentsHeader(
                 modifier = Modifier.height(40.dp),
                 shape = CircleShape,
                 color = c.s3,
-                border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+                border = BorderStroke(1.dp, c.line),
             ) {
                 Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(
@@ -222,7 +222,7 @@ private fun CommentRow(comment: Comment, isReply: Boolean, onReply: (() -> Unit)
     val likeCd = pluralStringResource(R.plurals.comment_like_cd, comment.likeCount, comment.likeCount)
     Column(Modifier.padding(start = if (isReply) 70.dp else 20.dp, end = 20.dp)) {
         Row(Modifier.padding(top = 12.dp)) {
-            InitialsAvatar(comment.authorName, comment.authorId, if (isReply) AvatarSmall else AvatarLarge)
+            UserAvatar(comment.authorName, comment.authorId, if (isReply) AvatarSmall else AvatarLarge)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -269,7 +269,7 @@ private fun CommentRow(comment: Comment, isReply: Boolean, onReply: (() -> Unit)
             Modifier
                 .fillMaxWidth()
                 .height(1.dp)
-                .background(c.text2.copy(alpha = 0.10f)),
+                .background(c.line),
         )
     }
 }
@@ -293,7 +293,7 @@ private fun Composer(
         modifier = Modifier
             .fillMaxWidth()
             .background(c.s1)
-            .border(1.dp, c.text2.copy(alpha = 0.10f))
+            .border(1.dp, c.line)
             .navigationBarsPadding()
             .padding(horizontal = 20.dp, vertical = 13.dp),
     ) {
@@ -302,7 +302,7 @@ private fun Composer(
                 modifier = Modifier
                     .padding(bottom = 10.dp)
                     .fillMaxWidth()
-                    .background(c.error.copy(alpha = 0.12f), RoundedCornerShape(18.dp))
+                    .background(c.errorSoft, RoundedCornerShape(18.dp))
                     .padding(horizontal = 16.dp, vertical = 14.dp),
             ) {
                 Icon(painterResource(R.drawable.ic_shield_alert), contentDescription = null, tint = c.error, modifier = Modifier.size(20.dp))
@@ -338,7 +338,7 @@ private fun Composer(
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            InitialsAvatar(myName, myId, AvatarLarge)
+            UserAvatar(myName, myId, AvatarLarge)
             Spacer(Modifier.width(10.dp))
             val shape = RoundedCornerShape(16.dp)
             Box(

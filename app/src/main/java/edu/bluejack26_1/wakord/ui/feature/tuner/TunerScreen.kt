@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +24,8 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -56,9 +60,7 @@ import edu.bluejack26_1.wakord.domain.model.TunerInstrument
 import edu.bluejack26_1.wakord.ui.components.BackgroundArt
 import edu.bluejack26_1.wakord.ui.components.NotificationBell
 import edu.bluejack26_1.wakord.ui.components.WakButton
-import edu.bluejack26_1.wakord.ui.components.alertContainer
 import edu.bluejack26_1.wakord.ui.components.glassBorder
-import edu.bluejack26_1.wakord.ui.components.glassColor
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 import edu.bluejack26_1.wakord.ui.theme.jakarta
@@ -191,7 +193,7 @@ private fun HeaderChip(
         modifier = modifier.height(44.dp),
         shape = CircleShape,
         color = c.s3,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp),
@@ -265,18 +267,22 @@ private fun ReadingBlock(state: TunerUiState, onOpenSettings: () -> Unit) {
     ) {
         Text(overline, style = spaceGrotesk(11.sp, FontWeight.Medium), color = c.text3)
         Spacer(Modifier.height(6.dp))
-        Row(Modifier.height(132.dp)) {
-            Text(noteText, style = spaceGrotesk(132.sp).copy(lineHeight = 132.sp), color = noteColor)
-            if (octaveText != null) {
-                Spacer(Modifier.width(2.dp))
-                Text(octaveText, style = spaceGrotesk(28.sp, FontWeight.Medium), color = c.text3, modifier = Modifier.padding(top = 18.dp))
+        Row(Modifier.heightIn(min = 132.dp)) {
+            Text(noteText.take(1), style = spaceGrotesk(132.sp).copy(lineHeight = 132.sp), color = noteColor)
+            Column(Modifier.padding(start = 2.dp, top = 14.dp)) {
+                if (noteText.length > 1) {
+                    Text(noteText.drop(1), style = spaceGrotesk(48.sp).copy(lineHeight = 52.sp), color = noteColor)
+                }
+                if (octaveText != null) {
+                    Text(octaveText, style = spaceGrotesk(28.sp, FontWeight.Medium), color = c.text3, modifier = Modifier.padding(top = 4.dp))
+                }
             }
         }
         Spacer(Modifier.height(6.dp))
         Text(hzText ?: " ", style = spaceGrotesk(15.sp, FontWeight.Medium), color = c.text2)
         Spacer(Modifier.height(8.dp))
         StatusTag(state)
-        if (state.pitchPipeMode) {
+        if (state.pitchPipeMode && state.micPermission != MicPermission.GRANTED) {
             Spacer(Modifier.height(8.dp))
             Surface(onClick = onOpenSettings, shape = RoundedCornerShape(14.dp), color = Color.Transparent) {
                 Text(
@@ -312,9 +318,9 @@ private fun StatusTag(state: TunerUiState) {
             .height(30.dp)
             .background(
                 color = when {
-                    isAlert -> alertContainer(c)
+                    isAlert -> c.peachSoft
                     idle -> c.s3
-                    else -> c.primary.copy(alpha = 0.12f)
+                    else -> c.primarySoft
                 },
                 shape = RoundedCornerShape(8.dp),
             )
@@ -326,6 +332,7 @@ private fun StatusTag(state: TunerUiState) {
                 painter = painterResource(
                     when {
                         isAlert -> R.drawable.ic_alert_circle
+                        state.pitchPipeMode && state.micPermission == MicPermission.GRANTED -> R.drawable.ic_music_note
                         state.pitchPipeMode -> R.drawable.ic_mic_off
                         else -> R.drawable.ic_check
                     },
@@ -373,10 +380,16 @@ private fun StringCard(state: TunerUiState, onAction: (TunerAction) -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
         shape = RoundedCornerShape(28.dp),
-        color = glassColor(c),
+        color = c.glass,
         border = glassBorder(c),
     ) {
         Column(Modifier.padding(17.dp)) {
+            ModeSelector(
+                playMode = state.pitchPipeMode,
+                onListen = { onAction(TunerAction.UseListening) },
+                onPlay = { onAction(TunerAction.UsePitchPipe) },
+            )
+            Spacer(Modifier.height(14.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -420,6 +433,42 @@ private fun StringCard(state: TunerUiState, onAction: (TunerAction) -> Unit) {
 }
 
 @Composable
+private fun ModeSelector(playMode: Boolean, onListen: () -> Unit, onPlay: () -> Unit) {
+    val c = WakTheme.colors
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(44.dp)
+            .background(c.s3, RoundedCornerShape(14.dp))
+            .border(1.dp, c.line, RoundedCornerShape(14.dp))
+            .padding(4.dp)
+            .selectableGroup(),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        ModeOption(painterResource(R.drawable.ic_mic), stringResource(R.string.tuner_mode_listen), !playMode, onListen, Modifier.weight(1f))
+        ModeOption(painterResource(R.drawable.ic_music_note), stringResource(R.string.tuner_mode_play), playMode, onPlay, Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun ModeOption(icon: Painter, label: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val c = WakTheme.colors
+    val content = if (selected) c.text else c.text3
+    Row(
+        modifier = modifier
+            .fillMaxHeight()
+            .background(if (selected) c.s1 else Color.Transparent, RoundedCornerShape(10.dp))
+            .selectable(selected = selected, onClick = onClick, role = Role.RadioButton),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(icon, contentDescription = null, tint = if (selected) c.primaryText else c.text3, modifier = Modifier.size(16.dp))
+        Spacer(Modifier.width(6.dp))
+        Text(label, style = jakarta(13.sp), color = content)
+    }
+}
+
+@Composable
 private fun StringTile(
     note: String,
     number: Int,
@@ -438,7 +487,7 @@ private fun StringTile(
     }
     val border = when {
         isNow -> c.primary
-        isTuned -> c.text2.copy(alpha = 0.10f)
+        isTuned -> c.line
         else -> c.outline
     }
     val content = if (isNow) c.onPrimary else c.text
@@ -452,10 +501,11 @@ private fun StringTile(
         border = BorderStroke(1.dp, border),
     ) {
         Column(
-            modifier = Modifier.padding(top = 9.dp),
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(name, style = spaceGrotesk(18.sp), color = content)
+            Text(name, style = spaceGrotesk(18.sp).copy(lineHeight = 20.sp), color = content, maxLines = 1)
             Text(
                 text = when {
                     isNow -> stringResource(R.string.tuner_now)
@@ -505,8 +555,8 @@ private fun MicOffState(onOpenSettings: () -> Unit, onUsePitchPipe: () -> Unit) 
         Box(
             modifier = Modifier
                 .size(96.dp)
-                .background(alertContainer(c), RoundedCornerShape(32.dp))
-                .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(32.dp)),
+                .background(c.peachSoft, RoundedCornerShape(32.dp))
+                .border(1.dp, c.line, RoundedCornerShape(32.dp)),
             contentAlignment = Alignment.Center,
         ) {
             Icon(painterResource(R.drawable.ic_mic_off), contentDescription = null, tint = c.peachText, modifier = Modifier.size(40.dp))

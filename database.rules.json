@@ -99,6 +99,15 @@
         }
       }
     },
+    "notifications": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".indexOn": ["createdAt", "read"],
+        "$notificationId": {
+          ".write": "auth != null && (auth.uid === $uid || (!data.exists() && newData.child('actorId').val() === auth.uid))"
+        }
+      }
+    },
     "tunings": {
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",

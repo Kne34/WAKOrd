@@ -13,7 +13,7 @@
     <string name="progression_comments">%1$s comments</string>
     <string name="progression_view_all">View all %1$s</string>
     <string name="progression_add_comment">Add a comment…</string>
-    <string name="progression_share_text">%1$s by %2$s on WAKord</string>
+    <string name="progression_share_text">%1$s by %2$s on WAKOrd</string>
     <string name="progression_not_found">This progression is no longer available</string>
     <string name="progression_chord_cd">%1$s, tap for voicings</string>
 
@@ -40,4 +40,5 @@
     <string name="string_g">G</string>
     <string name="string_b">B</string>
     <string name="string_high_e">high E</string>
+    <string name="progression_view_cd">Show chords as</string>
 </resources>

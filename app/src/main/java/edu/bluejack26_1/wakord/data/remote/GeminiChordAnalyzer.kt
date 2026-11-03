@@ -1,5 +1,6 @@
 package edu.bluejack26_1.wakord.data.remote
 
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.ai.GenerativeModel
 import com.google.firebase.ai.ai
@@ -11,6 +12,8 @@ import edu.bluejack26_1.wakord.domain.model.AnalysisResult
 import edu.bluejack26_1.wakord.domain.model.AnalysisSource
 import edu.bluejack26_1.wakord.domain.model.DetectedChord
 import edu.bluejack26_1.wakord.domain.repository.ChordAnalyzer
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -18,36 +21,56 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.UUID
 
-internal val geminiModel: GenerativeModel by lazy {
+private fun model(name: String): GenerativeModel =
     Firebase.ai(backend = GenerativeBackend.googleAI()).generativeModel(
-        modelName = "gemini-2.5-flash",
+        modelName = name,
         generationConfig = generationConfig {
             responseMimeType = "application/json"
             temperature = 0.2f
         },
     )
-}
+
+private const val FLASH = "gemini-flash-latest"
+private const val FLASH_LITE = "gemini-flash-lite-latest"
+
+internal val geminiModel: GenerativeModel by lazy { model(FLASH) }
+
+internal val geminiLiteModel: GenerativeModel by lazy { model(FLASH_LITE) }
 
 class GeminiChordAnalyzer(private val clock: () -> Long = System::currentTimeMillis) : ChordAnalyzer {
-    override suspend fun analyze(samples: FloatArray, sampleRate: Int): Result<AnalysisResult> = runCatching {
-        val response = withTimeout(TIMEOUT_MS) {
-            geminiModel.generateContent(
-                content {
-                    inlineData(WavEncoder.encode(samples, sampleRate), "audio/wav")
-                    text(PROMPT)
-                },
-            )
+    override suspend fun analyze(samples: FloatArray, sampleRate: Int): Result<AnalysisResult> {
+        val audio = WavEncoder.encode(samples, sampleRate)
+        val durationMs = samples.size * 1000L / sampleRate
+        var last: Result<AnalysisResult> = Result.failure(IllegalStateException("No model tried"))
+        val attempts = listOf(Triple(FLASH, geminiModel, TIMEOUT_MS), Triple(FLASH_LITE, geminiLiteModel, LITE_TIMEOUT_MS))
+        for ((name, model, timeoutMs) in attempts) {
+            last = runCatching {
+                val response = withTimeout(timeoutMs) {
+                    model.generateContent(
+                        content {
+                            inlineData(audio, "audio/wav")
+                            text(PROMPT)
+                        },
+                    )
+                }
+                GeminiAnalysisParser.parse(
+                    json = requireNotNull(response.text),
+                    id = UUID.randomUUID().toString(),
+                    createdAt = clock(),
+                    durationMs = durationMs,
+                )
+            }
+            val error = last.exceptionOrNull() ?: return last
+            if (error is CancellationException && error !is TimeoutCancellationException) throw error
+            Log.w(TAG, "Gemini chord analysis failed on $name", error)
         }
-        GeminiAnalysisParser.parse(
-            json = requireNotNull(response.text),
-            id = UUID.randomUUID().toString(),
-            createdAt = clock(),
-            durationMs = samples.size * 1000L / sampleRate,
-        )
+        return last
     }
 
     private companion object {
-        const val TIMEOUT_MS = 45_000L
+        const val TAG = "GeminiChordAnalyzer"
+        const val TIMEOUT_MS = 25_000L
+        const val LITE_TIMEOUT_MS = 20_000L
         const val PROMPT = "You transcribe music. Listen to the recording and find its chord progression. " +
             "Reply with JSON only, shaped like {\"key\":\"C\",\"confidence\":0.8,\"bpm\":92," +
             "\"chords\":[{\"symbol\":\"C\",\"startMs\":0,\"endMs\":2000}]}. " +

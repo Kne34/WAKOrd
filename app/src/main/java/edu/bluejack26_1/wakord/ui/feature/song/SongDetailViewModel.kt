@@ -25,6 +25,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,9 +46,22 @@ class SongDetailViewModel(
     private var previewJob: Job? = null
     private val voicingCache = mutableMapOf<String, List<Int>>()
 
+    private var loadJob: Job? = null
+
     init {
+        load()
+        viewModelScope.launch { songRepository.isLiked(songId).catch { }.collect { v -> _uiState.update { it.copy(isLiked = v) } } }
         viewModelScope.launch {
-            songRepository.song(songId).collect { song ->
+            savedItemsRepository.isSaved(SavedType.SONG, songId).catch { }.collect { v -> _uiState.update { it.copy(isSaved = v) } }
+        }
+        viewModelScope.launch { commentRepository.comments(songId).catch { }.collect { v -> _uiState.update { it.copy(comments = v) } } }
+    }
+
+    private fun load() {
+        loadJob?.cancel()
+        _uiState.update { it.copy(isLoading = true, loadError = null) }
+        loadJob = viewModelScope.launch {
+            songRepository.song(songId).catch { e -> _uiState.update { it.copy(isLoading = false, loadError = e.messageRes()) } }.collect { song ->
                 original = song
                 _uiState.update { s ->
                     s.copy(
@@ -59,11 +73,6 @@ class SongDetailViewModel(
                 }
             }
         }
-        viewModelScope.launch { songRepository.isLiked(songId).collect { v -> _uiState.update { it.copy(isLiked = v) } } }
-        viewModelScope.launch {
-            savedItemsRepository.isSaved(SavedType.SONG, songId).collect { v -> _uiState.update { it.copy(isSaved = v) } }
-        }
-        viewModelScope.launch { commentRepository.comments(songId).collect { v -> _uiState.update { it.copy(comments = v) } } }
     }
 
     fun onAction(action: SongDetailAction) {
@@ -81,6 +90,7 @@ class SongDetailViewModel(
             SongDetailAction.PostComment -> postComment()
             is SongDetailAction.ToggleCommentLike -> toggleCommentLike(action.comment)
             SongDetailAction.DismissCommentBlocked -> _uiState.update { it.copy(showCommentBlocked = false) }
+            SongDetailAction.Retry -> load()
             SongDetailAction.DismissError -> _uiState.update { it.copy(errorMessage = null) }
         }
     }

@@ -59,6 +59,7 @@ class AnalyzeViewModel(
     fun onAction(action: AnalyzeAction) {
         when (action) {
             AnalyzeAction.ToggleRecording -> if (_uiState.value.isRecording) stopRequested = true else startRecording()
+            AnalyzeAction.CancelAnalysis -> cancelAnalysis()
             is AnalyzeAction.OpenHistory -> viewModelScope.launch { show(action.result) }
             AnalyzeAction.PlayResult -> if (_uiState.value.isPlayingResult) stopPlayback() else playResult()
             is AnalyzeAction.AddBar -> addBar(action.symbol)
@@ -99,10 +100,16 @@ class AnalyzeViewModel(
             when {
                 failure is AppError.MicrophoneOff -> _uiState.update { it.copy(microphoneOff = true) }
                 failure != null -> _uiState.update { it.copy(errorMessage = failure?.messageRes()) }
-                recorded < rate -> _uiState.update { it.copy(errorMessage = AppError.NotFound.messageRes()) }
+                recorded < rate -> _uiState.update { it.copy(errorMessage = AppError.NoChordsHeard.messageRes()) }
                 else -> analyze(buffer.copyOf(recorded), rate)
             }
         }
+    }
+
+    private fun cancelAnalysis() {
+        recordJob?.cancel()
+        recordJob = null
+        _uiState.update { it.copy(isRecording = false, inputLevel = 0f, stage = null) }
     }
 
     private suspend fun analyze(samples: FloatArray, rate: Int) {

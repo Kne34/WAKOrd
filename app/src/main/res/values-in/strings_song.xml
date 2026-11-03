@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="song_chord_sheet">Chord sheet</string>
+    <string name="song_chord_sheet">Lembar chord</string>
     <string name="more_options">Opsi lainnya</string>
     <string name="song_cover_cd">Sampul %1$s</string>
     <string name="song_stats">%1$s suka · %2$s simpan</string>
@@ -25,7 +25,7 @@
     <string name="song_saved">Tersimpan</string>
     <string name="song_comments_cd">Komentar, %1$s</string>
     <string name="share">Bagikan</string>
-    <string name="song_share_text">%1$s oleh %2$s di WAKord</string>
+    <string name="song_share_text">%1$s oleh %2$s di WAKOrd</string>
     <string name="song_reset_transpose">Kembalikan kunci asli</string>
 
     <string name="transpose">Transpose</string>

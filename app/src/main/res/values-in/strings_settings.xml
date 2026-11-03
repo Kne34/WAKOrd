@@ -25,7 +25,7 @@
     <string name="settings_saved_on_phone">tersimpan di HP ini</string>
     <string name="settings_keep_offline">Simpan item untuk offline</string>
     <string name="settings_log_out">Keluar</string>
-    <string name="settings_footer">WAKord %1$s · dibuat oleh KO &amp; WA</string>
+    <string name="settings_footer">WAKOrd %1$s · dibuat oleh KO &amp; WA</string>
 
     <string name="settings_pitch_subtitle">Tuner dan latihan nada menyetel A4 ke frekuensi ini</string>
     <string name="settings_pitch_lower">Turunkan 1 Hz</string>
@@ -34,7 +34,7 @@
     <string name="settings_pitch_reset">Kembalikan ke 440 Hz</string>
     <string name="settings_done">Selesai</string>
 
-    <string name="logout_title">Keluar dari WAKord?</string>
+    <string name="logout_title">Keluar dari WAKOrd?</string>
     <string name="logout_message">Lagu dan chord yang kamu simpan tetap tersinkron. Kamu bisa masuk lagi kapan saja.</string>
     <string name="cancel">Batal</string>
 </resources>

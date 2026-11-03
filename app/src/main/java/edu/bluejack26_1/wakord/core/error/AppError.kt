@@ -11,6 +11,7 @@ sealed class AppError(message: String? = null) : Exception(message) {
     object NotFound : AppError()
     object CommentBlocked : AppError()
     object MicrophoneOff : AppError()
+    object NoChordsHeard : AppError()
     class Unknown(message: String?) : AppError(message)
 }
 
@@ -23,5 +24,6 @@ fun Throwable.messageRes(): Int = when (this) {
     AppError.NotFound -> R.string.error_not_found
     AppError.CommentBlocked -> R.string.error_comment_blocked
     AppError.MicrophoneOff -> R.string.error_microphone_off
+    AppError.NoChordsHeard -> R.string.error_no_chords_heard
     else -> R.string.error_unknown
 }

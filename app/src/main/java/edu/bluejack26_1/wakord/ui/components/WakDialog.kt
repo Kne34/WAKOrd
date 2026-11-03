@@ -29,7 +29,7 @@ import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.ui.theme.WAKordTheme
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 
-enum class DialogTone { Default, Error, Destructive }
+enum class DialogTone { Default, Info, Error, Destructive, Danger }
 
 @Composable
 fun WakDialog(
@@ -62,15 +62,16 @@ private fun WakDialogContent(
     val c = WakTheme.colors
     val accent = when (tone) {
         DialogTone.Default -> c.primary
-        DialogTone.Error -> c.error
+        DialogTone.Info -> c.lavender
+        DialogTone.Error, DialogTone.Danger -> c.error
         DialogTone.Destructive -> c.peach
     }
-    val iconContainer = if (tone == DialogTone.Destructive) alertContainer(c) else accent.copy(alpha = 0.12f)
+    val iconContainer = if (tone == DialogTone.Destructive) c.peachSoft else accent.copy(alpha = 0.12f)
     Surface(
         modifier = Modifier.widthIn(max = 326.dp),
         shape = RoundedCornerShape(30.dp),
         color = c.s2,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Column(
             modifier = Modifier.padding(start = 23.dp, end = 23.dp, top = 27.dp, bottom = 21.dp),
@@ -105,7 +106,7 @@ private fun WakDialogContent(
                 text = primaryText,
                 onClick = onPrimary,
                 modifier = Modifier.fillMaxWidth(),
-                variant = if (tone == DialogTone.Destructive) WakButtonVariant.Destructive else WakButtonVariant.Primary,
+                variant = if (tone == DialogTone.Destructive || tone == DialogTone.Danger) WakButtonVariant.Destructive else WakButtonVariant.Primary,
             )
             if (secondaryText != null) {
                 Spacer(Modifier.height(8.dp))

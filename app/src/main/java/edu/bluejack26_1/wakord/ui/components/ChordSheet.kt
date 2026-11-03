@@ -19,12 +19,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +36,7 @@ import edu.bluejack26_1.wakord.R
 import edu.bluejack26_1.wakord.core.music.Chord
 import edu.bluejack26_1.wakord.core.music.ChordTheory
 import edu.bluejack26_1.wakord.core.music.NoteNames
+import edu.bluejack26_1.wakord.core.music.VoicingGenerator
 import edu.bluejack26_1.wakord.domain.model.ChordVoicing
 import edu.bluejack26_1.wakord.ui.theme.WakTheme
 import edu.bluejack26_1.wakord.ui.theme.jakarta
@@ -71,7 +69,7 @@ fun fingerText(voicing: ChordVoicing): String =
     }.joinToString(" · ")
 
 @Composable
-private fun voicingLabel(voicing: ChordVoicing): String {
+fun voicingLabel(voicing: ChordVoicing): String {
     val position = voicing.position
     if (position <= 0) return stringResource(R.string.voicing_open)
     val res = when {
@@ -85,8 +83,15 @@ private fun voicingLabel(voicing: ChordVoicing): String {
 }
 
 @Composable
-private fun muteText(voicing: ChordVoicing): String {
-    val muted = voicing.frets.withIndex().filter { it.value < 0 }.mapNotNull { StringNames.getOrNull(it.index) }.map { stringResource(it) }
+private fun muteText(voicing: ChordVoicing, tuning: List<Int>): String {
+    val guitar = tuning == VoicingGenerator.GUITAR_STANDARD
+    val muted = voicing.frets.withIndex().filter { it.value < 0 }.mapNotNull { (index, _) ->
+        if (guitar) {
+            StringNames.getOrNull(index)?.let { stringResource(it) }
+        } else {
+            tuning.getOrNull(index)?.let { NoteNames.name(it % 12, preferFlats = false) }
+        }
+    }
     return when (muted.size) {
         0 -> stringResource(R.string.chord_mute_none)
         1 -> muted.first()
@@ -94,7 +99,6 @@ private fun muteText(voicing: ChordVoicing): String {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChordSheet(
     symbol: String,
@@ -105,26 +109,10 @@ fun ChordSheet(
     onPreview: () -> Unit,
     onToggleSaved: () -> Unit,
     onClose: () -> Unit,
+    tuning: List<Int> = VoicingGenerator.GUITAR_STANDARD,
 ) {
-    val c = WakTheme.colors
-    val shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
-    ModalBottomSheet(
-        onDismissRequest = onClose,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        modifier = Modifier.border(1.dp, c.text2.copy(alpha = 0.10f), shape),
-        shape = shape,
-        containerColor = c.s2,
-        scrimColor = Color(0xFF03060F).copy(alpha = 0.66f),
-        dragHandle = {
-            Box(
-                Modifier
-                    .padding(top = 11.dp, bottom = 18.dp)
-                    .size(width = 40.dp, height = 5.dp)
-                    .background(c.s5, CircleShape),
-            )
-        },
-    ) {
-        ChordSheetContent(symbol, voicings, selectedVoicing, isSaved, onSelectVoicing, onPreview, onToggleSaved, onClose)
+    WakSheetFrame(onDismiss = onClose) {
+        ChordSheetContent(symbol, voicings, selectedVoicing, isSaved, onSelectVoicing, onPreview, onToggleSaved, onClose, tuning)
     }
 }
 
@@ -138,6 +126,7 @@ fun ChordSheetContent(
     onPreview: () -> Unit,
     onToggleSaved: () -> Unit,
     onClose: () -> Unit,
+    tuning: List<Int> = VoicingGenerator.GUITAR_STANDARD,
 ) {
     val c = WakTheme.colors
     val voicing = voicings.getOrNull(selectedVoicing)
@@ -160,7 +149,7 @@ fun ChordSheetContent(
                 modifier = Modifier.size(44.dp),
                 shape = CircleShape,
                 color = c.s3,
-                border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+                border = BorderStroke(1.dp, c.line),
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(painterResource(R.drawable.ic_close), contentDescription = stringResource(R.string.close), tint = c.text, modifier = Modifier.size(20.dp))
@@ -184,7 +173,7 @@ fun ChordSheetContent(
             Box(
                 modifier = Modifier
                     .background(c.s2, RoundedCornerShape(24.dp))
-                    .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(24.dp))
+                    .border(1.dp, c.line, RoundedCornerShape(24.dp))
                     .padding(horizontal = 7.dp, vertical = 8.dp),
             ) {
                 ChordDiagram(
@@ -203,7 +192,7 @@ fun ChordSheetContent(
                     emphasize = true,
                 )
                 DetailLine(stringResource(R.string.chord_fingers), fingerText(voicing))
-                DetailLine(stringResource(R.string.chord_mute), muteText(voicing))
+                DetailLine(stringResource(R.string.chord_mute), muteText(voicing, tuning))
             }
         }
         Spacer(Modifier.height(18.dp))

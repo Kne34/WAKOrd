@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_channel">Activity</string>
+    <string name="notification_like">%1$s liked %2$s</string>
+    <string name="notification_comment">%1$s commented: %2$s</string>
+    <string name="notification_reply">%1$s replied to you: %2$s</string>
+    <string name="notification_follow">%1$s started following you</string>
+    <string name="notifications_mark_all">Mark all read</string>
+    <string name="notifications_new">New · %1$d</string>
+    <string name="notifications_earlier">Earlier</string>
+    <string name="notifications_unread_cd">Unread</string>
+    <string name="notifications_empty_title">You’re all caught up</string>
+    <string name="notifications_empty_message">Likes, comments and new followers will show up here.</string>
+    <string name="notifications_row_like_progression">%1$s liked your progression “%2$s”</string>
+    <string name="notifications_row_like">%1$s liked “%2$s”</string>
+    <string name="notifications_row_comment">%1$s commented: “%2$s”</string>
+    <string name="notifications_row_reply">%1$s replied: “%2$s”</string>
+</resources>

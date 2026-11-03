@@ -41,7 +41,7 @@ fun WakButton(
         !enabled && !transparent -> c.s4
         variant == WakButtonVariant.Primary -> c.primary
         variant == WakButtonVariant.Secondary -> c.s3
-        variant == WakButtonVariant.Destructive -> c.error.copy(alpha = 0.12f)
+        variant == WakButtonVariant.Destructive -> c.errorSoft
         else -> Color.Transparent
     }
     val content = when {

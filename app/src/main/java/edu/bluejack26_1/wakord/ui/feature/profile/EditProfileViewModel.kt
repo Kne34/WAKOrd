@@ -30,6 +30,7 @@ class EditProfileViewModel(
             _uiState.update {
                 it.copy(
                     isLoading = false,
+                    uid = user?.uid.orEmpty(),
                     fullName = user?.fullName.orEmpty(),
                     username = user?.username.orEmpty(),
                     bio = user?.bio.orEmpty(),

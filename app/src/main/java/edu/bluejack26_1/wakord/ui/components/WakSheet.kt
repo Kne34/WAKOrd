@@ -2,12 +2,12 @@ package edu.bluejack26_1.wakord.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -38,25 +38,40 @@ import edu.bluejack26_1.wakord.ui.theme.spaceGrotesk
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WakSheet(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+fun WakSheetFrame(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
     val c = WakTheme.colors
     val shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        modifier = Modifier.border(1.dp, c.text2.copy(alpha = 0.10f), shape),
         shape = shape,
-        containerColor = c.s2,
-        scrimColor = Color(0xFF03060F).copy(alpha = 0.66f),
-        dragHandle = {
-            Box(
-                Modifier
-                    .padding(top = 11.dp, bottom = 18.dp)
-                    .size(width = 40.dp, height = 5.dp)
-                    .background(c.s5, CircleShape),
-            )
-        },
+        containerColor = Color.Transparent,
+        scrimColor = c.scrim,
+        dragHandle = null,
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
     ) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = shape,
+            color = c.s2,
+            border = BorderStroke(1.dp, c.line),
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(
+                    Modifier
+                        .padding(top = 11.dp, bottom = 18.dp)
+                        .size(width = 40.dp, height = 5.dp)
+                        .background(c.s5, CircleShape),
+                )
+                content()
+            }
+        }
+    }
+}
+
+@Composable
+fun WakSheet(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+    WakSheetFrame(onDismiss) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -83,7 +98,7 @@ fun SheetHeader(title: String, subtitle: String, onClose: () -> Unit) {
             modifier = Modifier.size(44.dp),
             shape = CircleShape,
             color = c.s3,
-            border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+            border = BorderStroke(1.dp, c.line),
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(painterResource(R.drawable.ic_close), contentDescription = stringResource(R.string.close), tint = c.text, modifier = Modifier.size(20.dp))

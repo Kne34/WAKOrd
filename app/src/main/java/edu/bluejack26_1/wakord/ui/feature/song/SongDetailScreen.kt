@@ -68,11 +68,11 @@ import edu.bluejack26_1.wakord.domain.model.SongLine
 import edu.bluejack26_1.wakord.domain.model.SongSection
 import edu.bluejack26_1.wakord.ui.components.AvatarSmall
 import edu.bluejack26_1.wakord.ui.components.BackgroundArt
+import edu.bluejack26_1.wakord.ui.components.ErrorState
 import edu.bluejack26_1.wakord.ui.components.GlassIconButton
-import edu.bluejack26_1.wakord.ui.components.InitialsAvatar
+import edu.bluejack26_1.wakord.ui.components.UserAvatar
 import edu.bluejack26_1.wakord.ui.components.compactCount
 import edu.bluejack26_1.wakord.ui.components.glassBorder
-import edu.bluejack26_1.wakord.ui.components.glassColor
 import edu.bluejack26_1.wakord.ui.components.keyLabel
 import edu.bluejack26_1.wakord.ui.components.levelColor
 import edu.bluejack26_1.wakord.ui.components.levelLabel
@@ -135,6 +135,7 @@ fun SongDetailScreen(
                         .padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
                 )
             }
+            state.loadError != null -> ErrorState(stringResource(state.loadError), { onAction(SongDetailAction.Retry) }, Modifier.align(Alignment.Center))
             state.isLoading -> CircularProgressIndicator(color = c.primary, modifier = Modifier.align(Alignment.Center))
             else -> Column(
                 modifier = Modifier
@@ -213,7 +214,7 @@ private fun SongHero(song: Song) {
         Row(
             modifier = Modifier
                 .height(36.dp)
-                .background(glassColor(c), CircleShape)
+                .background(c.glass, CircleShape)
                 .border(glassBorder(c), CircleShape)
                 .padding(horizontal = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -247,7 +248,7 @@ private fun SongInfo(song: Song) {
             .padding(start = 20.dp, end = 20.dp, top = 20.dp)
             .fillMaxWidth()
             .height(64.dp)
-            .background(glassColor(c), RoundedCornerShape(22.dp))
+            .background(c.glass, RoundedCornerShape(22.dp))
             .border(glassBorder(c), RoundedCornerShape(22.dp))
             .padding(vertical = 13.dp, horizontal = 5.dp),
     ) {
@@ -271,7 +272,7 @@ private fun RowScope.InfoCell(label: String, value: String, valueColor: Color, d
                 Modifier
                     .width(1.dp)
                     .fillMaxHeight()
-                    .background(c.text2.copy(alpha = 0.10f)),
+                    .background(c.line),
             )
         }
         Column(
@@ -330,7 +331,7 @@ private fun SongActions(
             modifier = Modifier.size(44.dp),
             shape = CircleShape,
             color = c.s3,
-            border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+            border = BorderStroke(1.dp, c.line),
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(painterResource(R.drawable.ic_share), contentDescription = stringResource(R.string.share), tint = c.text, modifier = Modifier.size(20.dp))
@@ -347,7 +348,7 @@ private fun ActionChip(icon: Int, iconTint: Color, text: String, onClick: () -> 
         modifier = modifier.height(44.dp),
         shape = CircleShape,
         color = c.s3,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
             Icon(painterResource(icon), contentDescription = null, tint = iconTint, modifier = Modifier.size(18.dp))
@@ -372,7 +373,7 @@ private fun TransposeCard(state: SongDetailUiState, onAction: (SongDetailAction)
             .fillMaxWidth()
             .height(60.dp)
             .background(c.s2, RoundedCornerShape(20.dp))
-            .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(20.dp))
+            .border(1.dp, c.line, RoundedCornerShape(20.dp))
             .padding(start = 17.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -401,7 +402,7 @@ private fun StepButton(icon: Int, description: String, onClick: () -> Unit) {
         modifier = Modifier.size(44.dp),
         shape = CircleShape,
         color = c.s3,
-        border = BorderStroke(1.dp, c.text2.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, c.line),
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(painterResource(icon), contentDescription = description, tint = c.text, modifier = Modifier.size(18.dp))
@@ -459,7 +460,7 @@ private fun ChordChip(chord: String, mark: ChordMark) {
         modifier = Modifier
             .height(36.dp)
             .background(if (mark == ChordMark.NOW) c.primary else c.s3, shape)
-            .border(1.dp, if (mark == ChordMark.NEXT) c.primary else c.text2.copy(alpha = 0.10f), shape)
+            .border(1.dp, if (mark == ChordMark.NEXT) c.primary else c.line, shape)
             .padding(horizontal = 13.dp),
         contentAlignment = Alignment.Center,
     ) {
@@ -527,12 +528,12 @@ private fun CommentsPreview(state: SongDetailUiState, onOpenComments: () -> Unit
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(c.s2, RoundedCornerShape(22.dp))
-                    .border(1.dp, c.text2.copy(alpha = 0.10f), RoundedCornerShape(22.dp))
+                    .border(1.dp, c.line, RoundedCornerShape(22.dp))
                     .clickable(onClick = onOpenComments)
                     .padding(17.dp),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    InitialsAvatar(top.authorName, top.authorId, AvatarSmall, fontSize = 11.sp)
+                    UserAvatar(top.authorName, top.authorId, AvatarSmall, fontSize = 11.sp)
                     Spacer(Modifier.width(10.dp))
                     Column(Modifier.weight(1f)) {
                         Text(top.authorName, style = jakarta(13.sp, FontWeight.SemiBold), color = c.text, maxLines = 1)
@@ -585,7 +586,7 @@ private fun PlayerBar(state: SongDetailUiState, song: Song, onAction: (SongDetai
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .shadow(24.dp, RoundedCornerShape(30.dp), ambientColor = Color.Black, spotColor = Color.Black)
+            .shadow(24.dp, RoundedCornerShape(30.dp), ambientColor = c.shadow, spotColor = c.shadow)
             .background(c.s2, RoundedCornerShape(30.dp))
             .border(glassBorder(c), RoundedCornerShape(30.dp))
             .padding(17.dp),
@@ -710,7 +711,7 @@ private fun PlayerChord(chord: String?, now: Boolean) {
         modifier = Modifier
             .height(30.dp)
             .background(if (now) c.primary else c.s3, shape)
-            .border(1.dp, if (now) c.primary else c.text2.copy(alpha = 0.10f), shape)
+            .border(1.dp, if (now) c.primary else c.line, shape)
             .padding(horizontal = 11.dp),
         contentAlignment = Alignment.Center,
     ) {

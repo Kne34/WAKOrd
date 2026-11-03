@@ -8,11 +8,11 @@
     <string name="tuner_string_label">Senar %1$d · %2$s</string>
     <string name="tuner_play_a_string">Petik satu senar</string>
     <string name="tuner_listening">Mendengarkan…</string>
-    <string name="tuner_in_tune">Pas · %1$s cents</string>
-    <string name="tuner_flat">Rendah · %1$s cents · kencangkan</string>
-    <string name="tuner_sharp">Tinggi · %1$s cents · kendurkan</string>
+    <string name="tuner_in_tune">Pas · %1$s sen</string>
+    <string name="tuner_flat">Rendah · %1$s sen · kencangkan</string>
+    <string name="tuner_sharp">Tinggi · %1$s sen · kendurkan</string>
     <string name="tuner_flat_scale">Rendah · −50</string>
-    <string name="tuner_zero_cents">0 cents</string>
+    <string name="tuner_zero_cents">0 sen</string>
     <string name="tuner_sharp_scale">+50 · Tinggi</string>
 
     <string name="tuner_strings_low_to_high">Senar · rendah ke tinggi</string>
@@ -23,14 +23,16 @@
     <string name="tuner_string_cd">Senar %1$d, %2$s</string>
 
     <string name="allow_mic_title">Izinkan mikrofon?</string>
-    <string name="allow_mic_message">WAKord mendengarkan untuk menyetem instrumen dan mendeteksi chord. Audio tetap di HP-mu kecuali kamu menyimpannya.</string>
+    <string name="allow_mic_message">WAKOrd mendengarkan untuk menyetem instrumen dan mendeteksi chord. Audio tetap di HP-mu kecuali kamu menyimpannya.</string>
     <string name="allow_microphone">Izinkan mikrofon</string>
     <string name="mic_off_title">Akses mikrofon mati</string>
-    <string name="mic_off_tuner_message">WAKord butuh mikrofon untuk mendengar senarmu. Audio diproses di HP ini dan tidak pernah direkam.</string>
+    <string name="mic_off_tuner_message">WAKOrd butuh mikrofon untuk mendengar senarmu. Audio diproses di HP ini dan tidak pernah direkam.</string>
     <string name="use_pitch_pipe">Pakai pitch pipe saja</string>
     <string name="tuner_pitch_pipe">Pitch pipe</string>
     <string name="tuner_pitch_pipe_hint">Ketuk senar untuk mendengar nadanya</string>
     <string name="tuner_turn_on_mic">Nyalakan mik</string>
+    <string name="tuner_mode_listen">Dengar</string>
+    <string name="tuner_mode_play">Bunyikan</string>
 
     <string name="tuner_instrument_title">Instrumen</string>
     <string name="tuner_instrument_subtitle">Tuner akan mendengarkan senar-senar ini</string>

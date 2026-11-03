@@ -47,6 +47,7 @@ data class ExerciseUiState(
     val question: Question? = null,
     val selectedId: String? = null,
     val feedback: AnswerFeedback? = null,
+    val answers: List<Boolean> = emptyList(),
     val isPlaying: Boolean = false,
     val summary: SessionSummary? = null,
     @param:StringRes val errorMessage: Int? = null,
@@ -68,12 +69,15 @@ sealed interface ExerciseAction {
 
 data class PitchMonitorUiState(
     val referenceMidi: Int = 60,
+    val referencePitch: Float = 440f,
     val isListening: Boolean = false,
     val reading: PitchReading? = null,
+    val microphoneOff: Boolean = false,
 )
 
 sealed interface PitchMonitorAction {
     data class SelectReference(val midi: Int) : PitchMonitorAction
     data object PlayReference : PitchMonitorAction
     data object ToggleListening : PitchMonitorAction
+    data object MicrophoneDenied : PitchMonitorAction
 }

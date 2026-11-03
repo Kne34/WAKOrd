@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -57,6 +58,8 @@ fun WakTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
     onImeAction: () -> Unit = {},
+    prefix: String? = null,
+    singleLine: Boolean = true,
 ) {
     val c = WakTheme.colors
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -85,7 +88,7 @@ fun WakTextField(
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
-            singleLine = true,
+            singleLine = singleLine,
             textStyle = MaterialTheme.typography.bodyLarge.copy(color = c.text, fontSize = 15.sp),
             cursorBrush = SolidColor(c.primary),
             visualTransformation = if (isPassword && !passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
@@ -99,14 +102,19 @@ fun WakTextField(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(54.dp)
+                        .then(if (singleLine) Modifier.height(54.dp) else Modifier.heightIn(min = 88.dp))
                         .background(c.s2, shape)
                         .border(1.dp, borderColor, shape)
-                        .padding(start = 17.dp, end = if (isPassword) 4.dp else 17.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                        .padding(start = 17.dp, end = if (isPassword) 4.dp else 17.dp)
+                        .then(if (singleLine) Modifier else Modifier.padding(vertical = 15.dp)),
+                    verticalAlignment = if (singleLine) Alignment.CenterVertically else Alignment.Top,
                 ) {
                     if (leadingIcon != null) {
                         Icon(leadingIcon, contentDescription = null, tint = iconTint, modifier = Modifier.size(20.dp))
+                        Spacer(Modifier.width(12.dp))
+                    }
+                    if (prefix != null) {
+                        Text(prefix, style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp), color = c.text3)
                         Spacer(Modifier.width(12.dp))
                     }
                     Box(Modifier.weight(1f)) {

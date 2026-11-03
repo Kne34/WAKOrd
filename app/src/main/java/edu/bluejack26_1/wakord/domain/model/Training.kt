@@ -51,6 +51,10 @@ data class DailyWorkout(
     val currentLevel: Int,
 )
 
+data class AccuracyBucket(val startDay: Long, val accuracy: Float?)
+
+data class AccuracySeries(val buckets: List<AccuracyBucket> = emptyList(), val change: Float? = null)
+
 data class TrainingStats(
     val workout: DailyWorkout,
     val longestStreak: Int,
@@ -58,6 +62,9 @@ data class TrainingStats(
     val history: List<DayStat>,
     val accuracyBySkill: Map<SkillType, Float>,
     val levels: List<LevelProgress>,
+    val daily: AccuracySeries = AccuracySeries(),
+    val weekly: AccuracySeries = AccuracySeries(),
+    val monthly: AccuracySeries = AccuracySeries(),
 )
 
 enum class PitchStatus { NO_SIGNAL, FLAT, ON_PITCH, SHARP }

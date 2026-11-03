@@ -2,6 +2,7 @@ package edu.bluejack26_1.wakord.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,7 @@ import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextMeasurer
@@ -23,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import edu.bluejack26_1.wakord.ui.theme.SpaceGrotesk
@@ -33,13 +36,6 @@ private val WHITE_OFFSETS = listOf(0, 2, 4, 5, 7, 9, 11)
 private val WHITE_LETTERS = listOf("C", "D", "E", "F", "G", "A", "B")
 private val BLACK_NAMES = mapOf(1 to "C♯", 3 to "D♯", 6 to "F♯", 8 to "G♯", 10 to "A♯")
 
-private val PianoFrame = Color(0xFF080D1D)
-private val IvoryKey = Color(0xFFF3EFE6)
-private val EbonyKey = Color(0xFF141A2C)
-private val BadgeFill = Color(0xFF0E1323)
-private val WhiteLabel = Color(0xFF3C494B)
-private val WhiteLabelActive = Color(0xFF2B0C00)
-
 @Composable
 fun PianoKeyboard(
     highlighted: Set<Int>,
@@ -47,18 +43,31 @@ fun PianoKeyboard(
     intervals: Map<Int, String> = emptyMap(),
     startMidi: Int = 48,
     octaves: Int = 2,
+    keyColors: Map<Int, Color> = emptyMap(),
+    keyboardHeight: Dp = 176.dp,
+    onKeyTap: ((Int) -> Unit)? = null,
 ) {
     val c = WakTheme.colors
     val measurer = rememberTextMeasurer()
+    val tapModifier = if (onKeyTap == null) {
+        Modifier
+    } else {
+        Modifier.pointerInput(startMidi, octaves, onKeyTap) {
+            detectTapGestures { offset ->
+                pianoKeyAt(offset, size.width.toFloat(), size.height.toFloat(), 4.dp.toPx(), 2.dp.toPx(), startMidi, octaves)?.let(onKeyTap)
+            }
+        }
+    }
     Canvas(
         modifier = modifier
             .fillMaxWidth()
-            .height(176.dp)
+            .height(keyboardHeight)
+            .then(tapModifier)
             .semantics { contentDescription = highlighted.sorted().joinToString(" ") },
     ) {
         val pad = 4.dp.toPx()
         val gap = 2.dp.toPx()
-        drawRoundRect(PianoFrame, cornerRadius = CornerRadius(14.dp.toPx()))
+        drawRoundRect(c.art.pianoFrame, cornerRadius = CornerRadius(14.dp.toPx()))
 
         val whiteCount = 7 * octaves
         val keyWidth = (size.width - pad * 2 - gap * (whiteCount - 1)) / whiteCount
@@ -69,14 +78,15 @@ fun PianoKeyboard(
             val midi = startMidi + (i / 7) * 12 + WHITE_OFFSETS[position]
             val active = midi in highlighted
             val left = pad + i * (keyWidth + gap)
-            drawBottomRounded(Rect(left, pad, left + keyWidth, pad + keyHeight), 5.dp.toPx(), if (active) c.peach else IvoryKey)
+            val fill = keyColors[midi] ?: c.peach
+            drawBottomRounded(Rect(left, pad, left + keyWidth, pad + keyHeight), 5.dp.toPx(), if (active) fill else c.art.ivoryKey)
             val centerX = left + keyWidth / 2
             val interval = intervals[midi]
             if (active && interval != null) {
-                drawBadge(measurer, interval, Offset(centerX, pad + keyHeight * 135f / 168f), 10.dp.toPx(), c.peach, 8.sp)
+                drawBadge(measurer, interval, Offset(centerX, pad + keyHeight * 135f / 168f), 10.dp.toPx(), c.art.pianoBadge, fill, 8.sp)
             }
             val label = if (position == 0 || active) "${WHITE_LETTERS[position]}${midi / 12 - 1}" else WHITE_LETTERS[position]
-            drawLabel(measurer, label, Offset(centerX, pad + keyHeight * 156.5f / 168f), if (active) WhiteLabelActive else WhiteLabel, 9.sp)
+            drawLabel(measurer, label, Offset(centerX, pad + keyHeight * 156.5f / 168f), if (active) c.art.pianoLabelActive else c.art.pianoLabel, 9.sp)
         }
 
         val blackWidth = keyWidth * 15f / 20.4f
@@ -88,15 +98,38 @@ fun PianoKeyboard(
             val active = midi in highlighted
             val centerX = pad + (i + 1) * (keyWidth + gap) - gap / 2
             val rect = Rect(centerX - blackWidth / 2, pad, centerX + blackWidth / 2, pad + blackHeight)
-            drawBottomRounded(rect.translate(0f, 1.5.dp.toPx()), 4.dp.toPx(), Color.Black.copy(alpha = 0.35f))
-            drawBottomRounded(rect, 4.dp.toPx(), if (active) c.primary else EbonyKey)
+            drawBottomRounded(rect.translate(0f, 1.5.dp.toPx()), 4.dp.toPx(), c.art.keyShadow)
+            val fill = keyColors[midi] ?: c.primary
+            drawBottomRounded(rect, 4.dp.toPx(), if (active) fill else c.art.ebonyKey)
             val interval = intervals[midi]
             if (active && interval != null) {
-                drawBadge(measurer, interval, Offset(centerX, pad + blackHeight * 79f / 106f), 9.dp.toPx(), c.primary, 7.sp)
+                drawBadge(measurer, interval, Offset(centerX, pad + blackHeight * 79f / 106f), 9.dp.toPx(), c.art.pianoBadge, fill, 7.sp)
             }
             drawLabel(measurer, BLACK_NAMES.getValue(midi % 12), Offset(centerX, pad + blackHeight * 96.5f / 106f), if (active) c.onPrimary else c.text3, 7.sp)
         }
     }
+}
+
+fun pianoKeyAt(offset: Offset, width: Float, height: Float, pad: Float, gap: Float, startMidi: Int, octaves: Int): Int? {
+    val whiteCount = 7 * octaves
+    val keyWidth = (width - pad * 2 - gap * (whiteCount - 1)) / whiteCount
+    val keyHeight = height - pad * 2
+    if (offset.y < pad || offset.y > pad + keyHeight) return null
+    val blackWidth = keyWidth * 15f / 20.4f
+    val blackHeight = keyHeight * 106f / 168f
+    if (offset.y <= pad + blackHeight) {
+        for (i in 0 until whiteCount - 1) {
+            val position = i % 7
+            if (position == 2 || position == 6) continue
+            val centerX = pad + (i + 1) * (keyWidth + gap) - gap / 2
+            if (offset.x in (centerX - blackWidth / 2)..(centerX + blackWidth / 2)) {
+                return startMidi + (i / 7) * 12 + WHITE_OFFSETS[position] + 1
+            }
+        }
+    }
+    val index = ((offset.x - pad) / (keyWidth + gap)).toInt()
+    if (offset.x < pad || index !in 0 until whiteCount) return null
+    return startMidi + (index / 7) * 12 + WHITE_OFFSETS[index % 7]
 }
 
 private fun DrawScope.drawBottomRounded(rect: Rect, radius: Float, color: Color) {
@@ -119,8 +152,8 @@ private fun DrawScope.drawLabel(measurer: TextMeasurer, text: String, center: Of
     drawText(layout, topLeft = Offset(center.x - layout.size.width / 2f, center.y - layout.size.height / 2f))
 }
 
-private fun DrawScope.drawBadge(measurer: TextMeasurer, text: String, center: Offset, radius: Float, color: Color, size: TextUnit) {
-    drawCircle(BadgeFill, radius = radius, center = center)
+private fun DrawScope.drawBadge(measurer: TextMeasurer, text: String, center: Offset, radius: Float, fill: Color, color: Color, size: TextUnit) {
+    drawCircle(fill, radius = radius, center = center)
     drawLabel(measurer, text, center, color, size)
 }
 

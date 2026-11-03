@@ -19,15 +19,18 @@ data class DailyWorkout(
 
 data class HomeUiState(
     val userName: String = "",
+    val userId: String = "",
     val photoUrl: String? = null,
     val recommended: List<Song> = emptyList(),
     val savedChords: List<SavedChord> = emptyList(),
     val workout: DailyWorkout = DailyWorkout(),
+    val unreadNotifications: Int = 0,
     val feed: List<FeedItem> = emptyList(),
     val likedIds: Set<String> = emptySet(),
     val isLoading: Boolean = true,
     val isLoadingMore: Boolean = false,
     val endReached: Boolean = false,
+    @param:StringRes val loadError: Int? = null,
     @param:StringRes val errorMessage: Int? = null,
 )
 
