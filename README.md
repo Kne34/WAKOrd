@@ -12,19 +12,20 @@ WAKOrd is an Android music companion for guitarists, ukulele players, and every 
 ## Features
 
 - **Tuner**: real-time tuner for guitar, ukulele, bass, mandolin and violin, alternate and custom tunings, and a pitch pipe.
-- **Analyze**: record up to 30 seconds to detect chords and key with Gemini, or read chords live while you strum. Voicings for piano, guitar and ukulele, and a chord track you can save as a progression. An on-device algorithm takes over when the AI is unavailable.
+- **Analyze**: record up to 30 seconds to detect chords and key with Gemini, read chords live while you strum, or build a chord by tapping piano keys, from triads up to 9th, 11th and 13th chords. Voicings for piano, guitar and ukulele, and a chord track you can save as a progression. An on-device algorithm takes over when the AI is unavailable.
 - **Ear & pitch training**: a daily workout with streaks, a pitch monitor, and levels from single notes to chord progressions.
 - **Songs & chord sheets**: lyrics with chords, one-tap transpose, playback with speed control, likes, saves and comments.
-- **Discover**: a personal feed from your instruments and genres, trending songs and progressions, search, and genre and level filters.
+- **Discover**: a personal feed from your instruments and genres, trending songs and progressions, search, and a filter popup for genre and level.
 - **Create & share**: write and upload chord progressions, follow other musicians, and get notified about likes, comments, replies and follows.
-- Saved songs and chords work offline, dark and light themes, English and Indonesian.
+- **Works offline**: everything you open is backed up on the device, and likes, saves, comments and uploads made offline sync automatically once you are back online.
+- Dark and light themes, English and Indonesian.
 
 ## Tech stack
 
 - Kotlin, Jetpack Compose with Material 3
 - MVVM with a manual dependency container
 - Firebase Authentication, Realtime Database and Firebase AI Logic (Gemini)
-- Room for offline saved items
+- Room as an offline backup of Firebase data, with queued writes synced by WorkManager
 - Min SDK 26, target SDK 37
 
 ## Build and run
